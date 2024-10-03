@@ -12,7 +12,7 @@ function getPathMapVal(path: string, map: Record<string, any>) {
   const newPath = path.replaceAll(/\d+/g, "[]");
   return map[newPath];
 }
-
+// todo: 不借助lodash: 如果子项都一样，则一样，如果子项有任何差异，则不一样
 function isSameItem<T>(props: {
   data1: T;
   data2: T;
