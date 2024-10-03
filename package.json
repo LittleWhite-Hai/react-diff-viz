@@ -1,0 +1,25 @@
+{
+  "name": "rediff",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LittleWhite-Hai/rediff.git"
+  },
+  "keywords": [
+    "react",
+    "diff",
+    "render",
+    "lcs"
+  ],
+  "author": "ttlewhite",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/LittleWhite-Hai/rediff/issues"
+  },
+  "homepage": "https://github.com/LittleWhite-Hai/rediff#readme",
+  "description": ""
+}
