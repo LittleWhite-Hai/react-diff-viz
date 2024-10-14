@@ -272,7 +272,7 @@ export default function Diff<T extends DataTypeBase>(props: {
         }
       });
     });
-    // 对齐高度
+    // 对齐before高度
     beforeAllElements.forEach((ele) => {
       const path = ele.dataset.dataPath;
       // 如果有子元素也需要diff对齐，则不对齐父亲高度
@@ -288,7 +288,7 @@ export default function Diff<T extends DataTypeBase>(props: {
         }
       }
     });
-    // 对齐高度
+    // 对齐current高度
     currentAllElements.forEach((ele) => {
       const path = ele.dataset.dataPath;
       // 如果有子元素也需要diff对齐，则不对齐父亲高度

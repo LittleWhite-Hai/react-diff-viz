@@ -1,3 +1,6 @@
+import _ from "lodash";
+import microDiff from "microdiff";
+
 export type IsEqualFuncType = (data1: any, data2: any) => boolean;
 const EMPTY_SYMBOL = Symbol.for("EMPTY_SYMBOL");
 
@@ -203,4 +206,60 @@ function rearrangeByArr2(props: {
   }
 
   return [result1, result2];
+}
+type DiffItemType = "CHANGED" | "CREATED" | "REMOVED" | "UNCHANGED";
+type DiffResType = Record<string, DiffItemType>;
+
+/**
+ *
+ * @param data1
+ * @param data2
+ * @returns  diff结果的结构：
+ * a.b.c:"CHANGED"
+ * a.c.0.d:"REMOVED"
+ */
+export function diff(data1: any, data2: any) {
+  const diffRes: DiffResType = {};
+  const microDiffRes = microDiff(data1, data2);
+  microDiffRes.forEach((diffItem) => {
+    const path = diffItem.path.join(".");
+    diffRes[path] = (diffItem.type + "D") as DiffItemType;
+  });
+
+  return diffRes;
+}
+/**
+ *
+ * @param data
+ * 获取对象路径值的映射,仅获取叶子节点的值
+ * 例子：
+ * 输入：data:{age:2,name:"张三",address:{city:"上海",area:"浦东"}}
+ * 输出：{
+ *  "age":2,
+ *  "name":"张三",
+ *  "address.city":"上海",
+ *  "address.area":"浦东"
+ * }
+ */
+export function getObjectPathValueMap(data: any) {
+  const map = new Map<string, any>();
+
+  function traverse(obj: any, path: string = "") {
+    if (typeof obj !== "object" || obj === null) {
+      map.set(path, obj);
+      return;
+    }
+
+    for (const [key, value] of Object.entries(obj)) {
+      const newPath = path ? `${path}.${key}` : key;
+      if (typeof value === "object" && value !== null) {
+        traverse(value, newPath);
+      } else {
+        map.set(newPath, value);
+      }
+    }
+  }
+
+  traverse(data);
+  return map;
 }

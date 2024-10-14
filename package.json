@@ -2,9 +2,12 @@
   "name": "rediff",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "tsc": "tsc"
+    "build2":"tsc --outDir ./dist --module es2022",
+    "build": "tsc --outDir ./dist --module CommonJS && cd dist && mv index.js index.cjs && cd ../ && tsc --module es2020  && npx prettier -w dist/*",
+    "test": "node --test ./dist/tests/*",
+    "test-micro": "swc -C module.type=commonjs ./test-micro-diff.ts -o ./test-micro-diff.js && node ./test-micro-diff.js > .test-micro-diff.log"
   },
   "repository": {
     "type": "git",
@@ -24,9 +27,12 @@
   "homepage": "https://github.com/LittleWhite-Hai/rediff#readme",
   "description": "",
   "dependencies": {
+    "lodash": "^4.17.21",
+    "microdiff": "^1.4.0",
     "react": "^18.3.1"
   },
   "devDependencies": {
+    "@types/lodash": "^4.17.10",
     "@types/react": "^18.3.11",
     "typescript": "^5.6.2"
   }
