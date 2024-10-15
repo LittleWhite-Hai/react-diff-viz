@@ -4,9 +4,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "build2":"tsc --outDir ./dist --module es2022",
+    "build2": "tsc --outDir ./dist --module es2022",
     "build": "tsc --outDir ./dist --module CommonJS && cd dist && mv index.js index.cjs && cd ../ && tsc --module es2020  && npx prettier -w dist/*",
-    "test": "node --test ./dist/tests/*",
+    "test": "node --test ./dist/tests/* > ./dist/tests/test-results.log",
     "test-micro": "swc -C module.type=commonjs ./test-micro-diff.ts -o ./test-micro-diff.js && node ./test-micro-diff.js > .test-micro-diff.log"
   },
   "repository": {
@@ -33,6 +33,7 @@
   },
   "devDependencies": {
     "@types/lodash": "^4.17.10",
+    "@types/node": "^22.7.5",
     "@types/react": "^18.3.11",
     "typescript": "^5.6.2"
   }

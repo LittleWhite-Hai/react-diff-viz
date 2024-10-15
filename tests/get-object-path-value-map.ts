@@ -69,6 +69,7 @@ test("包含数组对象的嵌套测试", (t) => {
   ]);
 
   const result = getObjectPathValueMap(input);
+  console.log("result", result);
   assert.deepStrictEqual(result, expected);
 });
 
