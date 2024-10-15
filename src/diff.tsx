@@ -1,5 +1,4 @@
-import React, {
-  useState,
+import {
   ReactNode,
   useRef,
   useMemo,
@@ -8,8 +7,8 @@ import React, {
   useCallback,
 } from "react";
 
-import { Path } from "./path-type";
-import { diff } from "./diff-algorithm";
+import { Path } from "../path-type";
+import { diff } from "../diff-algorithm";
 
 export type DataTypeBase = {
   [key: string]: any;
@@ -66,8 +65,8 @@ type FieldItem<T extends DataTypeBase> = {
 };
 type FieldItems<T extends DataTypeBase> = Array<FieldItem<T>>;
 
-function getIsEqualMap(fieldItems: any): any {
-  throw new Error("Function not implemented.");
+function getIsEqualMap(fieldItems: any) {
+  return {};
 }
 
 function calcDiff(
@@ -262,12 +261,12 @@ export default function Diff<T extends DataTypeBase>(props: {
       const beforePathDomList = beforeDataDomMap[key];
       const currentPathDomList = currentDataDomMap[key];
 
-      beforePathDomList.forEach((dom) => {
+      beforePathDomList?.forEach((dom) => {
         if (["UPDATE", "CREATE", "DELETE"].includes(val)) {
           dom.style.backgroundColor = "rgb(253, 226, 226)";
         }
       });
-      currentPathDomList.forEach((dom) => {
+      currentPathDomList?.forEach((dom) => {
         if (["UPDATE", "CREATE", "DELETE"].includes(val)) {
           dom.style.backgroundColor = "rgb(217, 245, 214)";
         }
@@ -296,7 +295,8 @@ export default function Diff<T extends DataTypeBase>(props: {
       if (path && !ele.querySelectorAll(`[data-path]`).length) {
         const rect = ele.getBoundingClientRect();
         if (pathMaxHeightMap[path] > rect.height) {
-          Number(getComputedStyle(ele).paddingBottom.slice(0, -2)) +
+          ele.style.paddingBottom =
+            Number(getComputedStyle(ele).paddingBottom.slice(0, -2)) +
             pathMaxHeightMap[path] -
             rect.height +
             "px";
