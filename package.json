@@ -1,40 +1,31 @@
 {
-  "name": "rediff",
-  "version": "1.0.0",
-  "main": "index.js",
+  "name": "rediff-vite",
+  "private": true,
+  "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "build2": "tsc --outDir ./dist --module es2022",
-    "build": "tsc --outDir ./dist --module CommonJS && cd dist && mv index.js index.cjs && cd ../ && tsc --module es2020  && npx prettier -w dist/*",
-    "test": "node --test ./dist/tests/* > ./dist/tests/test-results.log",
-    "test-micro": "swc -C module.type=commonjs ./test-micro-diff.ts -o ./test-micro-diff.js && node ./test-micro-diff.js > .test-micro-diff.log"
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/LittleWhite-Hai/rediff.git"
-  },
-  "keywords": [
-    "react",
-    "diff",
-    "render",
-    "lcs"
-  ],
-  "author": "ttlewhite",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/LittleWhite-Hai/rediff/issues"
-  },
-  "homepage": "https://github.com/LittleWhite-Hai/rediff#readme",
-  "description": "",
   "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "lodash": "^4.17.21",
-    "microdiff": "^1.4.0",
-    "react": "^18.3.1"
+    "microdiff": "^1.4.0"
   },
   "devDependencies": {
-    "@types/lodash": "^4.17.10",
-    "@types/node": "^22.7.5",
-    "@types/react": "^18.3.11",
-    "typescript": "^5.6.2"
+    "@eslint/js": "^9.11.1",
+    "@types/react": "^18.3.10",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.2",
+    "eslint": "^9.11.1",
+    "eslint-plugin-react-hooks": "^5.1.0-rc.0",
+    "eslint-plugin-react-refresh": "^0.4.12",
+    "globals": "^15.9.0",
+    "typescript": "^5.5.3",
+    "typescript-eslint": "^8.7.0",
+    "vite": "^5.4.8"
   }
 }

@@ -9,6 +9,7 @@ import React, {
 } from "react";
 
 import { Path } from "./path-type";
+import { diff } from "./diff-algorithm";
 
 export type DataTypeBase = {
   [key: string]: any;
@@ -75,10 +76,10 @@ function calcDiff(
   fieldItems: any
 ): {
   diffRes: Record<string, string>;
-  data1: any;
-  data2: any;
+  alignedData1: any;
+  alignedData2: any;
 } {
-  throw new Error("Function not implemented.");
+  return diff(beforeData, currentData);
 }
 
 function getFieldContent<T extends DataTypeBase>(
@@ -195,7 +196,7 @@ export default function Diff<T extends DataTypeBase>(props: {
     return getIsEqualMap(fieldItems);
   }, [fieldItems]);
 
-  const { diffRes, data1, data2 } = useMemo(() => {
+  const { diffRes, alignedData1, alignedData2 } = useMemo(() => {
     return calcDiff(beforeData, currentData, isEqualMap);
   }, [beforeData, currentData, isEqualMap]);
 
@@ -318,9 +319,9 @@ export default function Diff<T extends DataTypeBase>(props: {
           return (
             <RenderFieldItem<T>
               key={field.path ?? "" + field.key}
-              data={data1}
-              beforeData={data1}
-              currentData={data2}
+              data={alignedData1}
+              beforeData={alignedData1}
+              currentData={alignedData2}
               fieldItem={field}
               type="before"
             />
@@ -335,9 +336,9 @@ export default function Diff<T extends DataTypeBase>(props: {
           return (
             <RenderFieldItem
               key={field.path ?? "" + field.key}
-              data={data2}
-              beforeData={data1}
-              currentData={data2}
+              data={alignedData2}
+              beforeData={alignedData1}
+              currentData={alignedData2}
               fieldItem={field}
               type="current"
             />

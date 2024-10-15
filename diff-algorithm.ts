@@ -456,7 +456,7 @@ export function diff(rawData1: any, rawData2: any) {
     j++;
   }
 
-  return diffRes;
+  return { diffRes, alignedData1: data1, alignedData2: data2 };
 }
 
 const object1 = {
