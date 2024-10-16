@@ -5,7 +5,9 @@ import {
   useEffect,
   CSSProperties,
   useCallback,
+  useState,
 } from "react";
+import { throttle } from "lodash"; // 确保已安装并导入lodash
 
 import { Path } from "../path-type";
 import { diff } from "../diff-algorithm";
@@ -144,8 +146,18 @@ function RenderFieldItem<T extends DataTypeBase>(props: {
   beforeData: T;
   currentData: T;
   type: "before" | "current";
+  contentStyle: CSSProperties;
+  labelStyle: CSSProperties;
 }): any {
-  const { fieldItem, data, beforeData, currentData, type } = props;
+  const {
+    fieldItem,
+    data,
+    beforeData,
+    currentData,
+    type,
+    contentStyle,
+    labelStyle,
+  } = props;
   const ext = useMemo(
     () => ({
       beforeData,
@@ -157,9 +169,11 @@ function RenderFieldItem<T extends DataTypeBase>(props: {
   );
 
   return (
-    <div data-path={fieldItem.path}>
-      <div>{getPathLabel(data, fieldItem.label, ext)}</div>
-      <div>{getFieldContent(data, fieldItem.content, ext)}</div>
+    <div data-path={fieldItem.path} style={{ display: "flex" }}>
+      <div style={labelStyle}>{getPathLabel(data, fieldItem.label, ext)}</div>
+      <div style={contentStyle}>
+        {getFieldContent(data, fieldItem.content, ext)}
+      </div>
     </div>
   );
 }
@@ -169,12 +183,9 @@ export default function Diff<T extends DataTypeBase>(props: {
   beforeData: T;
   currentData: T;
   refreshKey?: number;
-  beforeColStyle?: CSSProperties;
-  currentColStyle?: CSSProperties;
-  beforeLabelStyle?: CSSProperties;
-  currentLabelStyle?: CSSProperties;
-  beforeContentStyle?: CSSProperties;
-  currentContentStyle?: CSSProperties;
+  colStyle?: CSSProperties;
+  labelStyle?: CSSProperties;
+  contentStyle?: CSSProperties;
   style?: CSSProperties;
 }) {
   const {
@@ -182,12 +193,9 @@ export default function Diff<T extends DataTypeBase>(props: {
     beforeData,
     currentData,
     refreshKey = 0,
-    beforeColStyle = { width: "45%" },
-    currentColStyle = { width: "45%" },
-    beforeLabelStyle = { width: "35%" },
-    currentLabelStyle = { width: "35%" },
-    beforeContentStyle = { width: "65%" },
-    currentContentStyle = { width: "65%" },
+    colStyle = { width: "45%" },
+    labelStyle = { width: "30%" },
+    contentStyle = { width: "65%" },
     style,
   } = props;
 
@@ -219,7 +227,7 @@ export default function Diff<T extends DataTypeBase>(props: {
     {
       // 统计beforeContainer里的path对应dom关系和max高度
       beforeAllElements.forEach((ele) => {
-        const path = ele.dataset.dataPath;
+        const path = ele.getAttribute("data-path");
         if (path) {
           // 如果有子元素也需要diff对齐，则不对齐父亲高度
           const rect = ele.getBoundingClientRect();
@@ -240,7 +248,7 @@ export default function Diff<T extends DataTypeBase>(props: {
     {
       // 统计currentContainer里的path对应dom关系和max高度
       currentAllElements.forEach((ele) => {
-        const path = ele.dataset.dataPath;
+        const path = ele.getAttribute("data-path");
         if (path) {
           const rect = ele.getBoundingClientRect();
           pathMaxHeightMap[path] = Math.max(
@@ -256,18 +264,19 @@ export default function Diff<T extends DataTypeBase>(props: {
         }
       });
     }
+
     // 着色
     Object.entries(diffRes).forEach(([key, val]: [string, string]) => {
       const beforePathDomList = beforeDataDomMap[key];
       const currentPathDomList = currentDataDomMap[key];
-
+      console.log("beforePathDomList", beforePathDomList);
       beforePathDomList?.forEach((dom) => {
-        if (["UPDATE", "CREATE", "DELETE"].includes(val)) {
+        if (["CHANGED", "CREATED", "DELETED"].includes(val)) {
           dom.style.backgroundColor = "rgb(253, 226, 226)";
         }
       });
       currentPathDomList?.forEach((dom) => {
-        if (["UPDATE", "CREATE", "DELETE"].includes(val)) {
+        if (["CHANGED", "CREATED", "DELETED"].includes(val)) {
           dom.style.backgroundColor = "rgb(217, 245, 214)";
         }
       });
@@ -309,10 +318,37 @@ export default function Diff<T extends DataTypeBase>(props: {
     alignAndColorDoms();
   }, [diffRes, beforeWrapperRef, currentWrapperRef, refreshKey]);
 
+  const [leftWidth, setLeftWidth] = useState<number>(500);
+  const [oldLeftWidth, setOldLeftWidth] = useState<number>(500);
+  const [dragStartEvent, setDragStartEvent] =
+    useState<React.MouseEvent<HTMLDivElement, MouseEvent>>();
+  const [isDragging, setIsDragging] = useState(false);
+  const mainRef = useRef<any>(null);
+  const handleMouseMove = throttle((e: MouseEvent) => {
+    if (!isDragging || !dragStartEvent) return;
+    setLeftWidth(oldLeftWidth - (dragStartEvent?.clientX - e.clientX));
+  }, 16);
+
+  useEffect(() => {
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    if (isDragging) {
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
+    }
+
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [isDragging, handleMouseMove]);
+
   return (
-    <div style={{ ...style, display: "flex" }}>
+    <div style={{ ...style, display: "flex", border: "1px dashed gray" }}>
       <div
-        style={{ marginRight: "10%", overflow: "scroll", ...beforeColStyle }}
+        style={{ marginRight: "4%", ...colStyle, width: leftWidth + "px" }}
         ref={beforeWrapperRef}
       >
         {fieldItems.map((field) => {
@@ -322,6 +358,8 @@ export default function Diff<T extends DataTypeBase>(props: {
               data={alignedData1}
               beforeData={alignedData1}
               currentData={alignedData2}
+              contentStyle={contentStyle}
+              labelStyle={labelStyle}
               fieldItem={field}
               type="before"
             />
@@ -329,9 +367,21 @@ export default function Diff<T extends DataTypeBase>(props: {
         })}
       </div>
       <div
-        style={{ overflow: "scroll", ...currentColStyle }}
-        ref={currentWrapperRef}
-      >
+        style={{
+          backgroundColor: isDragging ? "blue" : "black",
+          width: "5px",
+          height: "50px",
+          cursor: "col-resize",
+          // flex: "1",
+        }}
+        ref={mainRef}
+        onMouseDown={(e) => {
+          setDragStartEvent(e);
+          setIsDragging(true);
+          setOldLeftWidth(leftWidth);
+        }}
+      ></div>
+      <div style={{ ...colStyle, flex: 1 }} ref={currentWrapperRef}>
         {fieldItems.map((field) => {
           return (
             <RenderFieldItem
@@ -339,6 +389,8 @@ export default function Diff<T extends DataTypeBase>(props: {
               data={alignedData2}
               beforeData={alignedData1}
               currentData={alignedData2}
+              contentStyle={contentStyle}
+              labelStyle={labelStyle}
               fieldItem={field}
               type="current"
             />

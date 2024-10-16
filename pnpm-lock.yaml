@@ -2,6 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@eslint/js': ^9.11.1
+  '@types/lodash': ^4.17.10
   '@types/react': ^18.3.10
   '@types/react-dom': ^18.3.0
   '@vitejs/plugin-react': ^4.3.2
@@ -25,6 +26,7 @@ dependencies:
 
 devDependencies:
   '@eslint/js': 9.12.0
+  '@types/lodash': 4.17.10
   '@types/react': 18.3.11
   '@types/react-dom': 18.3.1
   '@vitejs/plugin-react': 4.3.2_vite@5.4.9
@@ -746,6 +748,10 @@ packages:
 
   /@types/json-schema/7.0.15:
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
+    dev: true
+
+  /@types/lodash/4.17.10:
+    resolution: {integrity: sha512-YpS0zzoduEhuOWjAotS6A5AVCva7X4lVlYLF0FYHAY9sdraBfnatttHItlWeZdGhuEkf+OzMNg2ZYAx8t+52uQ==}
     dev: true
 
   /@types/prop-types/15.7.13:

@@ -16,9 +16,13 @@ function App() {
         </button>
       </div>
       <Diff
-        beforeData={{ a: 3 }}
-        currentData={{ a: 4 }}
-        fieldItems={[{ label: "a", path: "a" }]}
+        beforeData={{ a: 3, 姓名: "李海龙" }}
+        currentData={{ a: 4, 姓名: "李海龙" }}
+        fieldItems={[
+          { label: "a", path: "a" },
+          { label: "姓名Label", path: "姓名" },
+        ]}
+        style={{ width: "1000px" }}
       />
     </>
   );
