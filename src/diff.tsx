@@ -7,80 +7,50 @@ import {
   useCallback,
   useState,
 } from "react";
-import { throttle } from "lodash"; // 确保已安装并导入lodash
+import { throttle } from "lodash"; 
 
-import { Path } from "../path-type";
-import { diff } from "../diff-algorithm";
+import { alignAndDiff } from "../diff-algorithm";
+import { ExtType, PathType, DataTypeBase, IsEqualFuncType, FieldItems, ContentType, LabelType, FieldItem } from "./types";
 
-export type DataTypeBase = {
-  [key: string]: any;
-};
 
-export enum DiffStatus {
-  CREATED = "CREATED",
-  UPDATED = "UPDATED",
-  DELETED = "DELETED",
-  UNCHANGED = "UNCHANGED",
+function getFieldPathMap<T extends DataTypeBase>(fieldItems: FieldItems<T>) {
+  const isEqualMap: Record<string, IsEqualFuncType> = {};
+  const arrayAlignLCSMap: Record<string, string|true> = {};
+  const arrayAlignCurrentDataMap: Record<string, string|true> = {};
+  const arrayNoAlignMap: Record<string, true> = {};
+
+  fieldItems.forEach((field) => {
+    if (field.isEqual&&field.path) {
+      isEqualMap[field.path] = field.isEqual;
+    }
+    if (field.arrayNeedAlignByLCS&&field.path) {
+      arrayAlignLCSMap[field.path] = field.arrayNeedAlignByLCS;
+    }
+    if (field.arrayNeedAlignByCurrentData&&field.path) {
+      arrayAlignCurrentDataMap[field.path] = field.arrayNeedAlignByCurrentData;
+    }
+    if (field.arrayNeedNoAlign&&field.path) {
+      arrayNoAlignMap[field.path] = true;
+    }
+  });
+  return {isEqualMap,arrayAlignLCSMap,arrayAlignCurrentDataMap,arrayNoAlignMap};
 }
 
-type ExtType<T> = {
-  beforeData: T;
-  currentData: T;
-  type: "before" | "current";
-  path: PathType<T>;
-  index?: number;
-};
 
-type LabelType<T> =
-  | undefined
-  | string
-  | ((data: any, record: T, ext: ExtType<T>) => ReactNode);
-type PathType<T> = undefined | Path<T> | "";
-
-type VisibleType<T> =
-  | undefined
-  | boolean
-  | ((data: any, record: T, ext: ExtType<T>) => boolean | undefined);
-
-type IsEqualFuncType = (data1: any, data2: any, ext: ExtType<any>) => boolean;
-
-type ContentType<T> =
-  | undefined
-  | ReactNode
-  | ((data: any, record: T, ext: ExtType<T>) => ReactNode);
-
-type FieldItem<T extends DataTypeBase> = {
-  label: LabelType<T>;
-  separator?: boolean;
-  path?: PathType<T>;
-  key?: string;
-  visible?: VisibleType<T>;
-  foldable?: boolean;
-  isEqual?: IsEqualFuncType;
-  colPadding?: number;
-  content?: ContentType<T>;
-  colorDataPath?: boolean;
-  arrNeedAlignByLCS?: boolean;
-  arrNeedAlignByAfterKey?: string;
-  labelWidth?: number;
-  index?: number;
-};
-type FieldItems<T extends DataTypeBase> = Array<FieldItem<T>>;
-
-function getIsEqualMap(fieldItems: any) {
-  return {};
-}
 
 function calcDiff(
-  beforeData: any,
-  currentData: any,
-  fieldItems: any
+props:{  data1: any,
+  data2: any,
+  isEqualMap: Record<string, IsEqualFuncType>,
+  arrayAlignLCSMap: Record<string, string | true>,
+  arrayAlignCurrentDataMap: Record<string, string | true>,
+  arrayNoAlignMap: Record<string, true>}
 ): {
   diffRes: Record<string, string>;
   alignedData1: any;
   alignedData2: any;
 } {
-  return diff(beforeData, currentData);
+  return alignAndDiff(props);
 }
 
 function getFieldContent<T extends DataTypeBase>(
@@ -169,9 +139,9 @@ function RenderFieldItem<T extends DataTypeBase>(props: {
   );
 
   return (
-    <div style={{ display: "flex", marginBottom: "4px" }}>
+    <div data-path={fieldItem.path} style={{ display: "flex", marginBottom: "4px" }}>
       <div style={labelStyle}>{getPathLabel(data, fieldItem.label, ext)}</div>
-      <div style={contentStyle} data-path={fieldItem.path}>
+      <div style={contentStyle} >
         {getFieldContent(data, fieldItem.content, ext)}
       </div>
     </div>
@@ -199,13 +169,13 @@ export default function Diff<T extends DataTypeBase>(props: {
     style,
   } = props;
 
-  const isEqualMap = useMemo(() => {
-    return getIsEqualMap(fieldItems);
+  const {isEqualMap,arrayAlignLCSMap,arrayAlignCurrentDataMap,arrayNoAlignMap} = useMemo(() => {
+    return getFieldPathMap(fieldItems);
   }, [fieldItems]);
 
   const { diffRes, alignedData1, alignedData2 } = useMemo(() => {
-    return calcDiff(beforeData, currentData, isEqualMap);
-  }, [beforeData, currentData, isEqualMap]);
+    return calcDiff({data1:beforeData, data2:currentData, isEqualMap,arrayAlignLCSMap,arrayAlignCurrentDataMap,arrayNoAlignMap});
+  }, [beforeData, currentData, isEqualMap,arrayAlignLCSMap,arrayAlignCurrentDataMap,arrayNoAlignMap]);
 
   const containerWrapperRef = useRef<HTMLDivElement>(null);
   const beforeWrapperRef = useRef<HTMLDivElement>(null);
@@ -270,7 +240,7 @@ export default function Diff<T extends DataTypeBase>(props: {
     Object.entries(diffRes).forEach(([key, val]: [string, string]) => {
       const beforePathDomList = beforeDataDomMap[key];
       const currentPathDomList = currentDataDomMap[key];
-      console.log("beforePathDomList", beforePathDomList);
+     
       beforePathDomList?.forEach((dom) => {
         if (["CHANGED", "CREATED", "DELETED"].includes(val)) {
           dom.style.backgroundColor = "rgb(253, 226, 226)";
@@ -284,32 +254,23 @@ export default function Diff<T extends DataTypeBase>(props: {
     });
     // 对齐before高度
     beforeAllElements.forEach((ele) => {
-      const path = ele.dataset.dataPath;
+      const path = ele.getAttribute("data-path");
       // 如果有子元素也需要diff对齐，则不对齐父亲高度
       if (path && !ele.querySelectorAll(`[data-path]`).length) {
         const rect = ele.getBoundingClientRect();
-
         if (pathMaxHeightMap[path] > rect.height) {
-          ele.style.paddingBottom =
-            Number(getComputedStyle(ele).paddingBottom.slice(0, -2)) +
-            pathMaxHeightMap[path] -
-            rect.height +
-            "px";
+          ele.style.height =Math.round(pathMaxHeightMap[path])+"px"
         }
       }
     });
     // 对齐current高度
     currentAllElements.forEach((ele) => {
-      const path = ele.dataset.dataPath;
+      const path = ele.getAttribute("data-path");
       // 如果有子元素也需要diff对齐，则不对齐父亲高度
       if (path && !ele.querySelectorAll(`[data-path]`).length) {
         const rect = ele.getBoundingClientRect();
         if (pathMaxHeightMap[path] > rect.height) {
-          ele.style.paddingBottom =
-            Number(getComputedStyle(ele).paddingBottom.slice(0, -2)) +
-            pathMaxHeightMap[path] -
-            rect.height +
-            "px";
+           ele.style.height =Math.round(pathMaxHeightMap[path])+"px"
         }
       }
     });
@@ -343,6 +304,10 @@ export default function Diff<T extends DataTypeBase>(props: {
     const handleMouseUp = () => {
       body!.style.cursor = "unset";
       setDragStartEvent(undefined);
+      setTimeout(() => {
+        // 拖拽后，重新对齐高度
+        alignAndColorDoms();
+      }, 60);
     };
 
     if (dragStartEvent) {

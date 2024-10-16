@@ -53,11 +53,7 @@ function App() {
   return (
     <>
       <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-      </div>
+
       <Diff
         beforeData={complexObject1}
         currentData={complexObject2}
@@ -95,13 +91,14 @@ function App() {
           {
             label: "工作经历",
             path: "工作经历",
+            arrayNeedAlignByLCS:"公司",
             content: (v) => JSON.stringify(v),
           },
           { label: "技能", path: "技能", content: (v) => JSON.stringify(v) },
           { label: "项目", path: "项目", content: (v) => JSON.stringify(v) },
           { label: "评分", path: "评分", content: (v) => JSON.stringify(v) },
         ]}
-        style={{ width: "1500px" }}
+    
       />
     </>
   );
