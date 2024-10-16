@@ -169,9 +169,9 @@ function RenderFieldItem<T extends DataTypeBase>(props: {
   );
 
   return (
-    <div data-path={fieldItem.path} style={{ display: "flex" }}>
+    <div style={{ display: "flex", marginBottom: "4px" }}>
       <div style={labelStyle}>{getPathLabel(data, fieldItem.label, ext)}</div>
-      <div style={contentStyle}>
+      <div style={contentStyle} data-path={fieldItem.path}>
         {getFieldContent(data, fieldItem.content, ext)}
       </div>
     </div>
@@ -193,7 +193,7 @@ export default function Diff<T extends DataTypeBase>(props: {
     beforeData,
     currentData,
     refreshKey = 0,
-    colStyle = { width: "45%" },
+    colStyle = { width: "650px" },
     labelStyle = { width: "30%" },
     contentStyle = { width: "65%" },
     style,
@@ -207,6 +207,7 @@ export default function Diff<T extends DataTypeBase>(props: {
     return calcDiff(beforeData, currentData, isEqualMap);
   }, [beforeData, currentData, isEqualMap]);
 
+  const containerWrapperRef = useRef<HTMLDivElement>(null);
   const beforeWrapperRef = useRef<HTMLDivElement>(null);
   const currentWrapperRef = useRef<HTMLDivElement>(null);
 
@@ -318,23 +319,33 @@ export default function Diff<T extends DataTypeBase>(props: {
     alignAndColorDoms();
   }, [diffRes, beforeWrapperRef, currentWrapperRef, refreshKey]);
 
-  const [leftWidth, setLeftWidth] = useState<number>(500);
-  const [oldLeftWidth, setOldLeftWidth] = useState<number>(500);
+  const [leftWidth, setLeftWidth] = useState<number>(
+    parseInt((colStyle.width ?? "650") as string)
+  );
+  const [rightWidth, setRightWidth] = useState<number>(
+    parseInt((colStyle.width ?? "650") as string)
+  );
+  const [oldLeftWidth, setOldLeftWidth] = useState<number>(
+    parseInt((colStyle.width ?? "650") as string)
+  );
+
   const [dragStartEvent, setDragStartEvent] =
     useState<React.MouseEvent<HTMLDivElement, MouseEvent>>();
-  const [isDragging, setIsDragging] = useState(false);
   const mainRef = useRef<any>(null);
   const handleMouseMove = throttle((e: MouseEvent) => {
-    if (!isDragging || !dragStartEvent) return;
-    setLeftWidth(oldLeftWidth - (dragStartEvent?.clientX - e.clientX));
+    if (!dragStartEvent) return;
+    const leftWidth = oldLeftWidth - (dragStartEvent.clientX - e.clientX);
+    setLeftWidth(leftWidth);
+    setRightWidth(containerWrapperRef.current!.clientWidth - leftWidth);
   }, 16);
 
   useEffect(() => {
     const handleMouseUp = () => {
-      setIsDragging(false);
+      body!.style.cursor = "unset";
+      setDragStartEvent(undefined);
     };
 
-    if (isDragging) {
+    if (dragStartEvent) {
       document.addEventListener("mousemove", handleMouseMove);
       document.addEventListener("mouseup", handleMouseUp);
     }
@@ -343,10 +354,19 @@ export default function Diff<T extends DataTypeBase>(props: {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isDragging, handleMouseMove]);
+  }, [handleMouseMove]);
+  const body = useMemo(() => document.querySelector("body"), []);
 
   return (
-    <div style={{ ...style, display: "flex", border: "1px dashed gray" }}>
+    <div
+      ref={containerWrapperRef}
+      style={{
+        width: "1500px",
+        ...style,
+        display: "flex",
+        border: "1px dashed gray",
+      }}
+    >
       <div
         style={{ marginRight: "4%", ...colStyle, width: leftWidth + "px" }}
         ref={beforeWrapperRef}
@@ -368,20 +388,23 @@ export default function Diff<T extends DataTypeBase>(props: {
       </div>
       <div
         style={{
-          backgroundColor: isDragging ? "blue" : "black",
-          width: "5px",
-          height: "50px",
+          backgroundColor: dragStartEvent ? "blue" : "black",
           cursor: "col-resize",
-          // flex: "1",
+          flex: "1",
+          maxWidth: "7px",
+          minWidth: "7px",
         }}
         ref={mainRef}
         onMouseDown={(e) => {
           setDragStartEvent(e);
-          setIsDragging(true);
+          body!.style.cursor = "col-resize";
           setOldLeftWidth(leftWidth);
         }}
       ></div>
-      <div style={{ ...colStyle, flex: 1 }} ref={currentWrapperRef}>
+      <div
+        style={{ ...colStyle, flex: 1, width: rightWidth + "px" }}
+        ref={currentWrapperRef}
+      >
         {fieldItems.map((field) => {
           return (
             <RenderFieldItem
