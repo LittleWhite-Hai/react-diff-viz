@@ -6,7 +6,7 @@ import Card from "./card";
 const complexObject1 = {
   个人信息: {
     姓名: "张三",
-    年龄: 30,
+    年龄: "32",
     地址: {
       城市: "北京",
       邮编: "100000",
@@ -27,7 +27,7 @@ const complexObject1 = {
 const complexObject2 = {
   个人信息: {
     姓名: "张三",
-    年龄: 31, // 变化
+    年龄: "30", // 变化
     地址: {
       城市: "北京", // 变化
       邮编: "200000", // 变化
@@ -54,6 +54,7 @@ function App() {
       <h1>Rediff</h1>
 
       <Diff
+        strictMode={false}
         beforeData={complexObject1}
         currentData={complexObject2}
         fieldItems={[
@@ -92,11 +93,11 @@ function App() {
             path: "工作经历",
             arrayKey: "公司",
             alignAlignType: "lcs",
-            content: (v: any, b: any) => {
+            content: (v: any) => {
               return v.map((item: any, index: number) => (
                 <div
                   style={{ marginBottom: "5px", textAlign: "center" }}
-                  key={item.公司}
+                  key={item.公司+item.职位}
                 >
                   <Card
                     pathPrefix={"工作经历." + index}

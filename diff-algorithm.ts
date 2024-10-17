@@ -1,5 +1,4 @@
 import _ from "lodash";
-import microDiff from "microdiff";
 import { IsEqualFuncType } from "./src/types";
 
 const EMPTY_SYMBOL = Symbol.for("EMPTY_SYMBOL");
@@ -12,12 +11,11 @@ function getValueByPath(obj: Record<string, any>, path: string) {
 function isSameItem<T>(props: {
   data1: T;
   data2: T;
-  path: string;
-  listKey: string | boolean;
+  listKey: string;
 }): boolean {
-  const { data1: obj1, data2: obj2, path, listKey } = props;
+  const { data1: obj1, data2: obj2, listKey } = props;
 
-  if (typeof listKey === "string") {
+  if (listKey) {
     return obj1[listKey as keyof T] === obj2[listKey as keyof T];
   }
 
@@ -25,7 +23,7 @@ function isSameItem<T>(props: {
 }
 
 // 获取两个数组的最长子序列
-function getLCS<T>(arr1: T[], arr2: T[], listKey: string | boolean): T[] {
+function getLCS<T>(arr1: T[], arr2: T[], listKey: string): T[] {
   const dp: T[][][] = Array(arr1.length + 1)
     .fill(0)
     .map(() => Array(arr2.length + 1).fill([[]]));
@@ -38,7 +36,6 @@ function getLCS<T>(arr1: T[], arr2: T[], listKey: string | boolean): T[] {
         isSameItem({
           data1: arr1[i - 1],
           data2: arr2[j - 1],
-          path: "[]",
           listKey,
         })
       ) {
@@ -59,7 +56,7 @@ function alignByLCS<T>(props: {
   arr1: T[];
   arr2: T[];
   lcs: T[];
-  listKey: string | boolean;
+  listKey: string;
   // isEqualMap: Record<string, IsEqualFuncType>;
   // listKeyMap: Record<string, string>;
 }): [(T | typeof EMPTY_SYMBOL)[], (T | typeof EMPTY_SYMBOL)[]] {
@@ -79,7 +76,6 @@ function alignByLCS<T>(props: {
       !isSameItem({
         data1: resI,
         data2: arr1[arrIdx1 - arrOffset1],
-        path: "[]",
         listKey,
       })
     ) {
@@ -91,7 +87,6 @@ function alignByLCS<T>(props: {
       !isSameItem({
         data1: resI,
         data2: arr2[arrIdx2 - arrOffset2],
-        path: "[]",
         listKey,
       })
     ) {
@@ -135,12 +130,14 @@ function alignByLCS<T>(props: {
   return [alignedArr1, alignedArr2];
 }
 
+
 function alignByArr2(props: {
   arr1: Record<string, any>[];
   arr2: Record<string, any>[];
   idKey: string;
 }) {
   const { arr1, arr2, idKey } = props;
+
   // 创建 arr1 的映射，用于快速查找
   const map1 = new Map<string, any[]>();
   arr1.forEach((item) => {
@@ -239,8 +236,8 @@ type DataArrayType = {
 function calcArrayAlign(props: {
   data1: any;
   data2: any;
-  arrayAlignLCSMap: Record<string, true | string>;
-  arrayAlignCurrentDataMap: Record<string, true | string>;
+  arrayAlignLCSMap: Record<string, string>;
+  arrayAlignCurrentDataMap: Record<string, string>;
   arrayNoAlignMap: Record<string, true>;
 }) {
   const {
@@ -290,7 +287,7 @@ function calcArrayAlign(props: {
 type DiffItemType = "CHANGED" | "CREATED" | "REMOVED" | "UNCHANGED";
 type DiffResType = Record<string, DiffItemType>;
 
-type BaseType = string | number | Date | null | undefined;
+type BaseType = string | number | Date | null | undefined | boolean;
 /**
  *
  * @param data
@@ -386,12 +383,13 @@ export function alignAndDiff(props: {
   data1: any;
   data2: any;
   isEqualMap: Record<string, IsEqualFuncType>;
-  arrayAlignLCSMap: Record<string, string | true>;
-  arrayAlignCurrentDataMap: Record<string, string | true>;
+  arrayAlignLCSMap: Record<string, string>;
+  arrayAlignCurrentDataMap: Record<string, string>;
   arrayNoAlignMap: Record<string, true>;
+  strictMode: boolean;
 }) {
   const { alignedData1, alignedData2 } = align(props);
-  const diffRes = diff(alignedData1, alignedData2, props.isEqualMap);
+  const diffRes = diff(alignedData1, alignedData2, props.isEqualMap, props.strictMode);
   return { diffRes, alignedData1, alignedData2 };
 }
 
@@ -399,8 +397,8 @@ function align(props: {
   data1: any;
   data2: any;
   isEqualMap: Record<string, IsEqualFuncType>;
-  arrayAlignLCSMap: Record<string, string | true>;
-  arrayAlignCurrentDataMap: Record<string, string | true>;
+  arrayAlignLCSMap: Record<string, string>;
+  arrayAlignCurrentDataMap: Record<string, string>;
   arrayNoAlignMap: Record<string, true>;
 }) {
   const {
@@ -441,7 +439,8 @@ function align(props: {
 export function diff(
   data1: any,
   data2: any,
-  isEqualMap: Record<string, IsEqualFuncType>
+  isEqualMap: Record<string, IsEqualFuncType>,
+  strictMode: boolean
 ) {
   const { arrayResult: arrayPathValue1 } = getObjectPathValueMap(data1);
   const { arrayResult: arrayPathValue2 } = getObjectPathValueMap(data2);
@@ -479,10 +478,10 @@ export function diff(
       }
     } else {
       // 数组1和数组2的path相同，则比较它们的值，相同则为"UNCHANGED"，不同则为"CHANGED"
-      if (arrayPathValue1[i].value !== arrayPathValue2[j].value) {
-        setNodeDiffRes(diffRes, arrayPathValue1[i].path, "CHANGED");
-      } else {
+      if (isEqualFundamentalData(arrayPathValue1[i].value, arrayPathValue2[j].value, strictMode)) {
         setNodeDiffRes(diffRes, arrayPathValue1[i].path, "UNCHANGED");
+      } else {
+        setNodeDiffRes(diffRes, arrayPathValue1[i].path, "CHANGED");
       }
       i++;
       j++;
@@ -511,169 +510,16 @@ export function diff(
 
   return diffRes;
 }
+function isEqualFundamentalData(a: BaseType, b: BaseType, strictMode: boolean) {
+  if (strictMode) {
+    return a === b
+  }
+  if (["0", 0, null, undefined, NaN, false].includes(a as any) && ["0", 0, null, undefined, NaN, false].includes(b as any)) {
+    return true
+  }
+  if (a === b || String(a) === String(b)) {
+    return true
+  }
 
-const object1 = {
-  公司: "创新科技有限公司",
-  成立日期: new Date("2010-05-15"),
-  员工数量: 250,
-  部门: [
-    {
-      名称: "研发部",
-      主管: "张三",
-      员工: [
-        {
-          工号: "RD001",
-          姓名: "李四",
-          职位: "高级工程师",
-          入职日期: new Date("2015-03-01"),
-        },
-        {
-          工号: "RD002",
-          姓名: "王五",
-          职位: "产品经理",
-          入职日期: new Date("2016-07-15"),
-        },
-        {
-          工号: "RD003",
-          姓名: "赵六",
-          职位: "UI设计师",
-          入职日期: new Date("2018-02-28"),
-        },
-      ],
-      项目: ["智能家居系统", "移动支付平台"],
-    },
-    {
-      名称: "市场部",
-      主管: "钱七",
-      员工: [
-        {
-          工号: "MK001",
-          姓名: "孙八",
-          职位: "市场总监",
-          入职日期: new Date("2014-09-01"),
-        },
-        {
-          工号: "MK002",
-          姓名: "周九",
-          职位: "销售经理",
-          入职日期: new Date("2017-05-20"),
-        },
-      ],
-      负责区域: ["华东", "华北", "华南"],
-    },
-  ],
-  财务状况: {
-    年营业额: 5000000,
-    净利润: 1000000,
-    主要客户: ["腾讯", "阿里巴巴", "百度"],
-  },
-  公司地址: {
-    省份: "广东",
-    城市: "深圳",
-    详细地址: "南山区科技园路10号",
-  },
-};
-
-const object2 = {
-  公司: "创新科技股份有限公司", // 更新：公司名称变更
-  成立日期: new Date("2010-05-15"),
-  员工数量: 280, // 更新：员工数量增加
-  部门: [
-    {
-      名称: "研发部",
-      主管: "张三",
-      员工: [
-        {
-          工号: "RD001",
-          姓名: "李四",
-          职位: "技术总监",
-          入职日期: new Date("2015-03-01"),
-        }, // 更新：职位变更
-        {
-          工号: "RD002",
-          姓名: "王五",
-          职位: "产品经理",
-          入职日期: new Date("2016-07-15"),
-        },
-        {
-          工号: "RD004",
-          姓名: "刘十",
-          职位: "后端工程师",
-          入职日期: new Date("2022-04-01"),
-        }, // 新增：新员工
-      ],
-      项目: ["智能家居系统", "移动支付平台", "区块链应用"], // 更新：新增项目
-    },
-    {
-      名称: "市场部",
-      主管: "钱七",
-      员工: [
-        {
-          工号: "MK001",
-          姓名: "孙八",
-          职位: "市场总监",
-          入职日期: new Date("2014-09-01"),
-        },
-        {
-          工号: "MK002",
-          姓名: "周九",
-          职位: "销售经理",
-          入职日期: new Date("2017-05-20"),
-        },
-        {
-          工号: "MK003",
-          姓名: "吴十一",
-          职位: "市场分析师",
-          入职日期: new Date("2023-01-10"),
-        }, // 新增：新员工
-      ],
-      负责区域: ["华东", "华北", "华南", "西南"], // 更新：新增负责区域
-    },
-    {
-      名称: "人力资源部", // 新增：新部门
-      主管: "郑十二",
-      员工: [
-        {
-          工号: "HR001",
-          姓名: "黄十三",
-          职位: "人力资源经理",
-          入职日期: new Date("2023-03-15"),
-        },
-      ],
-      职责: ["招聘", "培训", "绩效管理"],
-    },
-  ],
-  财务状况: {
-    年营业额: 6000000, // 更新：营业额增加
-    净利润: 1200000, // 更新：净利润增加
-    主要客户: ["腾讯", "阿里巴巴", "字节跳动"], // 更新：客户变更
-  },
-  公司地址: {
-    省份: "广东",
-    城市: "深圳",
-    详细地址: "南山区科技园路15号", // 更新：地址变更
-  },
-  公司愿景: "成为行业领先的科技创新企业", // 新增：公司愿景
-};
-// const microDiffRes = microDiff(object1, object2).map((i: any) => {
-//   return {
-//     path: i.path.join("."),
-//     type: i.type,
-//     oldValue: i.oldValue,
-//     newValue: i.value,
-//   };
-// });
-// console.log("microDiffRes:", microDiffRes);
-
-const res = alignAndDiff({
-  data1: object1,
-  data2: object2,
-  isEqualMap: {},
-  arrayAlignLCSMap: {},
-  arrayAlignCurrentDataMap: {},
-  arrayNoAlignMap: {},
-});
-console.log("res:", res);
-// const aaa = getObjectPathArrayMap(object1);
-// console.log("aaa", aaa);
-console.log("");
+  return false
+}

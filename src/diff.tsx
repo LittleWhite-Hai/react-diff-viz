@@ -50,21 +50,6 @@ function getFieldPathMap<T extends DataTypeBase>(fieldItems: FieldItems<T>) {
   };
 }
 
-// function calcDiff(props: {
-//   data1: any;
-//   data2: any;
-//   isEqualMap: Record<string, IsEqualFuncType>;
-//   arrayAlignLCSMap: Record<string, string | true>;
-//   arrayAlignCurrentDataMap: Record<string, string | true>;
-//   arrayNoAlignMap: Record<string, true>;
-// }): {
-//   diffRes: Record<string, string>;
-//   alignedData1: any;
-//   alignedData2: any;
-// } {
-//   return alignAndDiff(props);
-// }
-
 function getFieldContent<T extends DataTypeBase>(
   data: any,
   content: ContentType<T>,
@@ -209,6 +194,7 @@ export default function Diff<T extends DataTypeBase>(props: {
   fieldItems: FieldItems<T>;
   beforeData: T;
   currentData: T;
+  strictMode?:boolean
   refreshKey?: number;
   colStyle?: CSSProperties;
   labelStyle?: CSSProperties;
@@ -219,6 +205,7 @@ export default function Diff<T extends DataTypeBase>(props: {
     fieldItems,
     beforeData,
     currentData,
+    strictMode=true,
     refreshKey = 0,
     colStyle = { width: "650px" },
     labelStyle = { width: "30%" },
@@ -241,6 +228,7 @@ export default function Diff<T extends DataTypeBase>(props: {
       arrayAlignLCSMap,
       arrayAlignCurrentDataMap,
       arrayNoAlignMap,
+      strictMode,
     });
     console.log("res.diffRes:", res.diffRes);
     return res;
@@ -381,6 +369,7 @@ export default function Diff<T extends DataTypeBase>(props: {
   useEffect(() => {
     const handleMouseUp = () => {
       body!.style.cursor = "unset";
+      body!.style.userSelect = 'unset';
       setDragStartEvent(undefined);
       setTimeout(() => {
         // 拖拽后，重新对齐高度
@@ -415,9 +404,10 @@ export default function Diff<T extends DataTypeBase>(props: {
         ref={beforeWrapperRef}
       >
         {fieldItems.map((field) => {
+          const label = typeof field.label === "string" ? field.label:field.key??""
           return (
             <RenderFieldItem<T>
-              key={field.path ?? "" + field.key}
+            key={field.path +label}
               data={alignedData1}
               beforeData={alignedData1}
               currentData={alignedData2}
@@ -431,16 +421,17 @@ export default function Diff<T extends DataTypeBase>(props: {
       </div>
       <div
         style={{
-          backgroundColor: dragStartEvent ? "blue" : "black",
+          backgroundColor: dragStartEvent ? "rgb(83, 129, 238)" : "gray",
           cursor: "col-resize",
           flex: "1",
-          maxWidth: "7px",
-          minWidth: "7px",
+          maxWidth: "5px",
+          minWidth: "5px",
         }}
         ref={mainRef}
         onMouseDown={(e) => {
           setDragStartEvent(e);
           body!.style.cursor = "col-resize";
+          body!.style.userSelect = 'none';
           setOldLeftWidth(leftWidth);
         }}
       ></div>
@@ -449,9 +440,10 @@ export default function Diff<T extends DataTypeBase>(props: {
         ref={currentWrapperRef}
       >
         {fieldItems.map((field) => {
+          const label = typeof field.label === "string" ? field.label:field.key??""
           return (
             <RenderFieldItem
-              key={field.path ?? "" + field.key}
+              key={field.path +label}
               data={alignedData2}
               beforeData={alignedData1}
               currentData={alignedData2}
