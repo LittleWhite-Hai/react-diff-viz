@@ -1,8 +1,7 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
 import Diff from "./diff";
+import Card from "./card";
 
 const complexObject1 = {
   个人信息: {
@@ -35,9 +34,9 @@ const complexObject2 = {
     },
   },
   工作经历: [
+    { 公司: "新公司", 职位: "架构师", 年份: 2022 }, // 新增
     { 公司: "ABC科技", 职位: "软件工程师", 年份: 2018 },
     { 公司: "XYZ集团", 职位: "技术主管", 年份: 2020 }, // 变化
-    { 公司: "新公司", 职位: "架构师", 年份: 2022 }, // 新增
   ],
   技能: ["JavaScript", "React", "Node.js", "Python", "Docker"], // 变化
   项目: {
@@ -84,21 +83,36 @@ function App() {
             content: (v) => JSON.stringify(v),
           },
           {
-            label: "工作经历.0",
-            path: "工作经历.0",
+            label: "工作经历.1",
+            path: "工作经历.1",
             content: (v) => JSON.stringify(v),
           },
           {
             label: "工作经历",
             path: "工作经历",
-            arrayNeedAlignByLCS:"公司",
-            content: (v) => JSON.stringify(v),
+            arrayKey: "公司",
+            alignAlignType: "lcs",
+            content: (v: any, b: any) => {
+              console.log("v", v);
+              console.log("b", b);
+              return v.map((item: any, index: number) => (
+                <div
+                  // data-path={"工作经历." + index}
+                  style={{ marginBottom: "5px" }}
+                >
+                  <Card
+                    pathPrefix={"工作经历." + index}
+                    title={item.公司}
+                    content={item.职位}
+                  />
+                </div>
+              ));
+            },
           },
           { label: "技能", path: "技能", content: (v) => JSON.stringify(v) },
           { label: "项目", path: "项目", content: (v) => JSON.stringify(v) },
           { label: "评分", path: "评分", content: (v) => JSON.stringify(v) },
         ]}
-    
       />
     </>
   );
