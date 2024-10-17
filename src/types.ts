@@ -10,7 +10,7 @@ export type PathType<T> = undefined | Path<T> | "";
 export type ExtType<T> = {
   beforeData: T;
   currentData: T;
-  type: "before" | "current";
+  type: "before" | "current" | "";
   path: PathType<T>;
   index?: number;
 };

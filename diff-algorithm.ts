@@ -4,17 +4,10 @@ import { IsEqualFuncType } from "./src/types";
 
 const EMPTY_SYMBOL = Symbol.for("EMPTY_SYMBOL");
 
-// function getPathMapVal(path: string, map: Record<string, any>) {
-//   if (path.endsWith(".")) {
-//     path = path.substring(0, path.length - 1);
-//   }
-//   if (map[path]) {
-//     return map[path];
-//   }
-//   //path的数字，可能是个数组idx，用通配符[]替换
-//   const newPath = path.replaceAll(/\d+/g, "[]");
-//   return map[newPath];
-// }
+function getValueByPath(obj: Record<string, any>, path: string) {
+  return path.split(".").reduce((acc, key) => acc && acc[key], obj);
+}
+
 // todo: 不借助lodash: 如果子项都一样，则一样，如果子项有任何差异，则不一样
 function isSameItem<T>(props: {
   data1: T;
@@ -243,16 +236,20 @@ type DataArrayType = {
 }[];
 
 // 计算两个对象中的所有需对齐的数组，返回对齐后需要修改的数据
-function calcArrayAlign(
-  props: {
-    data1: any,
-    data2: any,
-    arrayAlignLCSMap: Record<string, true | string>,
-    arrayAlignCurrentDataMap: Record<string, true | string>,
-    arrayNoAlignMap: Record<string, true>
-  }
-) {
-  const { data1, data2, arrayAlignLCSMap, arrayAlignCurrentDataMap, arrayNoAlignMap } = props;
+function calcArrayAlign(props: {
+  data1: any;
+  data2: any;
+  arrayAlignLCSMap: Record<string, true | string>;
+  arrayAlignCurrentDataMap: Record<string, true | string>;
+  arrayNoAlignMap: Record<string, true>;
+}) {
+  const {
+    data1,
+    data2,
+    arrayAlignLCSMap,
+    arrayAlignCurrentDataMap,
+    arrayNoAlignMap,
+  } = props;
   const { mapResult: mapResult1 } = getObjectPathArrayMap(data1);
   const { mapResult: mapResult2 } = getObjectPathArrayMap(data2);
   const alignedResult1: DataArrayType = [];
@@ -386,24 +383,41 @@ function setNodeDiffRes(
 }
 
 export function alignAndDiff(props: {
-  data1: any, data2: any, isEqualMap: Record<string, IsEqualFuncType>,
-  arrayAlignLCSMap: Record<string, string | true>,
-  arrayAlignCurrentDataMap: Record<string, string | true>,
-  arrayNoAlignMap: Record<string, true>
+  data1: any;
+  data2: any;
+  isEqualMap: Record<string, IsEqualFuncType>;
+  arrayAlignLCSMap: Record<string, string | true>;
+  arrayAlignCurrentDataMap: Record<string, string | true>;
+  arrayNoAlignMap: Record<string, true>;
 }) {
   const { alignedData1, alignedData2 } = align(props);
   const diffRes = diff(alignedData1, alignedData2, props.isEqualMap);
-  return { diffRes, alignedData1, alignedData2 }
+  return { diffRes, alignedData1, alignedData2 };
 }
 
 function align(props: {
-  data1: any, data2: any, isEqualMap: Record<string, IsEqualFuncType>,
-  arrayAlignLCSMap: Record<string, string | true>,
-  arrayAlignCurrentDataMap: Record<string, string | true>,
-  arrayNoAlignMap: Record<string, true>
+  data1: any;
+  data2: any;
+  isEqualMap: Record<string, IsEqualFuncType>;
+  arrayAlignLCSMap: Record<string, string | true>;
+  arrayAlignCurrentDataMap: Record<string, string | true>;
+  arrayNoAlignMap: Record<string, true>;
 }) {
-  const { data1, data2, isEqualMap, arrayAlignLCSMap, arrayAlignCurrentDataMap, arrayNoAlignMap } = props;
-  const [alignedResult1, alignedResult2] = calcArrayAlign({ data1, data2, arrayAlignLCSMap, arrayAlignCurrentDataMap, arrayNoAlignMap });
+  const {
+    data1,
+    data2,
+    isEqualMap,
+    arrayAlignLCSMap,
+    arrayAlignCurrentDataMap,
+    arrayNoAlignMap,
+  } = props;
+  const [alignedResult1, alignedResult2] = calcArrayAlign({
+    data1,
+    data2,
+    arrayAlignLCSMap,
+    arrayAlignCurrentDataMap,
+    arrayNoAlignMap,
+  });
 
   const alignedData1 = _.cloneDeep(data1);
   const alignedData2 = _.cloneDeep(data2);
@@ -413,7 +427,7 @@ function align(props: {
   alignedResult2.forEach((item) => {
     alignedData2[item.path] = item.value;
   });
-  return { alignedData1, alignedData2 }
+  return { alignedData1, alignedData2 };
 }
 
 /**
@@ -424,9 +438,11 @@ function align(props: {
  * a.b.c:"CHANGED"
  * a.c.0.d:"REMOVED"
  */
-export function diff(data1: any, data2: any, isEqualMap: Record<string, IsEqualFuncType>) {
-
-
+export function diff(
+  data1: any,
+  data2: any,
+  isEqualMap: Record<string, IsEqualFuncType>
+) {
   const { arrayResult: arrayPathValue1 } = getObjectPathValueMap(data1);
   const { arrayResult: arrayPathValue2 } = getObjectPathValueMap(data2);
   // 对于arrayPathValue1和arrayPathValue2，如果path相同，则比较value，如果value不同，则diffRes[path] = "CHANGED"
@@ -480,8 +496,20 @@ export function diff(data1: any, data2: any, isEqualMap: Record<string, IsEqualF
     setNodeDiffRes(diffRes, arrayPathValue2[j].path, "CREATED");
     j++;
   }
+  // 用户自定义的isEqual会覆盖原本的diff计算
+  Object.entries(isEqualMap).forEach(([path, isEqualFunc]) => {
+    const a = getValueByPath(data1, path);
+    const b = getValueByPath(data2, path);
+    const isEqual = isEqualFunc(a, b, {
+      beforeData: data1,
+      currentData: data2,
+      type: "",
+      path,
+    });
+    diffRes[path] = isEqual ? "UNCHANGED" : "CHANGED";
+  });
 
-  return diffRes
+  return diffRes;
 }
 
 const object1 = {
@@ -637,7 +665,14 @@ const object2 = {
 // });
 // console.log("microDiffRes:", microDiffRes);
 
-const res = alignAndDiff({ data1: object1, data2: object2, isEqualMap: {}, arrayAlignLCSMap: {}, arrayAlignCurrentDataMap: {}, arrayNoAlignMap: {} });
+const res = alignAndDiff({
+  data1: object1,
+  data2: object2,
+  isEqualMap: {},
+  arrayAlignLCSMap: {},
+  arrayAlignCurrentDataMap: {},
+  arrayNoAlignMap: {},
+});
 console.log("res:", res);
 // const aaa = getObjectPathArrayMap(object1);
 // console.log("aaa", aaa);

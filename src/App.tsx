@@ -51,7 +51,7 @@ function App() {
 
   return (
     <>
-      <h1>Vite + React</h1>
+      <h1>Rediff</h1>
 
       <Diff
         beforeData={complexObject1}
@@ -60,27 +60,27 @@ function App() {
           {
             label: "个人信息.姓名",
             path: "个人信息.姓名",
-            content: (v) => JSON.stringify(v),
           },
           {
             label: "个人信息.年龄",
             path: "个人信息.年龄",
-            content: (v) => JSON.stringify(v),
+            isEqual: (a, b) => Math.abs(a - b) < 2,
           },
           {
             label: "个人信息.地址.城市",
             path: "个人信息.地址.城市",
-            content: (v) => JSON.stringify(v),
           },
           {
             label: "个人信息.地址.邮编",
             path: "个人信息.地址.邮编",
-            content: (v) => JSON.stringify(v),
           },
           {
             label: "个人信息.地址",
             path: "个人信息.地址",
             content: (v) => JSON.stringify(v),
+          },
+          {
+            label: "职业",
           },
           {
             label: "工作经历.1",
@@ -93,12 +93,10 @@ function App() {
             arrayKey: "公司",
             alignAlignType: "lcs",
             content: (v: any, b: any) => {
-              console.log("v", v);
-              console.log("b", b);
               return v.map((item: any, index: number) => (
                 <div
-                  // data-path={"工作经历." + index}
-                  style={{ marginBottom: "5px" }}
+                  style={{ marginBottom: "5px", textAlign: "center" }}
+                  key={item.公司}
                 >
                   <Card
                     pathPrefix={"工作经历." + index}
@@ -110,6 +108,9 @@ function App() {
             },
           },
           { label: "技能", path: "技能", content: (v) => JSON.stringify(v) },
+          {
+            label: "总结",
+          },
           { label: "项目", path: "项目", content: (v) => JSON.stringify(v) },
           { label: "评分", path: "评分", content: (v) => JSON.stringify(v) },
         ]}

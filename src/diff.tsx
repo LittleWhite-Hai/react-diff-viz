@@ -50,20 +50,20 @@ function getFieldPathMap<T extends DataTypeBase>(fieldItems: FieldItems<T>) {
   };
 }
 
-function calcDiff(props: {
-  data1: any;
-  data2: any;
-  isEqualMap: Record<string, IsEqualFuncType>;
-  arrayAlignLCSMap: Record<string, string | true>;
-  arrayAlignCurrentDataMap: Record<string, string | true>;
-  arrayNoAlignMap: Record<string, true>;
-}): {
-  diffRes: Record<string, string>;
-  alignedData1: any;
-  alignedData2: any;
-} {
-  return alignAndDiff(props);
-}
+// function calcDiff(props: {
+//   data1: any;
+//   data2: any;
+//   isEqualMap: Record<string, IsEqualFuncType>;
+//   arrayAlignLCSMap: Record<string, string | true>;
+//   arrayAlignCurrentDataMap: Record<string, string | true>;
+//   arrayNoAlignMap: Record<string, true>;
+// }): {
+//   diffRes: Record<string, string>;
+//   alignedData1: any;
+//   alignedData2: any;
+// } {
+//   return alignAndDiff(props);
+// }
 
 function getFieldContent<T extends DataTypeBase>(
   data: any,
@@ -76,6 +76,9 @@ function getFieldContent<T extends DataTypeBase>(
     index?: number;
   }
 ): ReactNode {
+  if (!ext.path && !content) {
+    return "";
+  }
   if (content) {
     if (typeof content === "function") {
       return content(getPathValue(data, ext.path), data, ext);
@@ -149,14 +152,53 @@ function RenderFieldItem<T extends DataTypeBase>(props: {
     }),
     [beforeData, currentData, type, fieldItem.path]
   );
+  const isHeader = !fieldItem.path && !fieldItem.content;
 
-  return (
+  return isHeader ? (
+    <div
+      style={{
+        paddingLeft: "16px",
+        marginTop: "10px",
+        marginBottom: "2px",
+        height: "24px",
+        fontWeight: "bold",
+        fontSize: "17px",
+        display: "flex",
+      }}
+    >
+      <div
+        style={{
+          height: "16px",
+          width: "4px",
+          marginRight: "3px",
+          marginTop: "4px",
+          background: "rgb(83, 129, 238)",
+        }}
+      ></div>
+      {getPathLabel(data, fieldItem.label, ext)}
+    </div>
+  ) : (
     <div
       data-path={fieldItem.path}
-      style={{ display: "flex", marginBottom: "4px" }}
+      style={{ display: "flex", marginBottom: "6px" }}
     >
-      <div style={labelStyle}>{getPathLabel(data, fieldItem.label, ext)}</div>
-      <div style={contentStyle}>
+      <div
+        style={{
+          textAlign: "left",
+          paddingLeft: "16px",
+          color: "gray",
+          ...labelStyle,
+        }}
+      >
+        {getPathLabel(data, fieldItem.label, ext)}
+      </div>
+      <div
+        style={{
+          textAlign: "left",
+          paddingLeft: "6px",
+          ...contentStyle,
+        }}
+      >
         {getFieldContent(data, fieldItem.content, ext)}
       </div>
     </div>
@@ -184,17 +226,15 @@ export default function Diff<T extends DataTypeBase>(props: {
     style,
   } = props;
 
-  const {
-    isEqualMap,
-    arrayAlignLCSMap,
-    arrayAlignCurrentDataMap,
-    arrayNoAlignMap,
-  } = useMemo(() => {
-    return getFieldPathMap(fieldItems);
-  }, [fieldItems]);
-
   const { diffRes, alignedData1, alignedData2 } = useMemo(() => {
-    return calcDiff({
+    const {
+      isEqualMap,
+      arrayAlignLCSMap,
+      arrayAlignCurrentDataMap,
+      arrayNoAlignMap,
+    } = getFieldPathMap(fieldItems);
+
+    const res = alignAndDiff({
       data1: beforeData,
       data2: currentData,
       isEqualMap,
@@ -202,14 +242,9 @@ export default function Diff<T extends DataTypeBase>(props: {
       arrayAlignCurrentDataMap,
       arrayNoAlignMap,
     });
-  }, [
-    beforeData,
-    currentData,
-    isEqualMap,
-    arrayAlignLCSMap,
-    arrayAlignCurrentDataMap,
-    arrayNoAlignMap,
-  ]);
+    console.log("res.diffRes:", res.diffRes);
+    return res;
+  }, [beforeData, currentData, fieldItems]);
 
   const containerWrapperRef = useRef<HTMLDivElement>(null);
   const beforeWrapperRef = useRef<HTMLDivElement>(null);
