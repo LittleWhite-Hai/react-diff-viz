@@ -194,7 +194,8 @@ export default function Diff<T extends DataTypeBase>(props: {
   fieldItems: FieldItems<T>;
   beforeData: T;
   currentData: T;
-  strictMode?:boolean
+  strictMode?: boolean;
+  currentOnlyMode?: boolean;
   refreshKey?: number;
   colStyle?: CSSProperties;
   labelStyle?: CSSProperties;
@@ -205,7 +206,8 @@ export default function Diff<T extends DataTypeBase>(props: {
     fieldItems,
     beforeData,
     currentData,
-    strictMode=true,
+    strictMode = true,
+    currentOnlyMode = false,
     refreshKey = 0,
     colStyle = { width: "650px" },
     labelStyle = { width: "30%" },
@@ -369,7 +371,7 @@ export default function Diff<T extends DataTypeBase>(props: {
   useEffect(() => {
     const handleMouseUp = () => {
       body!.style.cursor = "unset";
-      body!.style.userSelect = 'unset';
+      body!.style.userSelect = "unset";
       setDragStartEvent(undefined);
       setTimeout(() => {
         // 拖拽后，重新对齐高度
@@ -400,14 +402,20 @@ export default function Diff<T extends DataTypeBase>(props: {
       }}
     >
       <div
-        style={{ marginRight: "4%", ...colStyle, width: leftWidth + "px" }}
+        style={{
+          marginRight: "4%",
+          ...colStyle,
+          width: leftWidth + "px",
+          display: currentOnlyMode ? "none" : "block",
+        }}
         ref={beforeWrapperRef}
       >
         {fieldItems.map((field) => {
-          const label = typeof field.label === "string" ? field.label:field.key??""
+          const label =
+            typeof field.label === "string" ? field.label : field.key ?? "";
           return (
             <RenderFieldItem<T>
-            key={field.path +label}
+              key={field.path + label}
               data={alignedData1}
               beforeData={alignedData1}
               currentData={alignedData2}
@@ -426,12 +434,13 @@ export default function Diff<T extends DataTypeBase>(props: {
           flex: "1",
           maxWidth: "5px",
           minWidth: "5px",
+          display: currentOnlyMode ? "none" : "",
         }}
         ref={mainRef}
         onMouseDown={(e) => {
           setDragStartEvent(e);
           body!.style.cursor = "col-resize";
-          body!.style.userSelect = 'none';
+          body!.style.userSelect = "none";
           setOldLeftWidth(leftWidth);
         }}
       ></div>
@@ -440,10 +449,11 @@ export default function Diff<T extends DataTypeBase>(props: {
         ref={currentWrapperRef}
       >
         {fieldItems.map((field) => {
-          const label = typeof field.label === "string" ? field.label:field.key??""
+          const label =
+            typeof field.label === "string" ? field.label : field.key ?? "";
           return (
             <RenderFieldItem
-              key={field.path +label}
+              key={field.path + label}
               data={alignedData2}
               beforeData={alignedData1}
               currentData={alignedData2}

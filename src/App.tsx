@@ -55,6 +55,7 @@ function App() {
 
       <Diff
         strictMode={false}
+        currentOnlyMode={true}
         beforeData={complexObject1}
         currentData={complexObject2}
         fieldItems={[
@@ -97,7 +98,7 @@ function App() {
               return v.map((item: any, index: number) => (
                 <div
                   style={{ marginBottom: "5px", textAlign: "center" }}
-                  key={item.公司+item.职位}
+                  key={item.公司 + item.职位}
                 >
                   <Card
                     pathPrefix={"工作经历." + index}
