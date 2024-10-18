@@ -12,7 +12,7 @@ const styles = {
     margin: "0 0 8px 0",
     fontSize: "1.0em", // 调整字体大小
     textAlign: "left", // 左对齐
-    width: "70px",
+
   },
   content: {
     margin: 0,
@@ -30,7 +30,7 @@ const Card = ({
   pathPrefix: string;
 }) => {
   return (
-    <div style={styles.card}>
+    <div style={styles.card} >
       {title && content && (
         <>
           <h2 style={styles.title}>{title}</h2>

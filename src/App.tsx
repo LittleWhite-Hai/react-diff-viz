@@ -4,132 +4,77 @@ import Diff from "./diff";
 import Card from "./card";
 import InfoList from "./InfoList";
 
-const ancientEarth = {
-  name: "地球",
-  age: 4.52, // 单位：十亿年
-  timePeriod: "20,000年前",
-  type: "陆地行星",
-  galaxy: "银河系",
-  continents: [
-    "非洲",
-    "南极洲",
-    "亚洲",
-    "欧洲",
-    "北美洲",
-    "澳大利亚",
-    "南美洲",
-  ],
-  diameter: 12742, // 单位：公里
-  population: 0.005, // 单位：十亿，估计值
-  countries: 0, // 尚未形成现代国家
-  species: 8700000, // 物种数量变化不大
-  oceans: [
-    {
-      name: "大西洋",
-      area: 85133000, // 单位：平方公里
-      depth: 3646, // 单位：米
-    },
-    {
-      name: "印度洋",
-      area: 70560000, // 单位：平方公里
-      depth: 3741, // 单位：米
-    },
-  ],
-  atmosphere: {
-    composition: {
-      氮气: 78, // 百分比
-      氧气: 21, // 百分比
-      氩气: 0.93, // 百分比
-      二氧化碳: 0.018, // 百分比，较低的二氧化碳水平
-    },
-    layers: ["对流层", "平流层", "中间层", "热层", "外逸层"],
-  },
-  climate: {
-    temperature: "低于现在", // 较低的温度
-    seaLevel: "低于现在", // 较低的海平面
-  },
-  biodiversity: {
-    diversityLevel: "高", // 生物多样性仍然很高
-    extinctSpecies: "一些大型动物", // 一些大型动物灭绝
-  },
-  civilization: {
-    developmentLevel: "狩猎采集社会", // 以狩猎采集为主
-    technology: "石器工具", // 石器工具
-  },
-  magneticField: {
-    strength: 25, // 单位：微特斯拉
-    poles: {
-      north: "北极地区",
-      south: "南极地区",
-    },
-  },
-};
 
-const currentEarth = {
-  name: "地球",
-  age: 4.52, // 单位：十亿年
-  timePeriod: "现在",
-  type: "陆地行星",
-  galaxy: "银河系",
-  continents: [
-    "非洲",
-    "南极洲",
-    "亚洲",
-    "欧洲",
-    "北美洲",
-    "澳大利亚",
-    "南美洲",
-  ],
-  diameter: 12742, // 单位：公里
-  population: 8, // 单位：十亿，估计值
-  countries: 195, // 现代国家数量
-  species: 8700000, // 物种数量
-  oceans: [
-    {
-      name: "太平洋",
-      area: 168723000, // 单位：平方公里
-      depth: 3970, // 单位：米
-    },
-    {
-      name: "大西洋",
-      area: 85133000, // 单位：平方公里
-      depth: 3646, // 单位：米
-    },
-    {
-      name: "印度洋",
-      area: 70560000, // 单位：平方公里
-      depth: 3741, // 单位：米
-    },
-  ],
-  atmosphere: {
-    composition: {
-      氮气: 78, // 百分比
-      氧气: 21, // 百分比
-      氩气: 0.93, // 百分比
-      二氧化碳: 0.041, // 百分比，较高的二氧化碳水平
-    },
-    layers: ["对流层", "平流层", "中间层", "热层", "外逸层"],
-  },
-  climate: {
-    temperature: "上升", // 温度上升
-    seaLevel: "上升", // 海平面上升
-  },
-  biodiversity: {
-    diversityLevel: "高", // 生物多样性仍然很高
-    extinctSpecies: "灭绝率增加", // 灭绝率增加
-  },
-  civilization: {
-    developmentLevel: "先进的技术社会", // 高度发达的技术社会
-    technology: "数字和太空技术", // 数字和太空技术
-  },
-  magneticField: {
-    strength: 25, // 单位：微特斯拉
-    poles: {
-      north: "北极地区",
-      south: "南极地区",
-    },
-  },
-};
+
+
+const data1 = {
+  组件名称: "rediff",
+  简介: "功能强大的、集成数据diff算法与数据渲染的组件",
+  包体积: "131kb",
+  技术栈: "react",
+  npm依赖: ["react", "lodash"],
+  和其他组件的区别: "不同于jsdiff和microdiff仅提供diff算法，rediff还提供数据渲染功能",
+  是否为ts项目: true,
+  基础类型: "默认使用===比较基础类型，若将strictMode设置为true，则忽略类型差异",
+  对象类型: "子元素均不变则认为相等，否则认为不相等",
+  数组类型: "先对齐两数组，再逐个比较数组元素",
+  数组对齐方式: [{ 对齐方式: "最长公共子序列lcs", 算法: "寻找data1和data2的lcs，并使它们对齐lcs", 默认方式: true }, { 对齐方式: "提供数组key，以data2的顺序为基准", 算法: "改变data1的顺序，使data1与data2一致" }],
+  自定义diff算法: "用户可定制数据diff算法，使用isEqual函数",
+
+  data1: "用于比较的数据（一般是原始数据）",
+  data2: "用于比较的数据（一般是新数据）",
+  renderItems: "描述需要渲染的数据，包括diff方式和渲染方式",
+  colStyle: "所有data1和data2外侧dom的整体样式",
+  labelStyle: "每一项data的label样式",
+  contentStyle: "每一项data的content样式",
+  strictMode: "严格模式，默认开启，关闭后diff算法会忽略数据类型差异，如0=null=undefined=false",
+  data2Mode: "仅查看data2，默认false",
+  refreshKey: "改变Key以触发重新染色和高度对齐",
+
+  label: "数据的标题，若仅传入label，则渲染一个分隔标题",
+  path: "数据的路径",
+
+  foldable: "是否折叠",
+  isEqual: "用户可定制数据diff算法",
+  content: "渲染方式",
+  arrayKey: "数组的key，用于标记本数据为数组类型",
+  alignAlignType: "数组对齐方式，默认为最长公共子序列lcs对齐",
+} as any;
+
+const data2 = {
+  组件名称: "rediff(react-diff)",
+  简介: "功能强大的、集成数据diff算法与数据渲染的组件",
+  包体积: "131kb",
+  技术栈: "react",
+  npm依赖: ["react", "lodash"],
+  和其他组件的区别: "不同于jsdiff和microdiff仅提供diff算法，rediff还提供数据渲染功能",
+  是否为ts项目: true,
+  基础类型: "默认使用===比较基础类型，若将strictMode设置为true，则忽略类型差异",
+  对象类型: "子元素均不变则认为相等，否则认为不相等",
+  数组类型: "先对齐两数组，再逐个比较数组元素",
+  数组对齐方式: [{ 对齐方式: "不对齐数组，直接使用原数组进行比较" }, { 对齐方式: "最长公共子序列lcs", 算法: "寻找data1和data2的lcs，并使它们对齐lcs", 默认方式: true }, { 对齐方式: "提供数组key，以data2的顺序为基准", 算法: "改变data1的顺序，使data1与data2一致" }],
+  自定义diff算法: "用户可定制数据diff算法，使用isEqual函数",
+
+  data1: "用于比较的数据（一般是原始数据）",
+  data2: "用于比较的数据（一般是新数据）",
+  renderItems: "描述需要渲染的数据，包括diff方式和渲染方式",
+  colStyle: "所有data1和data2外侧dom的整体样式",
+  labelStyle: "每一项data的label样式",
+  contentStyle: "每一项data的content样式",
+  strictMode: "严格模式，默认开启，关闭后diff算法会忽略数据类型差异，如0=null=undefined=false",
+  data2Mode: "仅查看data2，默认false",
+  refreshKey: "改变Key以触发重新染色和高度对齐",
+
+  label: "数据的标题，若仅传入label，则渲染一个分隔标题",
+  path: "数据的路径",
+  visible: "是否渲染",
+  foldable: "是否折叠",
+  isEqual: "用户可定制数据diff算法",
+  content: "渲染方式",
+  arrayKey: "数组的key，用于标记本数据为数组类型",
+  alignAlignType: "数组对齐方式，默认为最长公共子序列lcs对齐",
+} as any;
+
 
 function App() {
   const [count, setCount] = useState(0);
@@ -137,168 +82,154 @@ function App() {
   return (
     <>
       <h1>Rediff</h1>
+      <button onClick={() => {
+        setTimeout(() => {
+          setCount(count + 1);
+        }, 1000);
+      }}>
+        count: {count}
+      </button>
 
       <Diff
         strictMode={false}
-        data1={ancientEarth}
-        data2={currentEarth}
+        data1={data1}
+        data2={data2}
+        refreshKey={count}
         renderItems={[
           {
-            label: "名称",
-            path: "name",
+            label: "组件名称",
+            path: "组件名称",
           },
           {
-            label: "物理性质",
+            label: "简介",
+            path: "简介",
           },
           {
-            label: "年龄（十亿年）",
-            path: "age",
-            isEqual: (a, b) => Math.abs(a - b) < 0.1,
+            label: "包体积",
+            path: "包体积",
+          },
+          // {
+          //   label: "技术栈",
+          //   path: "技术栈",
+          //   arrayKey: "",
+          //   content: (v: any) => {
+          //     console.log('v', v);
+          //     // return v
+          //     return v.join("+");
+          //   },
+          // },
+          {
+            label: "npm依赖",
+            path: "npm依赖",
           },
           {
-            label: "时期",
-            path: "timePeriod",
+            label: "和其他组件的区别",
+            path: "和其他组件的区别",
           },
           {
-            label: "类型",
-            path: "type",
+            label: "是否为ts项目",
+            path: "是否为ts项目",
           },
           {
-            label: "星系",
-            path: "galaxy",
+            label: "基础类型",
+            path: "基础类型",
           },
           {
-            label: "直径（公里）",
-            path: "diameter",
+            label: "对象类型",
+            path: "对象类型",
           },
           {
-            label: "大陆",
-            path: "continents",
-            content: (v) => v.join(", "),
+            label: "数组类型",
+            path: "数组类型",
           },
           {
-            label: "海洋",
-            path: "oceans",
-            arrayKey: "name",
+            label: "数组对齐方式",
+            path: "数组对齐方式",
+            arrayKey: "对齐方式",
             content: (v: any) => {
-              return v.map((ocean: any) => (
+              return v.map((item: any, idx: string) => (
                 <Card
-                  pathPrefix="oceans"
-                  key={ocean.name}
-                  title={ocean.name}
-                  content={`面积: ${ocean.area} 平方公里, 深度: ${ocean.depth} 米`}
+                  pathPrefix={"数组对齐方式." + idx}
+                  key={item.对齐方式}
+                  title={item.对齐方式}
+                  content={`算法: ${item.算法 || '无'}, 默认方式: ${item.默认方式 ? '是' : '否'}`}
                 />
               ));
             },
           },
           {
-            label: "大气成分",
-            path: "atmosphere.composition",
-            content: (v) => (
-              <InfoList
-                items={Object.entries(v).map(([key, value]) => ({
-                  label: key,
-                  value: `${value}%`,
-                  path: `atmosphere.composition.${key}`,
-                }))}
-              />
-            ),
+            label: "自定义diff算法",
+            path: "自定义diff算法",
+          },
+          { label: "diff组件的api" },
+          {
+            label: "data1",
+            path: "data1",
           },
           {
-            label: "大气层",
-            path: "atmosphere.layers",
-            content: (v) => v.join(", "),
+            label: "data2",
+            path: "data2",
           },
           {
-            label: "气候",
-            path: "climate",
-            content: (v) => (
-              <InfoList
-                items={[
-                  {
-                    label: "温度",
-                    value: v.temperature,
-                    path: "climate.temperature",
-                  },
-                  {
-                    label: "海平面",
-                    value: v.seaLevel,
-                    path: "climate.seaLevel",
-                  },
-                ]}
-              />
-            ),
+            label: "renderItems",
+            path: "renderItems",
           },
           {
-            label: "磁场强度（微特斯拉）",
-            path: "magneticField.strength",
+            label: "colStyle",
+            path: "colStyle",
           },
           {
-            label: "磁极",
-            path: "magneticField.poles",
-            content: (v) => (
-              <InfoList
-                items={[
-                  { label: "北极", value: v.north },
-                  { label: "南极", value: v.south },
-                ]}
-              />
-            ),
+            label: "labelStyle",
+            path: "labelStyle",
           },
           {
-            label: "文明和生物性质",
+            label: "contentStyle",
+            path: "contentStyle",
           },
           {
-            label: "人口（十亿）",
-            path: "population",
+            label: "strictMode",
+            path: "strictMode",
           },
           {
-            label: "国家数量",
-            path: "countries",
+            label: "data2Mode",
+            path: "data2Mode",
           },
           {
-            label: "物种数量",
-            path: "species",
+            label: "refreshKey",
+            path: "refreshKey",
+          },
+          { label: "renderItems的api" },
+          {
+            label: "label",
+            path: "label",
           },
           {
-            label: "生物多样性",
-            path: "biodiversity",
-            content: (v) => (
-              <InfoList
-                items={[
-                  {
-                    label: "多样性水平",
-                    value: v.diversityLevel,
-                    path: "biodiversity.diversityLevel",
-                  },
-                  {
-                    label: "灭绝物种",
-                    value: v.extinctSpecies,
-                    path: "biodiversity.extinctSpecies",
-                  },
-                ]}
-              />
-            ),
+            label: "path",
+            path: "path",
           },
           {
-            label: "文明",
-            path: "civilization",
-            content: (v) => (
-              <InfoList
-                items={[
-                  {
-                    label: "发展水平",
-                    value: v.developmentLevel,
-                    path: "civilization.developmentLevel",
-                  },
-                  {
-                    label: "技术",
-                    value: v.technology,
-                    path: "civilization.technology",
-                  },
-                ]}
-              />
-            ),
+            label: "visible",
+            path: "visible",
+          },
+          {
+            label: "foldable",
+            path: "foldable",
+          },
+          {
+            label: "isEqual",
+            path: "isEqual",
+          },
+          {
+            label: "content",
+            path: "content",
+          },
+          {
+            label: "arrayKey",
+            path: "arrayKey",
+          },
+          {
+            label: "alignAlignType",
+            path: "alignAlignType",
           },
         ]}
         labelStyle={{ width: "25%" }}

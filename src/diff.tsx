@@ -18,7 +18,7 @@ import {
   RenderItems,
   ContentType,
   LabelType,
-  FieldItem,
+  RenderItem,
 } from "./types";
 
 function getFieldPathMap<T extends DataTypeBase>(renderItems: RenderItems<T>) {
@@ -115,7 +115,7 @@ function getPathLabel<T extends DataTypeBase>(
 }
 
 function RenderFieldItem<T extends DataTypeBase>(props: {
-  fieldItem: FieldItem<T>;
+  fieldItem: RenderItem<T>;
   data: T;
   data1: T;
   data2: T;
@@ -135,6 +135,9 @@ function RenderFieldItem<T extends DataTypeBase>(props: {
     [data1, data2, type, fieldItem.path]
   );
   const isHeader = !fieldItem.path && !fieldItem.content;
+  if (fieldItem.visible === false) {
+    return null;
+  }
 
   return isHeader ? (
     <div
@@ -151,7 +154,7 @@ function RenderFieldItem<T extends DataTypeBase>(props: {
       <div
         style={{
           height: "16px",
-          width: "4px",
+          width: "3px",
           marginRight: "3px",
           marginTop: "4px",
           background: "rgb(83, 129, 238)",
@@ -222,12 +225,13 @@ export default function Diff<T extends DataTypeBase>(props: {
     style,
   } = props;
 
-  const { diffRes, alignedData1, alignedData2 } = useMemo(() => {
+  const { diffRes, alignedData1, alignedData2, arrayMap } = useMemo(() => {
     const {
       isEqualMap,
       arrayAlignLCSMap,
       arrayAlignCurrentDataMap,
       arrayNoAlignMap,
+      arrayMap
     } = getFieldPathMap(renderItems);
 
     const res = alignAndDiff({
@@ -240,7 +244,7 @@ export default function Diff<T extends DataTypeBase>(props: {
       strictMode,
     });
     console.log("res.diffRes:", res.diffRes);
-    return res;
+    return { ...res, arrayMap };
   }, [data1, data2, renderItems]);
 
   const containerWrapperRef = useRef<HTMLDivElement>(null);
@@ -249,10 +253,47 @@ export default function Diff<T extends DataTypeBase>(props: {
 
   const alignAndColorDoms = useCallback(() => {
     // 所有的path元素
-    const allElements1: NodeListOf<HTMLElement> =
-      wrapperRef1.current?.querySelectorAll(`[data-path]`) ?? ([] as any);
-    const allElements2: NodeListOf<HTMLElement> =
-      wrapperRef2.current?.querySelectorAll(`[data-path]`) ?? ([] as any);
+    const allElements1: Array<HTMLElement> =
+      Array.from(wrapperRef1.current?.querySelectorAll(`[data-path]`) ?? []) as Array<HTMLElement>;
+    const allElements2: Array<HTMLElement> =
+      Array.from(wrapperRef2.current?.querySelectorAll(`[data-path]`) ?? []) as Array<HTMLElement>;
+
+    // {
+    //   // 给所有数组元素添加data-path
+    //   const allArrayItemElements1: Array<HTMLElement> = []
+    //   allElements1.forEach((ele) => {
+    //     const path = ele.getAttribute("data-path");
+    //     const listChildren = ele.lastElementChild?.children
+    //     if (path && arrayMap[path] && listChildren) {
+    //       for (const idx in listChildren) {
+    //         const child = listChildren[idx] as HTMLElement
+    //         if (child instanceof HTMLElement && !child.getAttribute("data-path")) {
+    //           child.setAttribute("data-path", path + "." + idx);
+    //           allArrayItemElements1.push(child);
+    //         }
+
+    //       }
+    //     }
+    //   });
+    //   allElements1.push(...allArrayItemElements1);
+
+    //   const allArrayItemElements2: Array<HTMLElement> = []
+    //   allElements2.forEach((ele) => {
+    //     const path = ele.getAttribute("data-path");
+    //     const listChildren = ele.lastElementChild?.children
+    //     if (path && arrayMap[path] && listChildren) {
+    //       for (const idx in listChildren) {
+    //         const child = listChildren[idx] as HTMLElement
+    //         if (child instanceof HTMLElement && !child.getAttribute("data-path")) {
+    //           child.setAttribute("data-path", path + "." + idx);
+    //           allArrayItemElements2.push(child);
+    //         }
+    //       }
+    //     }
+    //   });
+    //   allElements2.push(...allArrayItemElements2);
+    // }
+
 
     // path对应dom关系
     const data1DomMap: Record<string, HTMLElement[]> = {};
@@ -327,11 +368,12 @@ export default function Diff<T extends DataTypeBase>(props: {
         }
       });
     });
+    console.log("pathMaxHeightMap:", pathMaxHeightMap);
     // 对齐高度1
     allElements1.forEach((ele) => {
       const path = ele.getAttribute("data-path");
       // 如果有子元素也需要diff对齐，则不对齐父亲高度
-      if (path && !ele.querySelectorAll(`[data-path]`).length) {
+      if (path) {
         const rect = ele.getBoundingClientRect();
         if (pathMaxHeightMap[path] > rect.height) {
           ele.style.height = Math.round(pathMaxHeightMap[path]) + "px";
@@ -342,14 +384,14 @@ export default function Diff<T extends DataTypeBase>(props: {
     allElements2.forEach((ele) => {
       const path = ele.getAttribute("data-path");
       // 如果有子元素也需要diff对齐，则不对齐父亲高度
-      if (path && !ele.querySelectorAll(`[data-path]`).length) {
+      if (path) {
         const rect = ele.getBoundingClientRect();
         if (pathMaxHeightMap[path] > rect.height) {
           ele.style.height = Math.round(pathMaxHeightMap[path]) + "px";
         }
       }
     });
-  }, [diffRes, wrapperRef1, wrapperRef2]);
+  }, [diffRes, arrayMap, wrapperRef1, wrapperRef2]);
 
   useEffect(() => {
     alignAndColorDoms();
@@ -368,6 +410,7 @@ export default function Diff<T extends DataTypeBase>(props: {
   const [dragStartEvent, setDragStartEvent] =
     useState<React.MouseEvent<HTMLDivElement, MouseEvent>>();
   const mainRef = useRef<any>(null);
+
   const handleMouseMove = throttle((e: MouseEvent) => {
     if (!dragStartEvent) return;
     const leftWidth = oldLeftWidth - (dragStartEvent.clientX - e.clientX);
@@ -395,7 +438,7 @@ export default function Diff<T extends DataTypeBase>(props: {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [handleMouseMove]);
+  }, [dragStartEvent]);
   const body = useMemo(() => document.querySelector("body"), []);
 
   return (
@@ -450,6 +493,11 @@ export default function Diff<T extends DataTypeBase>(props: {
           setDragStartEvent(e);
           body!.style.cursor = "col-resize";
           body!.style.userSelect = "none";
+          containerWrapperRef.current?.querySelectorAll(`[data-path]`).forEach(i => {
+            if (i instanceof HTMLElement) {
+              i.style.height = "unset"
+            }
+          })
           setOldLeftWidth(leftWidth);
         }}
       ></div>
