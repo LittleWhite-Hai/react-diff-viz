@@ -46,7 +46,7 @@ const data2 = {
   简介: "功能强大的、集成数据diff算法与数据渲染的组件",
   包体积: "131kb",
   技术栈: "react",
-  npm依赖: ["react", "lodash"],
+  npm依赖: ["react", "lodash", "?"],
   和其他组件的区别: "不同于jsdiff和microdiff仅提供diff算法，rediff还提供数据渲染功能",
   是否为ts项目: true,
   基础类型: "默认使用===比较基础类型，若将strictMode设置为true，则忽略类型差异",
@@ -108,20 +108,19 @@ function App() {
             label: "包体积",
             path: "包体积",
           },
-          // {
-          //   label: "技术栈",
-          //   path: "技术栈",
-          //   arrayKey: "",
-          //   content: (v: any) => {
-          //     console.log('v', v);
-          //     // return v
-          //     return v.join("+");
-          //   },
-          // },
+          {
+            label: "技术栈",
+            path: "技术栈",
+          },
           {
             label: "npm依赖",
             path: "npm依赖",
+            arrayKey: "",
+            content: (v: any) => {
+              return v.map(String).join("+");
+            },
           },
+
           {
             label: "和其他组件的区别",
             path: "和其他组件的区别",

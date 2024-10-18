@@ -64,11 +64,14 @@ function getFieldContent<T extends DataTypeBase>(
   }
   if (content) {
     if (typeof arrayKey === "string" && typeof content === "function") {
-      return (
-        content(getPathValue(data, ext.path, arrayKey), data, ext) as any
-      )?.map((i: any, idx: any) => (
-        <div data-path={ext.path + "." + idx}>{i}</div>
-      ));
+      const res = content(getPathValue(data, ext.path, arrayKey), data, ext) as any
+      if (res.map) {
+        return res.map((i: any, idx: any) => (
+          <div data-path={ext.path + "." + idx}>{i}</div>
+        ));
+      } else {
+        return res
+      }
     }
     if (typeof content === "function") {
       return content(getPathValue(data, ext.path, arrayKey), data, ext);
@@ -87,9 +90,7 @@ function getPathValue<T extends DataTypeBase>(
   arrayKey: string | undefined
 ): any {
   const res = getValueByPath(data, path);
-  // if (Array.isArray(res) && typeof arrayKey === "string") {
-  //   return res;
-  // }
+
   // if (["object", "function"].includes(typeof res)) {
   //   return JSON.stringify(res);
   // }
