@@ -8,9 +8,9 @@ export type DataTypeBase = {
 export type PathType<T> = undefined | Path<T> | "";
 
 export type ExtType<T> = {
-  beforeData: T;
-  currentData: T;
-  type: "before" | "current" | "";
+  data1: T;
+  data2: T;
+  type: "data1" | "data2" | "";
   path: PathType<T>;
   index?: number;
 };
@@ -47,8 +47,8 @@ export type FieldItem<T extends DataTypeBase> = {
   content?: ContentType<T>;
   colorDataPath?: boolean;
   arrayKey?: string;
-  alignAlignType?: "lcs" | "currentData" | "none";
+  alignAlignType?: "lcs" | "data2" | "none";
   labelWidth?: number;
   index?: number;
 };
-export type FieldItems<T extends DataTypeBase> = Array<FieldItem<T>>;
+export type RenderItems<T extends DataTypeBase> = Array<FieldItem<T>>;

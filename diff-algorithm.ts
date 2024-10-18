@@ -130,7 +130,6 @@ function alignByLCS<T>(props: {
   return [alignedArr1, alignedArr2];
 }
 
-
 function alignByArr2(props: {
   arr1: Record<string, any>[];
   arr2: Record<string, any>[];
@@ -389,7 +388,12 @@ export function alignAndDiff(props: {
   strictMode: boolean;
 }) {
   const { alignedData1, alignedData2 } = align(props);
-  const diffRes = diff(alignedData1, alignedData2, props.isEqualMap, props.strictMode);
+  const diffRes = diff(
+    alignedData1,
+    alignedData2,
+    props.isEqualMap,
+    props.strictMode
+  );
   return { diffRes, alignedData1, alignedData2 };
 }
 
@@ -478,7 +482,13 @@ export function diff(
       }
     } else {
       // 数组1和数组2的path相同，则比较它们的值，相同则为"UNCHANGED"，不同则为"CHANGED"
-      if (isEqualFundamentalData(arrayPathValue1[i].value, arrayPathValue2[j].value, strictMode)) {
+      if (
+        isEqualFundamentalData(
+          arrayPathValue1[i].value,
+          arrayPathValue2[j].value,
+          strictMode
+        )
+      ) {
         setNodeDiffRes(diffRes, arrayPathValue1[i].path, "UNCHANGED");
       } else {
         setNodeDiffRes(diffRes, arrayPathValue1[i].path, "CHANGED");
@@ -500,8 +510,8 @@ export function diff(
     const a = getValueByPath(data1, path);
     const b = getValueByPath(data2, path);
     const isEqual = isEqualFunc(a, b, {
-      beforeData: data1,
-      currentData: data2,
+      data1,
+      data2,
       type: "",
       path,
     });
@@ -512,14 +522,17 @@ export function diff(
 }
 function isEqualFundamentalData(a: BaseType, b: BaseType, strictMode: boolean) {
   if (strictMode) {
-    return a === b
+    return a === b;
   }
-  if (["0", 0, null, undefined, NaN, false].includes(a as any) && ["0", 0, null, undefined, NaN, false].includes(b as any)) {
-    return true
+  if (
+    ["0", 0, null, undefined, NaN, false].includes(a as any) &&
+    ["0", 0, null, undefined, NaN, false].includes(b as any)
+  ) {
+    return true;
   }
   if (a === b || String(a) === String(b)) {
-    return true
+    return true;
   }
 
-  return false
+  return false;
 }

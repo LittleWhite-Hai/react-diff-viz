@@ -15,19 +15,19 @@ import {
   PathType,
   DataTypeBase,
   IsEqualFuncType,
-  FieldItems,
+  RenderItems,
   ContentType,
   LabelType,
   FieldItem,
 } from "./types";
 
-function getFieldPathMap<T extends DataTypeBase>(fieldItems: FieldItems<T>) {
+function getFieldPathMap<T extends DataTypeBase>(renderItems: RenderItems<T>) {
   const isEqualMap: Record<string, IsEqualFuncType> = {};
   const arrayAlignLCSMap: Record<string, string> = {};
   const arrayAlignCurrentDataMap: Record<string, string> = {};
   const arrayNoAlignMap: Record<string, true> = {};
 
-  fieldItems.forEach((field) => {
+  renderItems.forEach((field) => {
     const path: string = field.path ?? "";
     if (field.isEqual && path) {
       isEqualMap[path] = field.isEqual;
@@ -35,7 +35,7 @@ function getFieldPathMap<T extends DataTypeBase>(fieldItems: FieldItems<T>) {
     if (typeof field.arrayKey === "string") {
       if (field.alignAlignType === "lcs") {
         arrayAlignLCSMap[path] = field.arrayKey;
-      } else if (field.alignAlignType === "currentData") {
+      } else if (field.alignAlignType === "data2") {
         arrayAlignCurrentDataMap[path] = field.arrayKey;
       } else if (field.alignAlignType === "none") {
         arrayNoAlignMap[path] = true;
@@ -53,13 +53,7 @@ function getFieldPathMap<T extends DataTypeBase>(fieldItems: FieldItems<T>) {
 function getFieldContent<T extends DataTypeBase>(
   data: any,
   content: ContentType<T>,
-  ext: {
-    beforeData: T;
-    currentData: T;
-    type: "before" | "current";
-    path: PathType<T>;
-    index?: number;
-  }
+  ext: ExtType<T>
 ): ReactNode {
   if (!ext.path && !content) {
     return "";
@@ -113,29 +107,22 @@ function getPathLabel<T extends DataTypeBase>(
 function RenderFieldItem<T extends DataTypeBase>(props: {
   fieldItem: FieldItem<T>;
   data: T;
-  beforeData: T;
-  currentData: T;
-  type: "before" | "current";
+  data1: T;
+  data2: T;
+  type: "data1" | "data2";
   contentStyle: CSSProperties;
   labelStyle: CSSProperties;
 }): any {
-  const {
-    fieldItem,
-    data,
-    beforeData,
-    currentData,
-    type,
-    contentStyle,
-    labelStyle,
-  } = props;
+  const { fieldItem, data, data1, data2, type, contentStyle, labelStyle } =
+    props;
   const ext = useMemo(
     () => ({
-      beforeData,
-      currentData,
+      data1,
+      data2,
       type,
       path: fieldItem.path,
     }),
-    [beforeData, currentData, type, fieldItem.path]
+    [data1, data2, type, fieldItem.path]
   );
   const isHeader = !fieldItem.path && !fieldItem.content;
 
@@ -191,23 +178,33 @@ function RenderFieldItem<T extends DataTypeBase>(props: {
 }
 
 export default function Diff<T extends DataTypeBase>(props: {
-  fieldItems: FieldItems<T>;
-  beforeData: T;
-  currentData: T;
+  // 描述数据的渲染方式及diff计算方式
+  renderItems: RenderItems<T>;
+  // 用于比较的数据1
+  data1: T;
+  // 用于比较的数据2
+  data2: T;
+  // 严格模式，默认开启，关闭后diff算法会忽略数据类型差异，如0="0"
   strictMode?: boolean;
-  currentOnlyMode?: boolean;
+  // 仅查看数据2
+  data2Mode?: boolean;
+  // 改变Key以触发重新染色和高度对齐
   refreshKey?: number;
+  // data1和data2的整体样式
   colStyle?: CSSProperties;
+  // 每条数据label的样式
   labelStyle?: CSSProperties;
+  // 每条数据content的样式
   contentStyle?: CSSProperties;
+  // diff组件整体样式
   style?: CSSProperties;
 }) {
   const {
-    fieldItems,
-    beforeData,
-    currentData,
+    renderItems,
+    data1,
+    data2,
     strictMode = true,
-    currentOnlyMode = false,
+    data2Mode = false,
     refreshKey = 0,
     colStyle = { width: "650px" },
     labelStyle = { width: "30%" },
@@ -221,11 +218,11 @@ export default function Diff<T extends DataTypeBase>(props: {
       arrayAlignLCSMap,
       arrayAlignCurrentDataMap,
       arrayNoAlignMap,
-    } = getFieldPathMap(fieldItems);
+    } = getFieldPathMap(renderItems);
 
     const res = alignAndDiff({
-      data1: beforeData,
-      data2: currentData,
+      data1: data1,
+      data2: data2,
       isEqualMap,
       arrayAlignLCSMap,
       arrayAlignCurrentDataMap,
@@ -234,29 +231,29 @@ export default function Diff<T extends DataTypeBase>(props: {
     });
     console.log("res.diffRes:", res.diffRes);
     return res;
-  }, [beforeData, currentData, fieldItems]);
+  }, [data1, data2, renderItems]);
 
   const containerWrapperRef = useRef<HTMLDivElement>(null);
-  const beforeWrapperRef = useRef<HTMLDivElement>(null);
-  const currentWrapperRef = useRef<HTMLDivElement>(null);
+  const wrapperRef1 = useRef<HTMLDivElement>(null);
+  const wrapperRef2 = useRef<HTMLDivElement>(null);
 
   const alignAndColorDoms = useCallback(() => {
     // 所有的path元素
-    const beforeAllElements: NodeListOf<HTMLElement> =
-      beforeWrapperRef.current?.querySelectorAll(`[data-path]`) ?? ([] as any);
-    const currentAllElements: NodeListOf<HTMLElement> =
-      currentWrapperRef.current?.querySelectorAll(`[data-path]`) ?? ([] as any);
+    const allElements1: NodeListOf<HTMLElement> =
+      wrapperRef1.current?.querySelectorAll(`[data-path]`) ?? ([] as any);
+    const allElements2: NodeListOf<HTMLElement> =
+      wrapperRef2.current?.querySelectorAll(`[data-path]`) ?? ([] as any);
 
     // path对应dom关系
-    const beforeDataDomMap: Record<string, HTMLElement[]> = {};
-    const currentDataDomMap: Record<string, HTMLElement[]> = {};
+    const data1DomMap: Record<string, HTMLElement[]> = {};
+    const data2DomMap: Record<string, HTMLElement[]> = {};
 
     // path对应的最高dom
     const pathMaxHeightMap: Record<string, number> = {};
 
     {
-      // 统计beforeContainer里的path对应dom关系和max高度
-      beforeAllElements.forEach((ele) => {
+      // 统计container1里的path对应dom关系和max高度
+      allElements1.forEach((ele) => {
         const path = ele.getAttribute("data-path");
         if (path) {
           const rect = ele.getBoundingClientRect();
@@ -265,18 +262,18 @@ export default function Diff<T extends DataTypeBase>(props: {
             rect.height
           );
 
-          if (beforeDataDomMap[path]) {
-            beforeDataDomMap[path].push(ele);
+          if (data1DomMap[path]) {
+            data1DomMap[path].push(ele);
           } else {
-            beforeDataDomMap[path] = [ele];
+            data1DomMap[path] = [ele];
           }
         }
       });
     }
 
     {
-      // 统计currentContainer里的path对应dom关系和max高度
-      currentAllElements.forEach((ele) => {
+      // 统计container2里的path对应dom关系和max高度
+      allElements2.forEach((ele) => {
         const path = ele.getAttribute("data-path");
         if (path) {
           const rect = ele.getBoundingClientRect();
@@ -285,10 +282,10 @@ export default function Diff<T extends DataTypeBase>(props: {
             rect.height
           );
 
-          if (currentDataDomMap[path]) {
-            currentDataDomMap[path].push(ele);
+          if (data2DomMap[path]) {
+            data2DomMap[path].push(ele);
           } else {
-            currentDataDomMap[path] = [ele];
+            data2DomMap[path] = [ele];
           }
         }
       });
@@ -296,10 +293,10 @@ export default function Diff<T extends DataTypeBase>(props: {
 
     // 着色
     Object.entries(diffRes).forEach(([key, val]: [string, string]) => {
-      const beforePathDomList = beforeDataDomMap[key];
-      const currentPathDomList = currentDataDomMap[key];
+      const pathDomList1 = data1DomMap[key];
+      const pathDomList2 = data2DomMap[key];
 
-      beforePathDomList?.forEach((dom) => {
+      pathDomList1?.forEach((dom) => {
         if (["CHANGED", "CREATED", "DELETED"].includes(val)) {
           const contentElement = (dom.lastElementChild ?? dom) as HTMLElement;
           if (dom.querySelectorAll(`[data-path]`).length) {
@@ -309,7 +306,7 @@ export default function Diff<T extends DataTypeBase>(props: {
           }
         }
       });
-      currentPathDomList?.forEach((dom) => {
+      pathDomList2?.forEach((dom) => {
         if (["CHANGED", "CREATED", "DELETED"].includes(val)) {
           const contentElement = (dom.lastElementChild ?? dom) as HTMLElement;
           if (dom.querySelectorAll(`[data-path]`).length) {
@@ -320,8 +317,8 @@ export default function Diff<T extends DataTypeBase>(props: {
         }
       });
     });
-    // 对齐before高度
-    beforeAllElements.forEach((ele) => {
+    // 对齐高度1
+    allElements1.forEach((ele) => {
       const path = ele.getAttribute("data-path");
       // 如果有子元素也需要diff对齐，则不对齐父亲高度
       if (path && !ele.querySelectorAll(`[data-path]`).length) {
@@ -331,8 +328,8 @@ export default function Diff<T extends DataTypeBase>(props: {
         }
       }
     });
-    // 对齐current高度
-    currentAllElements.forEach((ele) => {
+    // 对齐高度2
+    allElements2.forEach((ele) => {
       const path = ele.getAttribute("data-path");
       // 如果有子元素也需要diff对齐，则不对齐父亲高度
       if (path && !ele.querySelectorAll(`[data-path]`).length) {
@@ -342,11 +339,11 @@ export default function Diff<T extends DataTypeBase>(props: {
         }
       }
     });
-  }, [diffRes, beforeWrapperRef, currentWrapperRef]);
+  }, [diffRes, wrapperRef1, wrapperRef2]);
 
   useEffect(() => {
     alignAndColorDoms();
-  }, [diffRes, beforeWrapperRef, currentWrapperRef, refreshKey]);
+  }, [diffRes, wrapperRef1, wrapperRef2, refreshKey]);
 
   const [leftWidth, setLeftWidth] = useState<number>(
     parseInt((colStyle.width ?? "650") as string)
@@ -406,23 +403,23 @@ export default function Diff<T extends DataTypeBase>(props: {
           marginRight: "4%",
           ...colStyle,
           width: leftWidth + "px",
-          display: currentOnlyMode ? "none" : "block",
+          display: data2Mode ? "none" : "block",
         }}
-        ref={beforeWrapperRef}
+        ref={wrapperRef1}
       >
-        {fieldItems.map((field) => {
+        {renderItems.map((field) => {
           const label =
             typeof field.label === "string" ? field.label : field.key ?? "";
           return (
             <RenderFieldItem<T>
               key={field.path + label}
               data={alignedData1}
-              beforeData={alignedData1}
-              currentData={alignedData2}
+              data1={alignedData1}
+              data2={alignedData2}
               contentStyle={contentStyle}
               labelStyle={labelStyle}
               fieldItem={field}
-              type="before"
+              type="data1"
             />
           );
         })}
@@ -432,9 +429,9 @@ export default function Diff<T extends DataTypeBase>(props: {
           backgroundColor: dragStartEvent ? "rgb(83, 129, 238)" : "gray",
           cursor: "col-resize",
           flex: "1",
-          maxWidth: "5px",
-          minWidth: "5px",
-          display: currentOnlyMode ? "none" : "",
+          maxWidth: "4px",
+          minWidth: "4px",
+          display: data2Mode ? "none" : "",
         }}
         ref={mainRef}
         onMouseDown={(e) => {
@@ -446,21 +443,21 @@ export default function Diff<T extends DataTypeBase>(props: {
       ></div>
       <div
         style={{ ...colStyle, flex: 1, width: rightWidth + "px" }}
-        ref={currentWrapperRef}
+        ref={wrapperRef2}
       >
-        {fieldItems.map((field) => {
+        {renderItems.map((field) => {
           const label =
             typeof field.label === "string" ? field.label : field.key ?? "";
           return (
             <RenderFieldItem
               key={field.path + label}
               data={alignedData2}
-              beforeData={alignedData1}
-              currentData={alignedData2}
+              data1={alignedData1}
+              data2={alignedData2}
               contentStyle={contentStyle}
               labelStyle={labelStyle}
               fieldItem={field}
-              type="current"
+              type="data2"
             />
           );
         })}

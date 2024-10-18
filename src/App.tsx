@@ -55,10 +55,10 @@ function App() {
 
       <Diff
         strictMode={false}
-        currentOnlyMode={true}
-        beforeData={complexObject1}
-        currentData={complexObject2}
-        fieldItems={[
+        // data2Mode={true}
+        data1={complexObject1}
+        data2={complexObject2}
+        renderItems={[
           {
             label: "个人信息.姓名",
             path: "个人信息.姓名",
