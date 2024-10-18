@@ -9,7 +9,7 @@ import {
 } from "react";
 import { throttle } from "lodash";
 
-import { alignAndDiff } from "../diff-algorithm";
+import { alignAndDiff, getValueByPath } from "../diff-algorithm";
 import {
   ExtType,
   PathType,
@@ -26,6 +26,7 @@ function getFieldPathMap<T extends DataTypeBase>(renderItems: RenderItems<T>) {
   const arrayAlignLCSMap: Record<string, string> = {};
   const arrayAlignCurrentDataMap: Record<string, string> = {};
   const arrayNoAlignMap: Record<string, true> = {};
+  const arrayMap: Record<string, true> = {};
 
   renderItems.forEach((field) => {
     const path: string = field.path ?? "";
@@ -40,6 +41,7 @@ function getFieldPathMap<T extends DataTypeBase>(renderItems: RenderItems<T>) {
       } else if (field.alignAlignType === "none") {
         arrayNoAlignMap[path] = true;
       }
+      arrayMap[path] = true;
     }
   });
   return {
@@ -47,56 +49,64 @@ function getFieldPathMap<T extends DataTypeBase>(renderItems: RenderItems<T>) {
     arrayAlignLCSMap,
     arrayAlignCurrentDataMap,
     arrayNoAlignMap,
+    arrayMap,
   };
 }
 
 function getFieldContent<T extends DataTypeBase>(
   data: any,
   content: ContentType<T>,
+  arrayKey: string | undefined,
   ext: ExtType<T>
 ): ReactNode {
   if (!ext.path && !content) {
     return "";
   }
   if (content) {
+    if (typeof arrayKey === "string" && typeof content === "function") {
+      return (
+        content(getPathValue(data, ext.path, arrayKey), data, ext) as any
+      )?.map((i: any, idx: any) => (
+        <div data-path={ext.path + "." + idx}>{i}</div>
+      ));
+    }
     if (typeof content === "function") {
-      return content(getPathValue(data, ext.path), data, ext);
+      return content(getPathValue(data, ext.path, arrayKey), data, ext);
     } else {
       return content;
     }
   } else {
-    return getPathValue(data, ext.path);
+    return getPathValue(data, ext.path, undefined);
   }
 }
 
 // 根据path得到data中对应的原始数据
 function getPathValue<T extends DataTypeBase>(
   data: T,
-  path: string | undefined
+  path: string | undefined,
+  arrayKey: string | undefined
 ): any {
-  if (path === undefined) {
-    return data;
-  } else {
-    // path是string
-    const pathArr = path.split(".") ?? [];
-    let curData = data;
-    for (const tmpIdx of pathArr) {
-      curData = (curData as T)?.[tmpIdx];
-    }
-    return curData;
-  }
+  const res = getValueByPath(data, path);
+  // if (Array.isArray(res) && typeof arrayKey === "string") {
+  //   return res;
+  // }
+  // if (["object", "function"].includes(typeof res)) {
+  //   return JSON.stringify(res);
+  // }
+  return res;
 }
 
 // 根据path得到data对应的label
 function getPathLabel<T extends DataTypeBase>(
   data: T | undefined,
   label: LabelType<T>,
+  arrayKey: string | undefined,
   ext: ExtType<T>
 ): ReactNode {
   if (!data) {
     return typeof label === "string" ? label : "";
   }
-  const curData = ext.path ? getPathValue(data, ext.path) : undefined;
+  const curData = ext.path ? getPathValue(data, ext.path, arrayKey) : undefined;
   if (typeof label === "function") {
     return label(curData, data, ext);
   } else {
@@ -147,7 +157,7 @@ function RenderFieldItem<T extends DataTypeBase>(props: {
           background: "rgb(83, 129, 238)",
         }}
       ></div>
-      {getPathLabel(data, fieldItem.label, ext)}
+      {getPathLabel(data, fieldItem.label, fieldItem.arrayKey, ext)}
     </div>
   ) : (
     <div
@@ -162,7 +172,7 @@ function RenderFieldItem<T extends DataTypeBase>(props: {
           ...labelStyle,
         }}
       >
-        {getPathLabel(data, fieldItem.label, ext)}
+        {getPathLabel(data, fieldItem.label, fieldItem.arrayKey, ext)}
       </div>
       <div
         style={{
@@ -171,7 +181,7 @@ function RenderFieldItem<T extends DataTypeBase>(props: {
           ...contentStyle,
         }}
       >
-        {getFieldContent(data, fieldItem.content, ext)}
+        {getFieldContent(data, fieldItem.content, fieldItem.arrayKey, ext)}
       </div>
     </div>
   );
@@ -180,8 +190,8 @@ function RenderFieldItem<T extends DataTypeBase>(props: {
 export default function Diff<T extends DataTypeBase>(props: {
   // 描述数据的渲染方式及diff计算方式
   renderItems: RenderItems<T>;
-  // 用于比较的数据1
-  data1: T;
+  // 用于比较的数据1，如果不传，则等于data2
+  data1?: T;
   // 用于比较的数据2
   data2: T;
   // 严格模式，默认开启，关闭后diff算法会忽略数据类型差异，如0="0"
@@ -201,7 +211,7 @@ export default function Diff<T extends DataTypeBase>(props: {
 }) {
   const {
     renderItems,
-    data1,
+    data1 = props.data2,
     data2,
     strictMode = true,
     data2Mode = false,
@@ -297,7 +307,7 @@ export default function Diff<T extends DataTypeBase>(props: {
       const pathDomList2 = data2DomMap[key];
 
       pathDomList1?.forEach((dom) => {
-        if (["CHANGED", "CREATED", "DELETED"].includes(val)) {
+        if (["CHANGED", "DELETED"].includes(val)) {
           const contentElement = (dom.lastElementChild ?? dom) as HTMLElement;
           if (dom.querySelectorAll(`[data-path]`).length) {
             contentElement.style.borderRight = "3px solid rgb(253, 226, 226)";
@@ -307,7 +317,7 @@ export default function Diff<T extends DataTypeBase>(props: {
         }
       });
       pathDomList2?.forEach((dom) => {
-        if (["CHANGED", "CREATED", "DELETED"].includes(val)) {
+        if (["CHANGED", "CREATED"].includes(val)) {
           const contentElement = (dom.lastElementChild ?? dom) as HTMLElement;
           if (dom.querySelectorAll(`[data-path]`).length) {
             contentElement.style.borderRight = "3px solid rgb(217, 245, 214)";
@@ -400,9 +410,9 @@ export default function Diff<T extends DataTypeBase>(props: {
     >
       <div
         style={{
-          marginRight: "4%",
           ...colStyle,
           width: leftWidth + "px",
+          overflow: "hidden",
           display: data2Mode ? "none" : "block",
         }}
         ref={wrapperRef1}
@@ -429,6 +439,8 @@ export default function Diff<T extends DataTypeBase>(props: {
           backgroundColor: dragStartEvent ? "rgb(83, 129, 238)" : "gray",
           cursor: "col-resize",
           flex: "1",
+          marginRight: "1%",
+          marginLeft: "1%",
           maxWidth: "4px",
           minWidth: "4px",
           display: data2Mode ? "none" : "",
@@ -442,7 +454,12 @@ export default function Diff<T extends DataTypeBase>(props: {
         }}
       ></div>
       <div
-        style={{ ...colStyle, flex: 1, width: rightWidth + "px" }}
+        style={{
+          ...colStyle,
+          flex: 1,
+          overflow: "hidden",
+          width: rightWidth + "px",
+        }}
         ref={wrapperRef2}
       >
         {renderItems.map((field) => {

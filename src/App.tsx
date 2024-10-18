@@ -2,48 +2,133 @@ import { useState } from "react";
 import "./App.css";
 import Diff from "./diff";
 import Card from "./card";
+import InfoList from "./InfoList";
 
-const complexObject1 = {
-  个人信息: {
-    姓名: "张三",
-    年龄: "32",
-    地址: {
-      城市: "北京",
-      邮编: "100000",
+const ancientEarth = {
+  name: "地球",
+  age: 4.52, // 单位：十亿年
+  timePeriod: "20,000年前",
+  type: "陆地行星",
+  galaxy: "银河系",
+  continents: [
+    "非洲",
+    "南极洲",
+    "亚洲",
+    "欧洲",
+    "北美洲",
+    "澳大利亚",
+    "南美洲",
+  ],
+  diameter: 12742, // 单位：公里
+  population: 0.005, // 单位：十亿，估计值
+  countries: 0, // 尚未形成现代国家
+  species: 8700000, // 物种数量变化不大
+  oceans: [
+    {
+      name: "大西洋",
+      area: 85133000, // 单位：平方公里
+      depth: 3646, // 单位：米
+    },
+    {
+      name: "印度洋",
+      area: 70560000, // 单位：平方公里
+      depth: 3741, // 单位：米
+    },
+  ],
+  atmosphere: {
+    composition: {
+      氮气: 78, // 百分比
+      氧气: 21, // 百分比
+      氩气: 0.93, // 百分比
+      二氧化碳: 0.018, // 百分比，较低的二氧化碳水平
+    },
+    layers: ["对流层", "平流层", "中间层", "热层", "外逸层"],
+  },
+  climate: {
+    temperature: "低于现在", // 较低的温度
+    seaLevel: "低于现在", // 较低的海平面
+  },
+  biodiversity: {
+    diversityLevel: "高", // 生物多样性仍然很高
+    extinctSpecies: "一些大型动物", // 一些大型动物灭绝
+  },
+  civilization: {
+    developmentLevel: "狩猎采集社会", // 以狩猎采集为主
+    technology: "石器工具", // 石器工具
+  },
+  magneticField: {
+    strength: 25, // 单位：微特斯拉
+    poles: {
+      north: "北极地区",
+      south: "南极地区",
     },
   },
-  工作经历: [
-    { 公司: "ABC科技", 职位: "软件工程师", 年份: 2018 },
-    { 公司: "XYZ集团", 职位: "高级开发者", 年份: 2020 },
-  ],
-  技能: ["JavaScript", "React", "Node.js", "Python"],
-  项目: {
-    进行中: ["电商平台", "数据分析工具"],
-    已完成: ["社交媒体APP", "在线教育系统"],
-  },
-  评分: { 技术: 9, 沟通: 8, 团队合作: 9 },
 };
 
-const complexObject2 = {
-  个人信息: {
-    姓名: "张三",
-    年龄: "30", // 变化
-    地址: {
-      城市: "北京", // 变化
-      邮编: "200000", // 变化
+const currentEarth = {
+  name: "地球",
+  age: 4.52, // 单位：十亿年
+  timePeriod: "现在",
+  type: "陆地行星",
+  galaxy: "银河系",
+  continents: [
+    "非洲",
+    "南极洲",
+    "亚洲",
+    "欧洲",
+    "北美洲",
+    "澳大利亚",
+    "南美洲",
+  ],
+  diameter: 12742, // 单位：公里
+  population: 8, // 单位：十亿，估计值
+  countries: 195, // 现代国家数量
+  species: 8700000, // 物种数量
+  oceans: [
+    {
+      name: "太平洋",
+      area: 168723000, // 单位：平方公里
+      depth: 3970, // 单位：米
+    },
+    {
+      name: "大西洋",
+      area: 85133000, // 单位：平方公里
+      depth: 3646, // 单位：米
+    },
+    {
+      name: "印度洋",
+      area: 70560000, // 单位：平方公里
+      depth: 3741, // 单位：米
+    },
+  ],
+  atmosphere: {
+    composition: {
+      氮气: 78, // 百分比
+      氧气: 21, // 百分比
+      氩气: 0.93, // 百分比
+      二氧化碳: 0.041, // 百分比，较高的二氧化碳水平
+    },
+    layers: ["对流层", "平流层", "中间层", "热层", "外逸层"],
+  },
+  climate: {
+    temperature: "上升", // 温度上升
+    seaLevel: "上升", // 海平面上升
+  },
+  biodiversity: {
+    diversityLevel: "高", // 生物多样性仍然很高
+    extinctSpecies: "灭绝率增加", // 灭绝率增加
+  },
+  civilization: {
+    developmentLevel: "先进的技术社会", // 高度发达的技术社会
+    technology: "数字和太空技术", // 数字和太空技术
+  },
+  magneticField: {
+    strength: 25, // 单位：微特斯拉
+    poles: {
+      north: "北极地区",
+      south: "南极地区",
     },
   },
-  工作经历: [
-    { 公司: "新公司", 职位: "架构师", 年份: 2022 }, // 新增
-    { 公司: "ABC科技", 职位: "软件工程师", 年份: 2018 },
-    { 公司: "XYZ集团", 职位: "技术主管", 年份: 2020 }, // 变化
-  ],
-  技能: ["JavaScript", "React", "Node.js", "Python", "Docker"], // 变化
-  项目: {
-    进行中: ["电商平台升级", "AI助手开发"], // 变化
-    已完成: ["社交媒体APP", "在线教育系统", "企业管理系统"], // 变化
-  },
-  评分: { 技术: 9, 沟通: 8, 团队合作: 9 },
 };
 
 function App() {
@@ -55,67 +140,169 @@ function App() {
 
       <Diff
         strictMode={false}
-        // data2Mode={true}
-        data1={complexObject1}
-        data2={complexObject2}
+        data1={ancientEarth}
+        data2={currentEarth}
         renderItems={[
           {
-            label: "个人信息.姓名",
-            path: "个人信息.姓名",
+            label: "名称",
+            path: "name",
           },
           {
-            label: "个人信息.年龄",
-            path: "个人信息.年龄",
-            isEqual: (a, b) => Math.abs(a - b) < 2,
+            label: "物理性质",
           },
           {
-            label: "个人信息.地址.城市",
-            path: "个人信息.地址.城市",
+            label: "年龄（十亿年）",
+            path: "age",
+            isEqual: (a, b) => Math.abs(a - b) < 0.1,
           },
           {
-            label: "个人信息.地址.邮编",
-            path: "个人信息.地址.邮编",
+            label: "时期",
+            path: "timePeriod",
           },
           {
-            label: "个人信息.地址",
-            path: "个人信息.地址",
-            content: (v) => JSON.stringify(v),
+            label: "类型",
+            path: "type",
           },
           {
-            label: "职业",
+            label: "星系",
+            path: "galaxy",
           },
           {
-            label: "工作经历.1",
-            path: "工作经历.1",
-            content: (v) => JSON.stringify(v),
+            label: "直径（公里）",
+            path: "diameter",
           },
           {
-            label: "工作经历",
-            path: "工作经历",
-            arrayKey: "公司",
-            alignAlignType: "lcs",
+            label: "大陆",
+            path: "continents",
+            content: (v) => v.join(", "),
+          },
+          {
+            label: "海洋",
+            path: "oceans",
+            arrayKey: "name",
             content: (v: any) => {
-              return v.map((item: any, index: number) => (
-                <div
-                  style={{ marginBottom: "5px", textAlign: "center" }}
-                  key={item.公司 + item.职位}
-                >
-                  <Card
-                    pathPrefix={"工作经历." + index}
-                    title={item.公司}
-                    content={item.职位}
-                  />
-                </div>
+              return v.map((ocean: any) => (
+                <Card
+                  pathPrefix="oceans"
+                  key={ocean.name}
+                  title={ocean.name}
+                  content={`面积: ${ocean.area} 平方公里, 深度: ${ocean.depth} 米`}
+                />
               ));
             },
           },
-          { label: "技能", path: "技能", content: (v) => JSON.stringify(v) },
           {
-            label: "总结",
+            label: "大气成分",
+            path: "atmosphere.composition",
+            content: (v) => (
+              <InfoList
+                items={Object.entries(v).map(([key, value]) => ({
+                  label: key,
+                  value: `${value}%`,
+                  path: `atmosphere.composition.${key}`,
+                }))}
+              />
+            ),
           },
-          { label: "项目", path: "项目", content: (v) => JSON.stringify(v) },
-          { label: "评分", path: "评分", content: (v) => JSON.stringify(v) },
+          {
+            label: "大气层",
+            path: "atmosphere.layers",
+            content: (v) => v.join(", "),
+          },
+          {
+            label: "气候",
+            path: "climate",
+            content: (v) => (
+              <InfoList
+                items={[
+                  {
+                    label: "温度",
+                    value: v.temperature,
+                    path: "climate.temperature",
+                  },
+                  {
+                    label: "海平面",
+                    value: v.seaLevel,
+                    path: "climate.seaLevel",
+                  },
+                ]}
+              />
+            ),
+          },
+          {
+            label: "磁场强度（微特斯拉）",
+            path: "magneticField.strength",
+          },
+          {
+            label: "磁极",
+            path: "magneticField.poles",
+            content: (v) => (
+              <InfoList
+                items={[
+                  { label: "北极", value: v.north },
+                  { label: "南极", value: v.south },
+                ]}
+              />
+            ),
+          },
+          {
+            label: "文明和生物性质",
+          },
+          {
+            label: "人口（十亿）",
+            path: "population",
+          },
+          {
+            label: "国家数量",
+            path: "countries",
+          },
+          {
+            label: "物种数量",
+            path: "species",
+          },
+          {
+            label: "生物多样性",
+            path: "biodiversity",
+            content: (v) => (
+              <InfoList
+                items={[
+                  {
+                    label: "多样性水平",
+                    value: v.diversityLevel,
+                    path: "biodiversity.diversityLevel",
+                  },
+                  {
+                    label: "灭绝物种",
+                    value: v.extinctSpecies,
+                    path: "biodiversity.extinctSpecies",
+                  },
+                ]}
+              />
+            ),
+          },
+          {
+            label: "文明",
+            path: "civilization",
+            content: (v) => (
+              <InfoList
+                items={[
+                  {
+                    label: "发展水平",
+                    value: v.developmentLevel,
+                    path: "civilization.developmentLevel",
+                  },
+                  {
+                    label: "技术",
+                    value: v.technology,
+                    path: "civilization.technology",
+                  },
+                ]}
+              />
+            ),
+          },
         ]}
+        labelStyle={{ width: "25%" }}
+        contentStyle={{ width: "70%" }}
       />
     </>
   );

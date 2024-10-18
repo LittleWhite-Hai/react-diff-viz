@@ -3,7 +3,13 @@ import { IsEqualFuncType } from "./src/types";
 
 const EMPTY_SYMBOL = Symbol.for("EMPTY_SYMBOL");
 
-function getValueByPath(obj: Record<string, any>, path: string) {
+export function getValueByPath(
+  obj: Record<string, any>,
+  path: string | undefined
+) {
+  if (!path) {
+    return obj;
+  }
   return path.split(".").reduce((acc, key) => acc && acc[key], obj);
 }
 

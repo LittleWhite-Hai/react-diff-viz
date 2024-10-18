@@ -1,10 +1,10 @@
-import React from "react";
 const styles = {
   card: {
     border: "1px solid #ccc",
     borderRadius: "8px",
     padding: "16px",
     paddingTop: "5px",
+    marginBottom: "5px",
     maxWidth: "300px",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
   },
@@ -31,12 +31,12 @@ const Card = ({
 }) => {
   return (
     <div style={styles.card}>
-      <h2 style={styles.title} data-path={pathPrefix + ".公司"}>
-        {title}
-      </h2>
-      <p style={styles.content} data-path={pathPrefix + ".职位"}>
-        {content}
-      </p>
+      {title && content && (
+        <>
+          <h2 style={styles.title}>{title}</h2>
+          <p style={styles.content}>{content}</p>
+        </>
+      )}
     </div>
   );
 };
