@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import Diff from "../diff";
 import Card from "./card";
@@ -101,6 +101,9 @@ function App() {
   const [count, setCount] = useState(0);
   const [editCollapse, setEditCollapse] = useState(true);
   const [editedData, setEditedData] = useState(data2);
+  useEffect(() => {
+    console.log("editedData", editedData);
+  }, [editedData]);
 
   return (
     <>
@@ -124,14 +127,15 @@ function App() {
           <div style={{ marginLeft: "30px" }}>
             <a
               style={{ cursor: "pointer" }}
-              onClick={() => {
+              onClick={(e) => {
+                e.preventDefault();
                 open("http://www.baidu.com");
               }}
             >
               <svg
                 stroke="currentColor"
                 fill="currentColor"
-                stroke-width="0"
+                strokeWidth="0"
                 viewBox="0 0 496 512"
                 focusable="false"
                 height="1em"
@@ -153,14 +157,15 @@ function App() {
             </a>
             <a
               style={{ cursor: "pointer" }}
-              onClick={() => {
+              onClick={(e) => {
+                e.preventDefault();
                 open("http://www.baidu.com");
               }}
             >
               <svg
                 stroke="currentColor"
                 fill="currentColor"
-                stroke-width="0"
+                strokeWidth="0"
                 viewBox="0 0 576 512"
                 focusable="false"
                 style={{
@@ -183,31 +188,33 @@ function App() {
         </div>
       </div>
 
-      <div
-        style={
-          editCollapse
-            ? { display: "none" }
-            : {
-                position: "absolute",
-                left: "10%",
-                top: "155px",
-                zIndex: "100",
-                padding: "5px",
-                background: "lightgray",
-              }
-        }
-      >
-        <JsonEditor
-          data={editedData}
-          minWidth={630}
-          setData={setEditedData}
-          collapse={editCollapse}
-          collapseAnimationTime={0}
-        />
-      </div>
+      {!editCollapse && (
+        <div
+          style={{
+            position: "absolute",
+            left: "10%",
+            top: "155px",
+            zIndex: "100",
+            padding: "5px",
+            background: "lightgray",
+          }}
+        >
+          <JsonEditor
+            data={editedData}
+            minWidth={630}
+            setData={setEditedData}
+            collapse={editCollapse}
+            collapseAnimationTime={0}
+          />
+        </div>
+      )}
+
       <div style={{ display: "flex", justifyContent: "end", width: "1500px" }}>
         <a
-          onClick={() => setEditCollapse(!editCollapse)}
+          onClick={(e) => {
+            e.preventDefault();
+            setEditCollapse(!editCollapse);
+          }}
           style={{
             marginRight: "20px",
             cursor: "pointer",
@@ -217,14 +224,29 @@ function App() {
         </a>
         <a
           href=""
-          onClick={() => {
+          onClick={(e) => {
+            e.preventDefault();
             setEditedData(data1);
+          }}
+          style={{
+            cursor: "pointer",
+            marginRight: "20px",
+          }}
+        >
+          Reset Data
+        </a>
+
+        <a
+          href=""
+          onClick={(e) => {
+            e.preventDefault();
+            setCount(count + 1);
           }}
           style={{
             cursor: "pointer",
           }}
         >
-          Reset Data
+          Align And Color
         </a>
       </div>
       <Diff

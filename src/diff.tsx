@@ -235,7 +235,7 @@ export default function Diff<T extends DataTypeBase>(props: {
       arrayNoAlignMap,
       strictMode,
     });
-    console.log("res.diffRes:", res.diffRes);
+
     return { ...res, arrayMap };
   }, [data1, data2, vizItems]);
 
@@ -380,33 +380,36 @@ export default function Diff<T extends DataTypeBase>(props: {
     // 对齐高度1
     allElements1.forEach((ele) => {
       const path = ele.getAttribute("data-path");
-      // 如果有子元素也需要diff对齐，则不对齐父亲高度
-      if (path) {
+      if (path && !ele.querySelectorAll(`[data-path]`).length) {
         const rect = ele.getBoundingClientRect();
         if (pathMaxHeightMap[path] > rect.height) {
           ele.style.height = Math.round(pathMaxHeightMap[path]) + "px";
-        } else {
-          ele.style.height = "unset";
         }
       }
     });
     // 对齐高度2
     allElements2.forEach((ele) => {
       const path = ele.getAttribute("data-path");
-      // 如果有子元素也需要diff对齐，则不对齐父亲高度
-      if (path) {
+      if (path && !ele.querySelectorAll(`[data-path]`).length) {
         const rect = ele.getBoundingClientRect();
         if (pathMaxHeightMap[path] > rect.height) {
           ele.style.height = Math.round(pathMaxHeightMap[path]) + "px";
-        } else {
-          ele.style.height = "unset";
         }
       }
     });
   }, [diffRes, arrayMap, wrapperRef1, wrapperRef2]);
 
   useEffect(() => {
-    alignAndColorDoms();
+    containerWrapperRef.current
+      ?.querySelectorAll(`[data-path]`)
+      .forEach((i) => {
+        if (i instanceof HTMLElement) {
+          i.style.height = "unset";
+        }
+      });
+    setTimeout(() => {
+      alignAndColorDoms();
+    }, 18);
   }, [diffRes, wrapperRef1, wrapperRef2, refreshKey]);
 
   const [leftWidth, setLeftWidth] = useState<number>(
