@@ -8,14 +8,20 @@ importers:
 
   .:
     dependencies:
+      json-edit-react:
+        specifier: ^1.17.0
+        version: 1.17.0(react@18.3.1)
       lodash:
-        specifier: ^4.17.21 || ^4.17.11 || ^3.10.1
+        specifier: ^4.17.21
         version: 4.17.21
       react:
-        specifier: ^16.8.0 || ^17.0.0 || ^18.2.0
+        specifier: ^18.3.1
         version: 18.3.1
+      react-diff-viz:
+        specifier: ^1.0.0
+        version: 1.0.0(lodash@4.17.21)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-dom:
-        specifier: ^16.8.0 || ^17.0.0 || ^18.2.0
+        specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
     devDependencies:
       '@eslint/js':
@@ -390,55 +396,46 @@ packages:
     resolution: {integrity: sha512-0KXvIJQMOImLCVCz9uvvdPgfyWo93aHHp8ui3FrtOP57svqrF/roSSR5pjqL2hcMp0ljeGlU4q9o/rQaAQ3AYA==}
     cpu: [arm]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-arm-musleabihf@4.24.0':
     resolution: {integrity: sha512-it2BW6kKFVh8xk/BnHfakEeoLPv8STIISekpoF+nBgWM4d55CZKc7T4Dx1pEbTnYm/xEKMgy1MNtYuoA8RFIWw==}
     cpu: [arm]
     os: [linux]
-    libc: [musl]
 
   '@rollup/rollup-linux-arm64-gnu@4.24.0':
     resolution: {integrity: sha512-i0xTLXjqap2eRfulFVlSnM5dEbTVque/3Pi4g2y7cxrs7+a9De42z4XxKLYJ7+OhE3IgxvfQM7vQc43bwTgPwA==}
     cpu: [arm64]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-arm64-musl@4.24.0':
     resolution: {integrity: sha512-9E6MKUJhDuDh604Qco5yP/3qn3y7SLXYuiC0Rpr89aMScS2UAmK1wHP2b7KAa1nSjWJc/f/Lc0Wl1L47qjiyQw==}
     cpu: [arm64]
     os: [linux]
-    libc: [musl]
 
   '@rollup/rollup-linux-powerpc64le-gnu@4.24.0':
     resolution: {integrity: sha512-2XFFPJ2XMEiF5Zi2EBf4h73oR1V/lycirxZxHZNc93SqDN/IWhYYSYj8I9381ikUFXZrz2v7r2tOVk2NBwxrWw==}
     cpu: [ppc64]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-riscv64-gnu@4.24.0':
     resolution: {integrity: sha512-M3Dg4hlwuntUCdzU7KjYqbbd+BLq3JMAOhCKdBE3TcMGMZbKkDdJ5ivNdehOssMCIokNHFOsv7DO4rlEOfyKpg==}
     cpu: [riscv64]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-s390x-gnu@4.24.0':
     resolution: {integrity: sha512-mjBaoo4ocxJppTorZVKWFpy1bfFj9FeCMJqzlMQGjpNPY9JwQi7OuS1axzNIk0nMX6jSgy6ZURDZ2w0QW6D56g==}
     cpu: [s390x]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-x64-gnu@4.24.0':
     resolution: {integrity: sha512-ZXFk7M72R0YYFN5q13niV0B7G8/5dcQ9JDp8keJSfr3GoZeXEoMHP/HlvqROA3OMbMdfr19IjCeNAnPUG93b6A==}
     cpu: [x64]
     os: [linux]
-    libc: [glibc]
 
   '@rollup/rollup-linux-x64-musl@4.24.0':
     resolution: {integrity: sha512-w1i+L7kAXZNdYl+vFvzSZy8Y1arS7vMgIy8wusXJzRrPyof5LAb02KGr1PD2EkRcl73kHulIID0M501lN+vobQ==}
     cpu: [x64]
     os: [linux]
-    libc: [musl]
 
   '@rollup/rollup-win32-arm64-msvc@4.24.0':
     resolution: {integrity: sha512-VXBrnPWgBpVDCVY6XF3LEW0pOU51KbaHhccHw6AS6vBWIC60eqsH19DAeeObl+g8nKAz04QFdl/Cefta0xQtUQ==}
@@ -833,6 +830,11 @@ packages:
   json-buffer@3.0.1:
     resolution: {integrity: sha512-4bV5BfR2mqfQTJm+V5tPPdf+ZpuhiIvTuAB5g8kcrXOZpTT/QwwVRWBywX1ozr6lEuPdbHxwaJlm9G6mI2sfSQ==}
 
+  json-edit-react@1.17.0:
+    resolution: {integrity: sha512-kIDsPuCLDBJtECVastgQgKvPta2w8FI4az74W4ghsy4pkBQI2tyBx886g8N5w7IqYe1hGG/9hz0ZWvCmLW2GFA==}
+    peerDependencies:
+      react: '>=16.0.0'
+
   json-schema-traverse@0.4.1:
     resolution: {integrity: sha512-xbbCH5dCYU5T8LcEhhuh7HJ88HXuW3qsI3Y0zOZFKfZEHcpWiHU/Jxzk629Brsab/mMiHQti9wMP+845RPe3Vg==}
 
@@ -897,6 +899,12 @@ packages:
   node-releases@2.0.18:
     resolution: {integrity: sha512-d9VeXT4SJ7ZeOqGX6R5EM022wpL+eWPooLI+5UpWn2jCT1aosUQEhQP214x33Wkwx3JQMvIm+tIoVOdodFS40g==}
 
+  object-property-assigner@1.3.1:
+    resolution: {integrity: sha512-3R6x1l1sQA4jQBOqxkxH3DHw0PMh7K5UY4x1Yc5QYbbkzZpAJ8l9w+Trq/64ZRe2thiOsa8JpB4M7D61hnkjRA==}
+
+  object-property-extractor@1.0.12:
+    resolution: {integrity: sha512-X6rMK1O6O3EU4O06BtATezWKr+5idX6Yo0PndVqr8NlED3Eoa2YE+VKQgQL4EK0+vh+YA83Sjj9Nsi/PuXXeDQ==}
+
   optionator@0.9.4:
     resolution: {integrity: sha512-6IpQ7mKUxRcZNLIObR0hz7lxsapSSIYNZJwXPGeF0mTVqGKFIXj1DQcMoT22S3ROcLyY/rz0PWaWZ9ayWmad9g==}
     engines: {node: '>= 0.8.0'}
@@ -942,6 +950,13 @@ packages:
 
   queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
+
+  react-diff-viz@1.0.0:
+    resolution: {integrity: sha512-ky/nf01yPCkaA3yxbxvV4PK/2tF9qb6ZnYhhTh0NAy0A0VuE8NPCkVEbaUZ1JX8DaVHjRAiIl/JWEXwaLWUXhQ==}
+    peerDependencies:
+      lodash: ^4.17.21 || ^4.17.11 || ^3.10.1
+      react: ^16.8.0 || ^17.0.0 || ^18.2.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.2.0
 
   react-dom@18.3.1:
     resolution: {integrity: sha512-5m4nQKp+rZRb09LNH59GM4BxTh9251/ylbKIbpe7TpGxfJ+9kv6BLkLBXIjjspbgbnIBNqlI23tRnTWT0snUIw==}
@@ -1847,6 +1862,12 @@ snapshots:
 
   json-buffer@3.0.1: {}
 
+  json-edit-react@1.17.0(react@18.3.1):
+    dependencies:
+      object-property-assigner: 1.3.1
+      object-property-extractor: 1.0.12
+      react: 18.3.1
+
   json-schema-traverse@0.4.1: {}
 
   json-stable-stringify-without-jsonify@1.0.1: {}
@@ -1901,6 +1922,10 @@ snapshots:
 
   node-releases@2.0.18: {}
 
+  object-property-assigner@1.3.1: {}
+
+  object-property-extractor@1.0.12: {}
+
   optionator@0.9.4:
     dependencies:
       deep-is: 0.1.4
@@ -1941,6 +1966,12 @@ snapshots:
   punycode@2.3.1: {}
 
   queue-microtask@1.2.3: {}
+
+  react-diff-viz@1.0.0(lodash@4.17.21)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      lodash: 4.17.21
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
 
   react-dom@18.3.1(react@18.3.1):
     dependencies:

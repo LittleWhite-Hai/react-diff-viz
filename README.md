@@ -1,10 +1,10 @@
 # react-diff-viz
 
-Rediff 是一个用于比较和展示复杂对象差异的 React 应用程序。
+react-diff-viz 是一个用于比较和展示复杂对象差异的 React 应用程序。
 
 ## 项目描述
 
-这个应用程序允许用户可视化地比较两个复杂的 JavaScript 对象之间的差异。它特别适用于展示个人信息、工作经历、技能等数据的变化。
+这个应用程序允许用户可视化地比较两个复杂的 JavaScript 对象之间的差异。
 
 ## 主要功能
 
@@ -21,30 +21,53 @@ Rediff 是一个用于比较和展示复杂对象差异的 React 应用程序。
 
 ## 安装
 
-1. 克隆仓库:
+```bash
+npm install react-diff-viz
+```
 
-   ```
-   git clone [您的仓库URL]
-   ```
+## 使用
 
-2. 安装依赖:
+```tsx
+import Diff from "react-diff-viz";
 
-   ```
-   pnpm install
-   ```
+const data1 = {
+  name: "John",
+  age: 30,
+  address: {
+    city: "New York",
+    country: "USA"
+  }
+};
 
-3. 运行应用:
-   ```
-   pnpm run dev
-   ```
+const data2 = {
+  name: "John",
+  age: 31,
+  address: {
+    city: "New York",
+    country: "USA"
+  }
+};
 
-## 使用方法
+const vizItems = [   
+  {
+    path: "name",
+    label: "name",
+  },
+  {
+    path: "age",
+    label: "age",
+  },
+  {
+    path: "address",
+    label: "address",
+    content: (v) => {
+      return v.city +" of "+ v.country;
+    },
+  },
+];
 
-在 `App.tsx` 文件中，您可以修改 `complexObject1` 和 `complexObject2` 来定义要比较的对象。通过调整 `Diff` 组件的 `fieldItems` 属性，您可以自定义比较的字段和展示方式。
-
-## 贡献
-
-欢迎提交 pull requests 来改进这个项目。对于重大更改，请先开一个 issue 讨论您想要改变的内容。
+<Diff data1={data1} data2={data2} vizItems={vizItems} />
+```
 
 ## 许可证
 

@@ -1,15 +1,14 @@
-import {
+import React, {
   ReactNode,
   useRef,
   useMemo,
   useEffect,
-  CSSProperties,
   useCallback,
   useState,
 } from "react";
 import { throttle } from "lodash";
 
-import { alignAndDiff, getValueByPath } from "../diff-algorithm";
+import { alignAndDiff, getValueByPath } from "./diff-algorithm";
 import {
   ExtType,
   DataTypeBase,
@@ -20,6 +19,7 @@ import {
   VizItem,
 } from "./types";
 import { headerBlueTipStyle, headerStyle, titleStyle } from "./styles";
+
 
 function getFieldPathMap<T extends DataTypeBase>(vizItems: VizItems<T>) {
   const isEqualMap: Record<string, IsEqualFuncType> = {};
@@ -125,8 +125,8 @@ function RenderFieldItem<T extends DataTypeBase>(props: {
   data1: T;
   data2: T;
   type: "data1" | "data2";
-  contentStyle: CSSProperties;
-  labelStyle: CSSProperties;
+  contentStyle: React.CSSProperties;
+  labelStyle: React.CSSProperties;
 }): any {
   const { fieldItem, data, data1, data2, type, contentStyle, labelStyle } =
     props;
@@ -197,13 +197,13 @@ export default function Diff<T extends DataTypeBase>(props: {
   // 改变Key以触发重新染色和高度对齐
   refreshKey?: number;
   // data1和data2的整体样式
-  colStyle?: CSSProperties;
+  colStyle?: React.CSSProperties;
   // 每条数据label的样式
-  labelStyle?: CSSProperties;
+  labelStyle?: React.CSSProperties;
   // 每条数据content的样式
-  contentStyle?: CSSProperties;
+  contentStyle?: React.CSSProperties;
   // diff组件整体样式
-  style?: CSSProperties;
+  style?: React.CSSProperties;
 }) {
   const {
     vizItems,
@@ -417,12 +417,15 @@ export default function Diff<T extends DataTypeBase>(props: {
   }, [diffRes, wrapperRef1, wrapperRef2, refreshKey]);
 
   const [leftWidth, setLeftWidth] = useState<number>(
+    // @ts-ignore
     parseInt((colStyle.width ?? "650") as string)
   );
   const [rightWidth, setRightWidth] = useState<number>(
+    // @ts-ignore
     parseInt((colStyle.width ?? "650") as string)
   );
   const [oldLeftWidth, setOldLeftWidth] = useState<number>(
+    // @ts-ignore
     parseInt((colStyle.width ?? "650") as string)
   );
 

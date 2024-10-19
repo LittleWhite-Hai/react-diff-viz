@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
-import Diff from "..";
+import Diff from "react-diff-viz";
 import Card from "./card";
 import { JsonEditor } from "json-edit-react";
 

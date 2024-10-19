@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { IsEqualFuncType } from "./src/types";
+import { IsEqualFuncType } from "./types";
 
 const EMPTY_SYMBOL = Symbol.for("EMPTY_SYMBOL");
 
