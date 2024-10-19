@@ -189,6 +189,8 @@ export default function Diff<T extends DataTypeBase>(props: {
   strictMode?: boolean;
   // 仅展示数据2
   singleMode?: boolean;
+  // 是否展示最上方的标题
+  showTitle?: boolean;
   data1Title?: string;
   data2Title?: string;
   // 改变Key以触发重新染色和高度对齐
@@ -208,6 +210,7 @@ export default function Diff<T extends DataTypeBase>(props: {
     data2,
     strictMode = true,
     singleMode = false,
+    showTitle = true,
     refreshKey = 0,
     data1Title = "原始数据",
     data2Title = "当前数据",
@@ -474,7 +477,7 @@ export default function Diff<T extends DataTypeBase>(props: {
         }}
         ref={wrapperRef1}
       >
-        <div style={titleStyle}>{data1Title}</div>
+        {showTitle && <div style={titleStyle}>{data1Title}</div>}
         {vizItems.map((field) => {
           const label =
             typeof field.label === "string" ? field.label : field.key ?? "";
@@ -527,7 +530,7 @@ export default function Diff<T extends DataTypeBase>(props: {
         }}
         ref={wrapperRef2}
       >
-        <div style={titleStyle}>{data2Title}</div>
+        {showTitle && <div style={titleStyle}>{data2Title}</div>}
         {vizItems.map((field) => {
           const label =
             typeof field.label === "string" ? field.label : field.key ?? "";
