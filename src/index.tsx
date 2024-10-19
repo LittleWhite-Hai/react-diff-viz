@@ -12,7 +12,6 @@ import { throttle } from "lodash";
 import { alignAndDiff, getValueByPath } from "../diff-algorithm";
 import {
   ExtType,
-  PathType,
   DataTypeBase,
   IsEqualFuncType,
   VizItems,
@@ -72,7 +71,7 @@ function getFieldContent<T extends DataTypeBase>(
       ) as any;
       if (res.map) {
         return res.map((i: any, idx: any) => (
-          <div data-path={ext.path + "." + idx}>{i}</div>
+          <div data-path={ext.path + "." + idx} key={ext.path + "." + idx}>{i}</div>
         ));
       } else {
         return res;
@@ -191,7 +190,9 @@ export default function Diff<T extends DataTypeBase>(props: {
   singleMode?: boolean;
   // 是否展示最上方的标题
   showTitle?: boolean;
+  // 数据1的标题
   data1Title?: string;
+  // 数据2的标题
   data2Title?: string;
   // 改变Key以触发重新染色和高度对齐
   refreshKey?: number;

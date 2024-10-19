@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import Diff from "../diff";
+import Diff from "..";
 import Card from "./card";
 import { JsonEditor } from "json-edit-react";
 
 const data1 = {
   组件名称: "react-diff-viz",
+  创建时间: 1729348627970,
   简介: "功能强大的、集成数据diff算法与数据渲染的组件",
   包体积: "131kb",
   技术栈: "react",
@@ -52,6 +53,7 @@ const data1 = {
 
 const data2 = {
   组件名称: "react-diff-viz",
+  创建时间: 1729348647970,
   简介: "功能强大的、集成数据diff算法与数据渲染的组件",
   包体积: "131kb",
   技术栈: "react",
@@ -264,6 +266,13 @@ function App() {
             path: "简介",
           },
           {
+            label: "创建时间",
+            path: "创建时间",
+            content: (v: any) => {
+              return new Date(v).toLocaleString();
+            },
+          },
+          {
             label: "包体积",
             path: "包体积",
           },
@@ -308,11 +317,10 @@ function App() {
               return v.map((item: any, idx: string) => (
                 <Card
                   pathPrefix={"数组对齐方式." + idx}
-                  key={item.对齐方式}
+                  key={item.对齐方式 ?? idx}
                   title={item.对齐方式}
-                  content={`算法: ${item.算法 || "无"}, 默认方式: ${
-                    item.默认方式 ? "是" : "否"
-                  }`}
+                  content={`算法: ${item.算法 || "无"}, 默认方式: ${item.默认方式 ? "是" : "否"
+                    }`}
                 />
               ));
             },
