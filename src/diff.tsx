@@ -15,20 +15,21 @@ import {
   PathType,
   DataTypeBase,
   IsEqualFuncType,
-  RenderItems,
+  VizItems,
   ContentType,
   LabelType,
-  RenderItem,
+  VizItem,
 } from "./types";
+import { headerBlueTipStyle, headerStyle, titleStyle } from "./styles";
 
-function getFieldPathMap<T extends DataTypeBase>(renderItems: RenderItems<T>) {
+function getFieldPathMap<T extends DataTypeBase>(vizItems: VizItems<T>) {
   const isEqualMap: Record<string, IsEqualFuncType> = {};
   const arrayAlignLCSMap: Record<string, string> = {};
   const arrayAlignCurrentDataMap: Record<string, string> = {};
   const arrayNoAlignMap: Record<string, true> = {};
   const arrayMap: Record<string, true> = {};
 
-  renderItems.forEach((field) => {
+  vizItems.forEach((field) => {
     const path: string = field.path ?? "";
     if (field.isEqual && path) {
       isEqualMap[path] = field.isEqual;
@@ -64,13 +65,17 @@ function getFieldContent<T extends DataTypeBase>(
   }
   if (content) {
     if (typeof arrayKey === "string" && typeof content === "function") {
-      const res = content(getPathValue(data, ext.path, arrayKey), data, ext) as any
+      const res = content(
+        getPathValue(data, ext.path, arrayKey),
+        data,
+        ext
+      ) as any;
       if (res.map) {
         return res.map((i: any, idx: any) => (
           <div data-path={ext.path + "." + idx}>{i}</div>
         ));
       } else {
-        return res
+        return res;
       }
     }
     if (typeof content === "function") {
@@ -116,7 +121,7 @@ function getPathLabel<T extends DataTypeBase>(
 }
 
 function RenderFieldItem<T extends DataTypeBase>(props: {
-  fieldItem: RenderItem<T>;
+  fieldItem: VizItem<T>;
   data: T;
   data1: T;
   data2: T;
@@ -141,26 +146,8 @@ function RenderFieldItem<T extends DataTypeBase>(props: {
   }
 
   return isHeader ? (
-    <div
-      style={{
-        paddingLeft: "16px",
-        marginTop: "10px",
-        marginBottom: "2px",
-        height: "24px",
-        fontWeight: "bold",
-        fontSize: "17px",
-        display: "flex",
-      }}
-    >
-      <div
-        style={{
-          height: "16px",
-          width: "3px",
-          marginRight: "3px",
-          marginTop: "4px",
-          background: "rgb(83, 129, 238)",
-        }}
-      ></div>
+    <div style={headerStyle}>
+      <div style={headerBlueTipStyle}></div>
       {getPathLabel(data, fieldItem.label, fieldItem.arrayKey, ext)}
     </div>
   ) : (
@@ -193,15 +180,17 @@ function RenderFieldItem<T extends DataTypeBase>(props: {
 
 export default function Diff<T extends DataTypeBase>(props: {
   // 描述数据的渲染方式及diff计算方式
-  renderItems: RenderItems<T>;
+  vizItems: VizItems<T>;
   // 用于比较的数据1，如果不传，则等于data2
   data1?: T;
   // 用于比较的数据2
   data2: T;
   // 严格模式，默认开启，关闭后diff算法会忽略数据类型差异，如0="0"
   strictMode?: boolean;
-  // 仅查看数据2
-  data2Mode?: boolean;
+  // 仅展示数据2
+  singleMode?: boolean;
+  data1Title?: string;
+  data2Title?: string;
   // 改变Key以触发重新染色和高度对齐
   refreshKey?: number;
   // data1和data2的整体样式
@@ -214,12 +203,14 @@ export default function Diff<T extends DataTypeBase>(props: {
   style?: CSSProperties;
 }) {
   const {
-    renderItems,
+    vizItems,
     data1 = props.data2,
     data2,
     strictMode = true,
-    data2Mode = false,
+    singleMode = false,
     refreshKey = 0,
+    data1Title = "原始数据",
+    data2Title = "当前数据",
     colStyle = { width: "650px" },
     labelStyle = { width: "30%" },
     contentStyle = { width: "65%" },
@@ -232,8 +223,8 @@ export default function Diff<T extends DataTypeBase>(props: {
       arrayAlignLCSMap,
       arrayAlignCurrentDataMap,
       arrayNoAlignMap,
-      arrayMap
-    } = getFieldPathMap(renderItems);
+      arrayMap,
+    } = getFieldPathMap(vizItems);
 
     const res = alignAndDiff({
       data1: data1,
@@ -246,7 +237,7 @@ export default function Diff<T extends DataTypeBase>(props: {
     });
     console.log("res.diffRes:", res.diffRes);
     return { ...res, arrayMap };
-  }, [data1, data2, renderItems]);
+  }, [data1, data2, vizItems]);
 
   const containerWrapperRef = useRef<HTMLDivElement>(null);
   const wrapperRef1 = useRef<HTMLDivElement>(null);
@@ -254,10 +245,19 @@ export default function Diff<T extends DataTypeBase>(props: {
 
   const alignAndColorDoms = useCallback(() => {
     // 所有的path元素
-    const allElements1: Array<HTMLElement> =
-      Array.from(wrapperRef1.current?.querySelectorAll(`[data-path]`) ?? []) as Array<HTMLElement>;
-    const allElements2: Array<HTMLElement> =
-      Array.from(wrapperRef2.current?.querySelectorAll(`[data-path]`) ?? []) as Array<HTMLElement>;
+    const allElements1: Array<HTMLElement> = Array.from(
+      wrapperRef1.current?.querySelectorAll(`[data-path]`) ?? []
+    );
+    const allElements2: Array<HTMLElement> = Array.from(
+      wrapperRef2.current?.querySelectorAll(`[data-path]`) ?? []
+    );
+    const allColoredElements: Array<HTMLElement> = Array.from(
+      containerWrapperRef.current?.querySelectorAll(`[data-colored-path]`) ?? []
+    );
+    allColoredElements.forEach((ele) => {
+      ele.style.backgroundColor = "unset";
+      ele.style.borderRight = "unset";
+    });
 
     // {
     //   // 给所有数组元素添加data-path
@@ -294,7 +294,6 @@ export default function Diff<T extends DataTypeBase>(props: {
     //   });
     //   allElements2.push(...allArrayItemElements2);
     // }
-
 
     // path对应dom关系
     const data1DomMap: Record<string, HTMLElement[]> = {};
@@ -349,8 +348,12 @@ export default function Diff<T extends DataTypeBase>(props: {
       const pathDomList2 = data2DomMap[key];
 
       pathDomList1?.forEach((dom) => {
-        if (["CHANGED", "DELETED"].includes(val)) {
-          const contentElement = (dom.lastElementChild ?? dom) as HTMLElement;
+        const contentElement = (dom.lastElementChild ?? dom) as HTMLElement;
+        if (!contentElement.style) {
+          return;
+        }
+        if (["CHANGED", "REMOVED"].includes(val)) {
+          contentElement.setAttribute("data-colored-path", key);
           if (dom.querySelectorAll(`[data-path]`).length) {
             contentElement.style.borderRight = "3px solid rgb(253, 226, 226)";
           } else {
@@ -359,8 +362,12 @@ export default function Diff<T extends DataTypeBase>(props: {
         }
       });
       pathDomList2?.forEach((dom) => {
+        const contentElement = (dom.lastElementChild ?? dom) as HTMLElement;
+        if (!contentElement.style) {
+          return;
+        }
         if (["CHANGED", "CREATED"].includes(val)) {
-          const contentElement = (dom.lastElementChild ?? dom) as HTMLElement;
+          contentElement.setAttribute("data-colored-path", key);
           if (dom.querySelectorAll(`[data-path]`).length) {
             contentElement.style.borderRight = "3px solid rgb(217, 245, 214)";
           } else {
@@ -369,7 +376,7 @@ export default function Diff<T extends DataTypeBase>(props: {
         }
       });
     });
-    console.log("pathMaxHeightMap:", pathMaxHeightMap);
+
     // 对齐高度1
     allElements1.forEach((ele) => {
       const path = ele.getAttribute("data-path");
@@ -378,6 +385,8 @@ export default function Diff<T extends DataTypeBase>(props: {
         const rect = ele.getBoundingClientRect();
         if (pathMaxHeightMap[path] > rect.height) {
           ele.style.height = Math.round(pathMaxHeightMap[path]) + "px";
+        } else {
+          ele.style.height = "unset";
         }
       }
     });
@@ -389,6 +398,8 @@ export default function Diff<T extends DataTypeBase>(props: {
         const rect = ele.getBoundingClientRect();
         if (pathMaxHeightMap[path] > rect.height) {
           ele.style.height = Math.round(pathMaxHeightMap[path]) + "px";
+        } else {
+          ele.style.height = "unset";
         }
       }
     });
@@ -449,7 +460,6 @@ export default function Diff<T extends DataTypeBase>(props: {
         width: "1500px",
         ...style,
         display: "flex",
-        border: "1px dashed gray",
       }}
     >
       <div
@@ -457,11 +467,12 @@ export default function Diff<T extends DataTypeBase>(props: {
           ...colStyle,
           width: leftWidth + "px",
           overflow: "hidden",
-          display: data2Mode ? "none" : "block",
+          display: singleMode ? "none" : "block",
         }}
         ref={wrapperRef1}
       >
-        {renderItems.map((field) => {
+        <div style={titleStyle}>{data1Title}</div>
+        {vizItems.map((field) => {
           const label =
             typeof field.label === "string" ? field.label : field.key ?? "";
           return (
@@ -480,6 +491,7 @@ export default function Diff<T extends DataTypeBase>(props: {
       </div>
       <div
         style={{
+          display: singleMode ? "none" : "",
           backgroundColor: dragStartEvent ? "rgb(83, 129, 238)" : "gray",
           cursor: "col-resize",
           flex: "1",
@@ -487,18 +499,19 @@ export default function Diff<T extends DataTypeBase>(props: {
           marginLeft: "1%",
           maxWidth: "4px",
           minWidth: "4px",
-          display: data2Mode ? "none" : "",
         }}
         ref={mainRef}
         onMouseDown={(e) => {
           setDragStartEvent(e);
           body!.style.cursor = "col-resize";
           body!.style.userSelect = "none";
-          containerWrapperRef.current?.querySelectorAll(`[data-path]`).forEach(i => {
-            if (i instanceof HTMLElement) {
-              i.style.height = "unset"
-            }
-          })
+          containerWrapperRef.current
+            ?.querySelectorAll(`[data-path]`)
+            .forEach((i) => {
+              if (i instanceof HTMLElement) {
+                i.style.height = "unset";
+              }
+            });
           setOldLeftWidth(leftWidth);
         }}
       ></div>
@@ -511,7 +524,8 @@ export default function Diff<T extends DataTypeBase>(props: {
         }}
         ref={wrapperRef2}
       >
-        {renderItems.map((field) => {
+        <div style={titleStyle}>{data2Title}</div>
+        {vizItems.map((field) => {
           const label =
             typeof field.label === "string" ? field.label : field.key ?? "";
           return (

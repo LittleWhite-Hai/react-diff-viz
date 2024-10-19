@@ -1,4 +1,4 @@
-# Rediff
+# react-diff-viz
 
 Rediff 是一个用于比较和展示复杂对象差异的 React 应用程序。
 
