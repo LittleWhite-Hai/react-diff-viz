@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
 import Diff from "react-diff-viz";
-import Card from "./card";
+
 import { JsonEditor } from "json-edit-react";
 
 import Form from "./form";
+import { Card, Link, Rate } from "@arco-design/web-react";
 
 const data1 = {
   组件名称: "react-diff-viz",
@@ -102,33 +103,47 @@ const data2 = {
 } as any;
 
 const initialFormData = {
-  "slider": 22,
-  tech_stack: [
-    "react",
-    "lodash",
-    "npm"
-  ],
-  "upload": [
+  name: "react-diff-viz",
+  introduction: "功能强大的、集成数据diff算法与数据渲染的组件",
+  link: "https://github.com/LittleWhite-Hai/react-diff-viz",
+  package_size: 133,
+  create_time: [1727765900000, 2897765900000],
+  npm_dependencies: ["react", "react-dom", "lodash"],
+  build_tool: "vite",
+  tech_stack: ["frontend", "javascript", "react"],
+  stars: 5,
+  is_support_array: true,
+  other_tools: [
     {
-      "uid": "-1",
-      "url": "//p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/e278888093bef8910e829486fb45dd69.png~tplv-uwbnlip3yd-webp.webp",
-      "name": "20200717"
-    }
+      name: "git diff",
+      description: "diff git commits, highlight text changes",
+    },
+    {
+      name: "microdiff",
+      description:
+        "Microdiff is a tiny, fast json diff tool, only offer diff algorithm",
+    },
   ],
-  "rate": 5,
-  "name": "react-diff-viz",
-  "introduction": "功能强大的、集成数据diff算法与数据渲染的组件",
-  "package_size": 133,
-  "build_tool": "vite",
-  "province": [
-    "frontend",
-    "javascript",
-    "react"
-  ],
-  "score": 5,
-  "date": "2024-10-20 14:58:20",
-  "switch": true
-}
+  data1: "用于比较的数据（一般是原始数据）",
+  data2: "用于比较的数据（一般是新数据）",
+  vizItems: "描述需要渲染的数据，包括diff方式和渲染方式",
+  colStyle: "所有data1和data2外侧dom的整体样式",
+  labelStyle: "每一项data的label样式",
+  contentStyle: "每一项data的content样式",
+  strictMode:
+    "严格模式，默认开启，关闭后diff算法会忽略数据类型差异，如0=null=undefined=false",
+  singleMode: "仅查看data2，默认false",
+  refreshKey: "改变Key以触发重新染色和高度对齐",
+
+  label: "数据的标题，若仅传入label，则渲染一个分隔标题",
+  path: "数据的路径",
+  visible: "false则不展示",
+  foldable: "是否折叠",
+  isEqual: "用户可定制数据diff算法",
+  content: "渲染方式",
+  arrayKey: "数组的key，用于标记本数据为数组类型",
+  alignAlignType: "数组对齐方式，默认为最长公共子序列lcs对齐",
+};
 function App() {
   const [count, setCount] = useState(0);
   const [formVisible, setFormVisible] = useState(false);
@@ -139,16 +154,12 @@ function App() {
     console.log("formData", formData);
   }, [formData]);
 
-
   return (
-    <>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "end",
-          width: "1500px",
-        }}
-      ></div>
+    <div style={{
+      width: "1500px",
+
+    }}>
+
       <div
         style={{
           width: "1500px",
@@ -164,7 +175,7 @@ function App() {
               style={{ cursor: "pointer" }}
               onClick={(e) => {
                 e.preventDefault();
-                open("http://www.baidu.com");
+                open("https://github.com/LittleWhite-Hai/react-diff-viz");
               }}
             >
               <svg
@@ -194,7 +205,7 @@ function App() {
               style={{ cursor: "pointer" }}
               onClick={(e) => {
                 e.preventDefault();
-                open("http://www.baidu.com");
+                open("https://www.npmjs.com/package/react-diff-viz");
               }}
             >
               <svg
@@ -223,35 +234,10 @@ function App() {
         </div>
       </div>
 
-      {/* {!editCollapse && (
-        <div
-          style={{
-            position: "absolute",
-            left: "10%",
-            top: "155px",
-            zIndex: "100",
-            padding: "5px",
-            background: "lightgray",
-          }}
-        >
-          <JsonEditor
-            data={editedData}
-            minWidth={630}
-            setData={setEditedData}
-            collapse={editCollapse}
-            collapseAnimationTime={0}
-          />
-        </div>
-      )} */}
-      <div
-        style={{
-          display: formVisible ? 'block' : 'none'
-        }}
-      >
-        <Form setFormData={setFormData} initialValues={initialFormData} />
-      </div>
       <div>
-        <div style={{ display: "flex", justifyContent: "end", width: "1500px" }}>
+        <div
+          style={{ display: "flex", justifyContent: "end", width: "1500px" }}
+        >
           <a
             onClick={(e) => {
               e.preventDefault();
@@ -268,7 +254,7 @@ function App() {
             href=""
             onClick={(e) => {
               e.preventDefault();
-              setEditedData(data1);
+              setFormData(initialFormData);
             }}
             style={{
               cursor: "pointer",
@@ -290,6 +276,13 @@ function App() {
           >
             Align And Color
           </a>
+        </div>
+        <div
+          style={{
+            display: formVisible ? "block" : "none",
+          }}
+        >
+          <Form setFormData={setFormData} initialValues={initialFormData} />
         </div>
         <Diff
           strictMode={false}
@@ -442,14 +435,127 @@ function App() {
           //   },
           // ]}
 
-          vizItems={[{ label: '组件名称', path: 'name' }, { label: '简介', path: 'introduction' },]}
+          vizItems={[
+            { label: "基本信息" },
+            { label: "组件名称", path: "name" },
+            { label: "简介", path: "introduction" },
+            { label: "链接", path: "link", content: (v: any) => <Link href={v} target="_blank" hoverable={false} onClick={() => { open(v) }}>点击跳转</Link> },
+            {
+              label: "维护时间",
+              path: "create_time",
+              content: (v: any) => {
+                if (v) {
+                  return (
+                    <span>
+                      <span data-path="create_time.0">{new Date(v[0]).toLocaleDateString()}</span>
+                      <span> ~ </span>
+                      <span data-path="create_time.1">{new Date(v[1]).toLocaleDateString()}</span>
+                    </span>
+                  );
+                }
+              },
+            },
+            { label: "包体积", path: "package_size", content: (v: any) => v + " kb" },
+            { label: "npm依赖", path: "npm_dependencies", content: (v: any) => v.join(", ") },
+            { label: "支持数组Diff", path: "is_support_array", content: (v: any) => v ? "是" : "否" },
+            { label: "构建工具", path: "build_tool" },
+            { label: "技术栈", path: "tech_stack", content: (v: any) => v.join(", ") },
+            { label: "stars", path: "stars", content: (v: any) => <Rate value={v} readonly /> },
+            {
+              label: "其他工具", path: "other_tools", arrayKey: "name", content: (v: any) => v.map((item: any) => <Card
+                style={{ width: 360, marginBottom: 10 }}
+                title={item.name}
+                key={item.name}
+                extra={<Link>More</Link>}
+
+
+              >
+                {item.description}
+                <br />
+
+              </Card>)
+            },
+            { label: "diff组件的api" },
+            {
+              label: "data1",
+              path: "data1",
+            },
+            {
+              label: "data2",
+              path: "data2",
+            },
+            {
+              label: "vizItems",
+              path: "vizItems",
+            },
+            {
+              label: "colStyle",
+              path: "colStyle",
+            },
+            {
+              label: "labelStyle",
+              path: "labelStyle",
+            },
+            {
+              label: "contentStyle",
+              path: "contentStyle",
+            },
+            {
+              label: "strictMode",
+              path: "strictMode",
+            },
+            {
+              label: "singleMode",
+              path: "singleMode",
+            },
+            {
+              label: "refreshKey",
+              path: "refreshKey",
+            },
+            { label: "vizItems的api" },
+            {
+              label: "label",
+              path: "label",
+            },
+            {
+              label: "path",
+              path: "path",
+            },
+            {
+              label: "visible",
+              path: "visible",
+            },
+            {
+              label: "foldable",
+              path: "foldable",
+            },
+            {
+              label: "isEqual",
+              path: "isEqual",
+            },
+            {
+              label: "content",
+              path: "content",
+            },
+            {
+              label: "arrayKey",
+              path: "arrayKey",
+            },
+            {
+              label: "alignAlignType",
+              path: "alignAlignType",
+            },
+          ]}
           labelStyle={{ width: "25%" }}
           contentStyle={{ width: "70%" }}
-          style={{ border: "1px dashed gray", display: formVisible ? 'none' : 'block' }}
-          colStyle={{ width: "650px" }}
+          style={{
+            border: "1px dashed gray",
+            display: formVisible ? "none" : "block",
+          }}
+          colStyle={{ width: "650px", display: formVisible ? "none" : "block" }}
         />
       </div>
-    </>
+    </div>
   );
 }
 

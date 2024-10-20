@@ -1,7 +1,6 @@
 
 import "@arco-design/web-react/dist/css/arco.css";
-import { IconArrowRise, IconArrowFall, IconDelete } from '@arco-design/web-react/icon';
-
+import { IconDelete } from '@arco-design/web-react/icon';
 import React, { useRef, useEffect, useState } from 'react';
 import {
     Form,
@@ -21,9 +20,9 @@ import {
     Upload,
     DatePicker,
     Modal,
-    Space,
 } from '@arco-design/web-react';
 const FormItem = Form.Item;
+
 const programmingCascaderOptions = [
     {
         value: 'frontend',
@@ -175,32 +174,37 @@ const noLabelLayout = {
     },
 };
 
-function App(props) {
-    const { setFormData, initialFormData } = props;
+export default function MyForm(props) {
+    const { setFormData, initialValues } = props;
     const formRef = useRef<any>();
-    const [size, setSize] = useState<any>('default');
+    const [values, setValues] = useState<any>(initialValues);
     useEffect(() => {
-        formRef.current.setFieldsValue({
-            rate: 5,
-        });
-    }, []);
+        setTimeout(() => {
+            console.log('props: ', props);
+            console.log('initialFormData: ', initialValues);
+            formRef.current.setFieldsValue(initialValues);
+        }, 200);
+    }, [initialValues]);
+
 
     const onValuesChange = (changeValue, values) => {
         setFormData(values);
+        setValues(values);
         console.log('onValuesChange: ', changeValue, values);
     };
 
     return (
-        <div style={{ maxWidth: 750 }}>
+        <div style={{ display: "flex" }}>
             <Form
                 ref={formRef}
                 title="Edit Data"
                 autoComplete='off'
                 {...formItemLayout}
                 size={"large"}
-                initialValues={initialFormData}
+                labelAlign='left'
                 onValuesChange={onValuesChange}
                 scrollToFirstError
+                style={{ width: "650px" }}
             >
                 <FormItem label='Component Name' field='name' rules={[{ required: true }]}>
                     <Input placeholder='please enter your component name' />
@@ -208,8 +212,11 @@ function App(props) {
                 <FormItem label='Introduction' field='introduction' rules={[{ required: true }]}>
                     <Input placeholder='please enter the introduction' />
                 </FormItem>
-                <FormItem label='Date' field='date' rules={[{ required: true }]}>
-                    <DatePicker showTime />
+                <FormItem label='Link' field='link' rules={[{ required: true }]}>
+                    <Input placeholder='please enter the link' />
+                </FormItem>
+                <FormItem label='Date' field='create_time' rules={[{ required: true }]}>
+                    <DatePicker.RangePicker showTime style={{ width: '100%' }} />
                 </FormItem>
                 <FormItem label='Package Size' field='package_size' rules={[{ type: 'number', required: true }]}>
                     <InputNumber placeholder='please enter' />
@@ -217,7 +224,7 @@ function App(props) {
                 <FormItem
                     label='Dependency'
                     required
-                    field='dependency'
+                    field='npm_dependencies'
                     rules={[{ type: 'array', minLength: 1 }]}
                 >
                     <Select
@@ -227,23 +234,26 @@ function App(props) {
                         options={['react', 'lodash', 'npm', 'typescript']}
                     />
                 </FormItem>
-                <FormItem label='Diff with other components' field='introduction' rules={[{ required: true }]} >
-                    <Input placeholder='please enter the introduction' />
+                <FormItem
+                    label='Support Array Diff'
+                    field='is_support_array'
+                    triggerPropName='checked'
+                    rules={[{ type: 'boolean', true: true, message: "react-diff-viz support array" }]}
+                    wrapperCol={{ span: 1 }}
+                >
+                    <Switch />
                 </FormItem>
+                <FormItem label='Stars' field='stars' rules={[{ required: true, type: 'number' }]} wrapperCol={{ span: 1 }}>
+                    <Rate />
+                </FormItem>
+
                 <FormItem
                     label='Build Tool'
                     field='build_tool'
-                    rules={[
-                        {
-                            validator: (value, callback) => {
-                                if (value !== 'b') {
-                                    callback('you can only choose b');
-                                }
-                            },
-                        },
-                    ]}
+                    required
+                    wrapperCol={{ span: 14, }}
                 >
-                    <Radio.Group>
+                    <Radio.Group style={{ marginRight: '17px' }}>
                         <Radio value='webpack'>webpack</Radio>
                         <Radio value='vite'>vite</Radio>
                         <Radio disabled value='parcel'>
@@ -252,179 +262,88 @@ function App(props) {
                         <Radio value='rollup'> Rollup </Radio>
                     </Radio.Group>
                 </FormItem>
+
+
                 <FormItem
-                    label='Province'
-                    field='province'
-                    rules={[
-                        {
-                            type: 'array',
-                            required: true,
-                        },
-                        {
-                            type: 'array',
-                            length: 4,
-                        },
-                    ]}
+                    label='Tech Stack'
+                    field='tech_stack'
+
                 >
                     <Cascader showSearch placeholder='please select' allowClear options={programmingCascaderOptions} />
                 </FormItem>
-
-                <FormItem label='Score' field='score' rules={[{ required: true, type: 'number' }]}>
-                    <Rate />
-                </FormItem>
-
-                <FormItem
-                    label='Support Array'
-                    field='switch'
-                    triggerPropName='checked'
-                    rules={[{ type: 'boolean', true: true, message: "react-diff-viz support array" }]}
-                >
-                    <Switch />
-                </FormItem>
-
-                <FormItem
-                    label='Slide'
-                    field='slider'
-                    rules={[
-                        {
-                            validator: (value, callback) => {
-                                if (value < 50) {
-                                    callback('must be greater than 50!');
-                                }
-                            },
-                        },
-                    ]}
-                >
-                    <Slider></Slider>
-                </FormItem>
                 <Form.Item
-                    label='Upload'
-                    field='upload'
-                    triggerPropName='fileList'
-                    initialValue={[
-                        {
-                            uid: '-1',
-                            url: '//p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/e278888093bef8910e829486fb45dd69.png~tplv-uwbnlip3yd-webp.webp',
-                            name: '20200717',
-                        },
-                    ]}
-                >
-                    <Upload
-                        listType='picture-card'
-                        multiple
-                        name='files'
-                        action='/'
-                        onPreview={(file: any) => {
-                            Modal.info({
-                                title: 'Preview',
-                                content: (
-                                    <img
-                                        src={file.url || URL.createObjectURL(file.originFile)}
-                                        style={{
-                                            maxWidth: '100%',
-                                        }}
-                                    ></img>
-                                ),
-                            });
+                    label='工具对比'
+                    labelCol={{ span: 7 }}
+                ><Form.List field='other_tools'>
+                        {(fields, { add, remove, move }) => {
+                            return (
+                                <div>
+                                    {fields.map((item, index) => {
+                                        return (
+                                            <div key={item.key}>
+                                                <Form.Item >
+                                                    <div style={{ display: 'flex', }}>
+                                                        <div>
+                                                            <Form.Item
+                                                                field={item.field + '.name'}
+                                                                rules={[{ required: true }]}
+
+                                                            >
+                                                                <Input style={{ width: '410px' }} prefix={(index + 1) + "."} />
+                                                            </Form.Item>
+                                                            <Form.Item
+                                                                field={item.field + '.description'}
+                                                                rules={[{ required: true }]}
+                                                                noStyle
+                                                            >
+                                                                <Input.TextArea style={{ width: '410px' }} />
+                                                            </Form.Item></div>
+
+                                                        <Button
+                                                            icon={<IconDelete />}
+                                                            shape='circle'
+                                                            size="mini"
+                                                            status="danger"
+                                                            onClick={() => remove(index)}
+                                                            style={{ marginLeft: '10px' }}
+                                                        ></Button>
+                                                    </div>
+                                                </Form.Item>
+                                            </div>
+                                        );
+                                    })}
+                                    <Form.Item wrapperCol={{ offset: 4 }} >
+                                        <Button
+                                            style={{ marginRight: '24px' }}
+                                            onClick={() => {
+                                                add({ name: '', description: '' });
+                                            }}
+                                            type="dashed"
+                                        >
+                                            Add Other Tool
+                                        </Button>
+                                    </Form.Item>
+
+                                </div>
+                            );
                         }}
-                    />
-                </Form.Item>
-                <Form.List field='users'>
-                    {(fields, { add, remove, move }) => {
-                        return (
-                            <div>
-                                {fields.map((item, index) => {
-                                    return (
-                                        <div key={item.key}>
-                                            <Form.Item label={'Tool ' + (index + 1)}>
-                                                <div style={{ display: 'flex', }}>
-                                                    <div>
-                                                        <Form.Item
-                                                            field={item.field + '.username'}
-                                                            rules={[{ required: true }]}
+                    </Form.List></Form.Item>
 
-                                                        >
-                                                            <Input style={{ width: '410px' }} prefix="name" />
-                                                        </Form.Item>
-                                                        <Form.Item
-                                                            field={item.field + '.address'}
-                                                            rules={[{ required: true }]}
-                                                            noStyle
-                                                        >
-                                                            <Input.TextArea style={{ width: '410px' }} />
-                                                        </Form.Item></div>
-
-                                                    <Button
-                                                        icon={<IconDelete />}
-                                                        shape='circle'
-                                                        size="mini"
-                                                        status="danger"
-                                                        onClick={() => remove(index)}
-                                                        style={{ marginLeft: '10px' }}
-                                                    ></Button>
-                                                </div>
-                                            </Form.Item>
-                                        </div>
-                                    );
-                                })}
-                                <Form.Item wrapperCol={{ offset: 5 }}>
-                                    <Button
-                                        onClick={() => {
-                                            add();
-                                        }}
-                                    >
-                                        Add Other Tool
-                                    </Button>
-                                </Form.Item>
-                            </div>
-                        );
+                {/* <Button
+                    onClick={() => {
+                        formRef.current.setFieldsValue(initialValues);
                     }}
-                </Form.List>
-                <FormItem
-                    {...noLabelLayout}
-                    field='readme'
-                    triggerPropName='checked'
-                    rules={[{ type: 'boolean', true: true }]}
+                    type='primary'
                 >
-                    <Checkbox>I have read the employee manual</Checkbox>
-                </FormItem>
-                <FormItem {...noLabelLayout}>
-                    <Button
-                        onClick={async () => {
-                            if (formRef.current) {
-                                try {
-                                    await formRef.current.validate();
-                                    Message.info('校验通过，提交成功！');
-                                } catch (_) {
-                                    console.log(formRef.current.getFieldsError());
-                                    Message.error('校验失败，请检查字段！');
-                                }
-                            }
-                        }}
-                        type='primary'
-                        style={{ marginRight: 24 }}
-                    >
-                        Submit
-                    </Button>
-                    <Button
-                        onClick={() => {
-                            formRef.current.resetFields();
-                        }}
-                    >
-                        Reset
-                    </Button>
-                    <Button
-                        type='text'
-                        onClick={() => {
-                            Message.info(`fields: ${formRef.current.getTouchedFields().join(',')}`);
-                        }}
-                    >
-                        Get touched fields
-                    </Button>
-                </FormItem>
+                    Reset
+                </Button> */}
             </Form>
+            <div style={{ width: "550px", color: 'var(--color-text-2)', textAlign: 'left', marginLeft: "80px" }}>
+                <p>Form data:</p>
+                <pre>{JSON.stringify(values, null, 2)}</pre>
+            </div>
         </div>
     );
 }
 
-export default App;
+
