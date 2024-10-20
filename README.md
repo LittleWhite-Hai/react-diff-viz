@@ -6,6 +6,10 @@ react-diff-viz 是一个用于比较和展示复杂对象差异的 React 应用�
 
 这个应用程序允许用户可视化地比较两个复杂的 JavaScript 对象之间的差异。
 
+## 项目地址
+
+github: https://github.com/LittleWhite-Hai/react-diff-viz
+
 ## 主要功能
 
 - 比较两个复杂对象的差异
@@ -70,5 +74,7 @@ const vizItems = [
 ```
 
 ## 许可证
+
+
 
 MIT

@@ -468,8 +468,8 @@ export default function Diff<T extends DataTypeBase>(props: {
       ref={containerWrapperRef}
       style={{
         width: "1500px",
-        ...style,
         display: "flex",
+        ...style,
       }}
     >
       <div

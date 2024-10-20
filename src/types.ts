@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { Path } from "../path-type";
+import { Path } from "./path-type";
 
 export type DataTypeBase = {
   [key: string]: any;
