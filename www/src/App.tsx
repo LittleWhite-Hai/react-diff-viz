@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
 import Diff from "react-diff-viz";
-
-import { JsonEditor } from "json-edit-react";
-
 import Form from "./form";
 import { Card, Link, Rate } from "@arco-design/web-react";
 
@@ -289,7 +286,7 @@ function App() {
           data1={initialFormData}
           data2={formData}
           refreshKey={count}
-          singleMode={formVisible}
+          singleMode={false}
           // vizItems={[
           //   {
           //     label: "组件名称",
@@ -548,11 +545,11 @@ function App() {
           ]}
           labelStyle={{ width: "25%" }}
           contentStyle={{ width: "70%" }}
+          colStyle={{ width: "650px" }}
           style={{
             border: "1px dashed gray",
-            display: formVisible ? "none" : "block",
           }}
-          colStyle={{ width: "650px", display: formVisible ? "none" : "block" }}
+
         />
       </div>
     </div>

@@ -1,12 +1,15 @@
 {
     "compilerOptions": {
+        "jsx": "react",
         "target": "ES2022",
         "lib": [
-            "ES2023"
+            "ES2023",
+            "dom"
         ],
         "module": "ESNext",
         "skipLibCheck": true,
         /* Bundler mode */
+        "outDir": "./dist",
         "moduleResolution": "bundler",
         "allowImportingTsExtensions": true,
         "isolatedModules": true,
@@ -19,6 +22,6 @@
         "noFallthroughCasesInSwitch": true
     },
     "include": [
-        "vite.config.ts"
+       "src"
     ]
 }

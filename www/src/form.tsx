@@ -174,7 +174,7 @@ const noLabelLayout = {
     },
 };
 
-export default function MyForm(props) {
+export default function MyForm(props: any) {
     const { setFormData, initialValues } = props;
     const formRef = useRef<any>();
     const [values, setValues] = useState<any>(initialValues);
@@ -187,7 +187,7 @@ export default function MyForm(props) {
     }, [initialValues]);
 
 
-    const onValuesChange = (changeValue, values) => {
+    const onValuesChange = (changeValue: any, values: any) => {
         setFormData(values);
         setValues(values);
         console.log('onValuesChange: ', changeValue, values);
