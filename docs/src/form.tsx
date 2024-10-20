@@ -182,7 +182,19 @@ export default function MyForm(props: any) {
         setTimeout(() => {
             console.log('props: ', props);
             console.log('initialFormData: ', initialValues);
-            formRef.current.setFieldsValue(initialValues);
+            formRef.current.setFieldsValue({
+                ...initialValues, create_time: [1727765900000, 2897165900000], other_tools: [
+                    {
+                        name: "git diff",
+                        description: "diff git commits, highlight text changes",
+                    },
+                    {
+                        name: "microdiff",
+                        description:
+                            "it's a diff tool",
+                    },
+                ],
+            });
         }, 200);
     }, [initialValues]);
 

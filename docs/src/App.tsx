@@ -459,15 +459,12 @@ function App() {
             { label: "技术栈", path: "tech_stack", content: (v: any) => v.join(", ") },
             { label: "stars", path: "stars", content: (v: any) => <Rate value={v} readonly /> },
             {
-              label: "其他工具", path: "other_tools", arrayKey: "name", content: (v: any) => v.map((item: any) => <Card
+              label: "其他工具", path: "other_tools", arrayKey: "name", content: (v: any) => v.map((item: any, idx: string) => <Card
                 style={{ width: 360, marginBottom: 10 }}
-                title={item.name}
+                title={<div data-path={`other_tools.${idx}.name`}>{item.name}</div>}
                 key={item.name}
                 extra={<Link>More</Link>}
-
-
-              >
-                {item.description}
+              ><div data-path={`other_tools.${idx}.description`}>{item.description}</div>
                 <br />
 
               </Card>)
