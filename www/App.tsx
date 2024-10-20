@@ -4,6 +4,8 @@ import Diff from "react-diff-viz";
 import Card from "./card";
 import { JsonEditor } from "json-edit-react";
 
+import Form from "./form";
+
 const data1 = {
   组件名称: "react-diff-viz",
   创建时间: 1729348627970,
@@ -99,13 +101,44 @@ const data2 = {
   alignAlignType: "数组对齐方式，默认为最长公共子序列lcs对齐",
 } as any;
 
+const initialFormData = {
+  "slider": 22,
+  tech_stack: [
+    "react",
+    "lodash",
+    "npm"
+  ],
+  "upload": [
+    {
+      "uid": "-1",
+      "url": "//p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/e278888093bef8910e829486fb45dd69.png~tplv-uwbnlip3yd-webp.webp",
+      "name": "20200717"
+    }
+  ],
+  "rate": 5,
+  "name": "react-diff-viz",
+  "introduction": "功能强大的、集成数据diff算法与数据渲染的组件",
+  "package_size": 133,
+  "build_tool": "vite",
+  "province": [
+    "frontend",
+    "javascript",
+    "react"
+  ],
+  "score": 5,
+  "date": "2024-10-20 14:58:20",
+  "switch": true
+}
 function App() {
   const [count, setCount] = useState(0);
-  const [editCollapse, setEditCollapse] = useState(true);
+  const [formVisible, setFormVisible] = useState(false);
   const [editedData, setEditedData] = useState(data2);
+
+  const [formData, setFormData] = useState(initialFormData);
   useEffect(() => {
-    console.log("editedData", editedData);
-  }, [editedData]);
+    console.log("formData", formData);
+  }, [formData]);
+
 
   return (
     <>
@@ -190,7 +223,7 @@ function App() {
         </div>
       </div>
 
-      {!editCollapse && (
+      {/* {!editCollapse && (
         <div
           style={{
             position: "absolute",
@@ -209,201 +242,213 @@ function App() {
             collapseAnimationTime={0}
           />
         </div>
-      )}
-
-      <div style={{ display: "flex", justifyContent: "end", width: "1500px" }}>
-        <a
-          onClick={(e) => {
-            e.preventDefault();
-            setEditCollapse(!editCollapse);
-          }}
-          style={{
-            marginRight: "20px",
-            cursor: "pointer",
-          }}
-        >
-          {editCollapse ? "Edit Data" : "Collapse Editor"}
-        </a>
-        <a
-          href=""
-          onClick={(e) => {
-            e.preventDefault();
-            setEditedData(data1);
-          }}
-          style={{
-            cursor: "pointer",
-            marginRight: "20px",
-          }}
-        >
-          Reset Data
-        </a>
-
-        <a
-          href=""
-          onClick={(e) => {
-            e.preventDefault();
-            setCount(count + 1);
-          }}
-          style={{
-            cursor: "pointer",
-          }}
-        >
-          Align And Color
-        </a>
+      )} */}
+      <div
+        style={{
+          display: formVisible ? 'block' : 'none'
+        }}
+      >
+        <Form setFormData={setFormData} initialValues={initialFormData} />
       </div>
-      <Diff
-        strictMode={false}
-        data1={data1}
-        data2={editedData}
-        refreshKey={count}
-        vizItems={[
-          {
-            label: "组件名称",
-            path: "组件名称",
-          },
-          {
-            label: "简介",
-            path: "简介",
-          },
-          {
-            label: "创建时间",
-            path: "创建时间",
-            content: (v: any) => {
-              return new Date(v).toLocaleString();
-            },
-          },
-          {
-            label: "包体积",
-            path: "包体积",
-          },
-          {
-            label: "技术栈",
-            path: "技术栈",
-          },
-          {
-            label: "npm依赖",
-            path: "npm依赖",
-            arrayKey: "",
-            content: (v: any) => {
-              return v.map(String).join("+");
-            },
-          },
+      <div>
+        <div style={{ display: "flex", justifyContent: "end", width: "1500px" }}>
+          <a
+            onClick={(e) => {
+              e.preventDefault();
+              setFormVisible(!formVisible);
+            }}
+            style={{
+              marginRight: "20px",
+              cursor: "pointer",
+            }}
+          >
+            {formVisible ? "隐藏表单" : "显示表单"}
+          </a>
+          <a
+            href=""
+            onClick={(e) => {
+              e.preventDefault();
+              setEditedData(data1);
+            }}
+            style={{
+              cursor: "pointer",
+              marginRight: "20px",
+            }}
+          >
+            Reset Data
+          </a>
 
-          {
-            label: "和其他组件的区别",
-            path: "和其他组件的区别",
-          },
-          {
-            label: "是否为ts项目",
-            path: "是否为ts项目",
-          },
-          {
-            label: "基础类型",
-            path: "基础类型",
-          },
-          {
-            label: "对象类型",
-            path: "对象类型",
-          },
-          {
-            label: "数组类型",
-            path: "数组类型",
-          },
-          {
-            label: "数组对齐方式",
-            path: "数组对齐方式",
-            arrayKey: "对齐方式",
-            content: (v: any) => {
-              return v.map((item: any, idx: string) => (
-                <Card
-                  pathPrefix={"数组对齐方式." + idx}
-                  key={item.对齐方式 ?? idx}
-                  title={item.对齐方式}
-                  content={`算法: ${item.算法 || "无"}, 默认方式: ${item.默认方式 ? "是" : "否"
-                    }`}
-                />
-              ));
-            },
-          },
-          {
-            label: "自定义diff算法",
-            path: "自定义diff算法",
-          },
-          { label: "diff组件的api" },
-          {
-            label: "data1",
-            path: "data1",
-          },
-          {
-            label: "data2",
-            path: "data2",
-          },
-          {
-            label: "vizItems",
-            path: "vizItems",
-          },
-          {
-            label: "colStyle",
-            path: "colStyle",
-          },
-          {
-            label: "labelStyle",
-            path: "labelStyle",
-          },
-          {
-            label: "contentStyle",
-            path: "contentStyle",
-          },
-          {
-            label: "strictMode",
-            path: "strictMode",
-          },
-          {
-            label: "singleMode",
-            path: "singleMode",
-          },
-          {
-            label: "refreshKey",
-            path: "refreshKey",
-          },
-          { label: "vizItems的api" },
-          {
-            label: "label",
-            path: "label",
-          },
-          {
-            label: "path",
-            path: "path",
-          },
-          {
-            label: "visible",
-            path: "visible",
-          },
-          {
-            label: "foldable",
-            path: "foldable",
-          },
-          {
-            label: "isEqual",
-            path: "isEqual",
-          },
-          {
-            label: "content",
-            path: "content",
-          },
-          {
-            label: "arrayKey",
-            path: "arrayKey",
-          },
-          {
-            label: "alignAlignType",
-            path: "alignAlignType",
-          },
-        ]}
-        labelStyle={{ width: "25%" }}
-        contentStyle={{ width: "70%" }}
-        style={{ border: "1px dashed gray" }}
-      />
+          <a
+            href=""
+            onClick={(e) => {
+              e.preventDefault();
+              setCount(count + 1);
+            }}
+            style={{
+              cursor: "pointer",
+            }}
+          >
+            Align And Color
+          </a>
+        </div>
+        <Diff
+          strictMode={false}
+          data1={initialFormData}
+          data2={formData}
+          refreshKey={count}
+          singleMode={formVisible}
+          // vizItems={[
+          //   {
+          //     label: "组件名称",
+          //     path: "组件名称",
+          //   },
+          //   {
+          //     label: "简介",
+          //     path: "简介",
+          //   },
+          //   {
+          //     label: "创建时间",
+          //     path: "创建时间",
+          //     content: (v: any) => {
+          //       return new Date(v).toLocaleString();
+          //     },
+          //   },
+          //   {
+          //     label: "包体积",
+          //     path: "包体积",
+          //   },
+          //   {
+          //     label: "技术栈",
+          //     path: "技术栈",
+          //   },
+          //   {
+          //     label: "npm依赖",
+          //     path: "npm依赖",
+          //     arrayKey: "",
+          //     content: (v: any) => {
+          //       return v.map(String).join("+");
+          //     },
+          //   },
+
+          //   {
+          //     label: "和其他组件的区别",
+          //     path: "和其他组件的区别",
+          //   },
+          //   {
+          //     label: "是否为ts项目",
+          //     path: "是否为ts项目",
+          //   },
+          //   {
+          //     label: "基础类型",
+          //     path: "基础类型",
+          //   },
+          //   {
+          //     label: "对象类型",
+          //     path: "对象类型",
+          //   },
+          //   {
+          //     label: "数组类型",
+          //     path: "数组类型",
+          //   },
+          //   {
+          //     label: "数组对齐方式",
+          //     path: "数组对齐方式",
+          //     arrayKey: "对齐方式",
+          //     content: (v: any) => {
+          //       return v.map((item: any, idx: string) => (
+          //         <Card
+          //           pathPrefix={"数组对齐方式." + idx}
+          //           key={item.对齐方式 ?? idx}
+          //           title={item.对齐方式}
+          //           content={`算法: ${item.算法 || "无"}, 默认方式: ${item.默认方式 ? "是" : "否"
+          //             }`}
+          //         />
+          //       ));
+          //     },
+          //   },
+          //   {
+          //     label: "自定义diff算法",
+          //     path: "自定义diff算法",
+          //   },
+          //   { label: "diff组件的api" },
+          //   {
+          //     label: "data1",
+          //     path: "data1",
+          //   },
+          //   {
+          //     label: "data2",
+          //     path: "data2",
+          //   },
+          //   {
+          //     label: "vizItems",
+          //     path: "vizItems",
+          //   },
+          //   {
+          //     label: "colStyle",
+          //     path: "colStyle",
+          //   },
+          //   {
+          //     label: "labelStyle",
+          //     path: "labelStyle",
+          //   },
+          //   {
+          //     label: "contentStyle",
+          //     path: "contentStyle",
+          //   },
+          //   {
+          //     label: "strictMode",
+          //     path: "strictMode",
+          //   },
+          //   {
+          //     label: "singleMode",
+          //     path: "singleMode",
+          //   },
+          //   {
+          //     label: "refreshKey",
+          //     path: "refreshKey",
+          //   },
+          //   { label: "vizItems的api" },
+          //   {
+          //     label: "label",
+          //     path: "label",
+          //   },
+          //   {
+          //     label: "path",
+          //     path: "path",
+          //   },
+          //   {
+          //     label: "visible",
+          //     path: "visible",
+          //   },
+          //   {
+          //     label: "foldable",
+          //     path: "foldable",
+          //   },
+          //   {
+          //     label: "isEqual",
+          //     path: "isEqual",
+          //   },
+          //   {
+          //     label: "content",
+          //     path: "content",
+          //   },
+          //   {
+          //     label: "arrayKey",
+          //     path: "arrayKey",
+          //   },
+          //   {
+          //     label: "alignAlignType",
+          //     path: "alignAlignType",
+          //   },
+          // ]}
+
+          vizItems={[{ label: '组件名称', path: 'name' }, { label: '简介', path: 'introduction' },]}
+          labelStyle={{ width: "25%" }}
+          contentStyle={{ width: "70%" }}
+          style={{ border: "1px dashed gray", display: formVisible ? 'none' : 'block' }}
+          colStyle={{ width: "650px" }}
+        />
+      </div>
     </>
   );
 }
