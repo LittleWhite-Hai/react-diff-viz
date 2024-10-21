@@ -101,7 +101,8 @@ const data2 = {
 
 const initialFormData = {
   name: "react-diff-viz",
-  introduction: "功能强大的、集成数据diff算法与数据渲染的组件",
+  introduction:
+    "react-diff-viz is a React component that compares and renders complex object differences",
   link: "https://github.com/LittleWhite-Hai/react-diff-viz",
   package_size: 133,
   create_time: [1727765900000, 2897765900000],
@@ -121,30 +122,32 @@ const initialFormData = {
         "Microdiff is a tiny, fast json diff tool, only offer diff algorithm",
     },
   ],
-  data1: "用于比较的数据（一般是原始数据）",
-  data2: "用于比较的数据（一般是新数据）",
-  vizItems: "描述需要渲染的数据，包括diff方式和渲染方式",
-  colStyle: "所有data1和data2外侧dom的整体样式",
-  labelStyle: "每一项data的label样式",
-  contentStyle: "每一项data的content样式",
+  data1: "Data used for comparison (usually the original data)",
+  data2: "Data used for comparison (usually the new data)",
+  vizItems:
+    "Describes the data to be rendered, including diff method and rendering method",
+  colStyle: "Overall style for the outer DOM of all data1 and data2",
+  labelStyle: "Style for the label of each data item",
+  contentStyle: "Style for the content of each data item",
   strictMode:
-    "严格模式，默认开启，关闭后diff算法会忽略数据类型差异，如0=null=undefined=false",
-  singleMode: "仅查看data2，默认false",
-  refreshKey: "改变Key以触发重新染色和高度对齐",
+    "Strict mode, enabled by default. When disabled, the diff algorithm ignores data type differences, e.g., 0=null=undefined=false",
+  singleMode: "Only view data2, default is false",
+  refreshKey: "Change this key to trigger recoloring and height alignment",
 
-  label: "数据的标题，若仅传入label，则渲染一个分隔标题",
-  path: "数据的路径",
-  visible: "false则不展示",
-  foldable: "是否折叠",
-  isEqual: "用户可定制数据diff算法",
-  content: "渲染方式",
-  arrayKey: "数组的key，用于标记本数据为数组类型",
-  alignAlignType: "数组对齐方式，默认为最长公共子序列lcs对齐",
+  label:
+    "Title of the data, if only label is provided, it renders a separator title",
+  path: "Path of the data",
+  visible: "If false, the item will not be displayed",
+  foldable: "Whether it can be folded",
+  isEqual: "User can customize the data diff algorithm",
+  content: "Rendering method",
+  arrayKey: "Key for arrays, used to mark this data as array type",
+  alignAlignType:
+    "Array alignment method, default is longest common subsequence (lcs) alignment",
 };
 function App() {
   const [count, setCount] = useState(0);
   const [formVisible, setFormVisible] = useState(false);
-  const [editedData, setEditedData] = useState(data2);
 
   const [formData, setFormData] = useState(initialFormData);
   useEffect(() => {
@@ -152,11 +155,11 @@ function App() {
   }, [formData]);
 
   return (
-    <div style={{
-      width: "1500px",
-
-    }}>
-
+    <div
+      style={{
+        width: "1500px",
+      }}
+    >
       <div
         style={{
           width: "1500px",
@@ -245,7 +248,7 @@ function App() {
               cursor: "pointer",
             }}
           >
-            {formVisible ? "隐藏表单" : "显示表单"}
+            {formVisible ? "Show Diff" : "Show Editor"}
           </a>
           <a
             href=""
@@ -287,189 +290,97 @@ function App() {
           data2={formData}
           refreshKey={count}
           singleMode={false}
-          // vizItems={[
-          //   {
-          //     label: "组件名称",
-          //     path: "组件名称",
-          //   },
-          //   {
-          //     label: "简介",
-          //     path: "简介",
-          //   },
-          //   {
-          //     label: "创建时间",
-          //     path: "创建时间",
-          //     content: (v: any) => {
-          //       return new Date(v).toLocaleString();
-          //     },
-          //   },
-          //   {
-          //     label: "包体积",
-          //     path: "包体积",
-          //   },
-          //   {
-          //     label: "技术栈",
-          //     path: "技术栈",
-          //   },
-          //   {
-          //     label: "npm依赖",
-          //     path: "npm依赖",
-          //     arrayKey: "",
-          //     content: (v: any) => {
-          //       return v.map(String).join("+");
-          //     },
-          //   },
-
-          //   {
-          //     label: "和其他组件的区别",
-          //     path: "和其他组件的区别",
-          //   },
-          //   {
-          //     label: "是否为ts项目",
-          //     path: "是否为ts项目",
-          //   },
-          //   {
-          //     label: "基础类型",
-          //     path: "基础类型",
-          //   },
-          //   {
-          //     label: "对象类型",
-          //     path: "对象类型",
-          //   },
-          //   {
-          //     label: "数组类型",
-          //     path: "数组类型",
-          //   },
-          //   {
-          //     label: "数组对齐方式",
-          //     path: "数组对齐方式",
-          //     arrayKey: "对齐方式",
-          //     content: (v: any) => {
-          //       return v.map((item: any, idx: string) => (
-          //         <Card
-          //           pathPrefix={"数组对齐方式." + idx}
-          //           key={item.对齐方式 ?? idx}
-          //           title={item.对齐方式}
-          //           content={`算法: ${item.算法 || "无"}, 默认方式: ${item.默认方式 ? "是" : "否"
-          //             }`}
-          //         />
-          //       ));
-          //     },
-          //   },
-          //   {
-          //     label: "自定义diff算法",
-          //     path: "自定义diff算法",
-          //   },
-          //   { label: "diff组件的api" },
-          //   {
-          //     label: "data1",
-          //     path: "data1",
-          //   },
-          //   {
-          //     label: "data2",
-          //     path: "data2",
-          //   },
-          //   {
-          //     label: "vizItems",
-          //     path: "vizItems",
-          //   },
-          //   {
-          //     label: "colStyle",
-          //     path: "colStyle",
-          //   },
-          //   {
-          //     label: "labelStyle",
-          //     path: "labelStyle",
-          //   },
-          //   {
-          //     label: "contentStyle",
-          //     path: "contentStyle",
-          //   },
-          //   {
-          //     label: "strictMode",
-          //     path: "strictMode",
-          //   },
-          //   {
-          //     label: "singleMode",
-          //     path: "singleMode",
-          //   },
-          //   {
-          //     label: "refreshKey",
-          //     path: "refreshKey",
-          //   },
-          //   { label: "vizItems的api" },
-          //   {
-          //     label: "label",
-          //     path: "label",
-          //   },
-          //   {
-          //     label: "path",
-          //     path: "path",
-          //   },
-          //   {
-          //     label: "visible",
-          //     path: "visible",
-          //   },
-          //   {
-          //     label: "foldable",
-          //     path: "foldable",
-          //   },
-          //   {
-          //     label: "isEqual",
-          //     path: "isEqual",
-          //   },
-          //   {
-          //     label: "content",
-          //     path: "content",
-          //   },
-          //   {
-          //     label: "arrayKey",
-          //     path: "arrayKey",
-          //   },
-          //   {
-          //     label: "alignAlignType",
-          //     path: "alignAlignType",
-          //   },
-          // ]}
-
+          data1Title="Before Data"
+          data2Title="Current Data"
           vizItems={[
-            { label: "基本信息" },
-            { label: "组件名称", path: "name" },
-            { label: "简介", path: "introduction" },
-            { label: "链接", path: "link", content: (v: any) => <Link href={v} target="_blank" hoverable={false} onClick={() => { open(v) }}>点击跳转</Link> },
+            { label: "Basic Information" },
+            { label: "Component Name", path: "name" },
+            { label: "Introduction", path: "introduction" },
             {
-              label: "维护时间",
+              label: "Link",
+              path: "link",
+              content: (v: any) => (
+                <Link
+                  href={v}
+                  target="_blank"
+                  hoverable={false}
+                  onClick={() => {
+                    open(v);
+                  }}
+                >
+                  Click to Jump
+                </Link>
+              ),
+            },
+            {
+              label: "Maintenance Time",
               path: "create_time",
               content: (v: any) => {
                 if (v) {
                   return (
                     <span>
-                      <span data-path="create_time.0">{new Date(v[0]).toLocaleDateString()}</span>
+                      <span data-path="create_time.0">
+                        {new Date(v[0]).toLocaleDateString()}
+                      </span>
                       <span> ~ </span>
-                      <span data-path="create_time.1">{new Date(v[1]).toLocaleDateString()}</span>
+                      <span data-path="create_time.1">
+                        {new Date(v[1]).toLocaleDateString()}
+                      </span>
                     </span>
                   );
                 }
               },
             },
-            { label: "包体积", path: "package_size", content: (v: any) => v + " kb" },
-            { label: "npm依赖", path: "npm_dependencies", content: (v: any) => v.join(", ") },
-            { label: "支持数组Diff", path: "is_support_array", content: (v: any) => v ? "是" : "否" },
-            { label: "构建工具", path: "build_tool" },
-            { label: "技术栈", path: "tech_stack", content: (v: any) => v.join(", ") },
-            { label: "stars", path: "stars", content: (v: any) => <Rate value={v} readonly /> },
             {
-              label: "其他工具", path: "other_tools", arrayKey: "name", content: (v: any) => v.map((item: any, idx: string) => <Card
-                style={{ width: 360, marginBottom: 10 }}
-                title={<div data-path={`other_tools.${idx}.name`}>{item.name}</div>}
-                key={item.name}
-                extra={<Link>More</Link>}
-              ><div data-path={`other_tools.${idx}.description`}>{item.description}</div>
-                <br />
-
-              </Card>)
+              label: "Package Size",
+              path: "package_size",
+              content: (v: any) => v + " kb",
             },
-            { label: "diff组件的api" },
+            {
+              label: "Npm Dependencies",
+              path: "npm_dependencies",
+              content: (v: any) => v.join(", "),
+            },
+            {
+              label: "Support Array Diff",
+              path: "is_support_array",
+              content: (v: any) => (v ? "Yes" : "No"),
+            },
+            { label: "Build Tool", path: "build_tool" },
+            {
+              label: "Tech Stack",
+              path: "tech_stack",
+              content: (v: any) => v.join(", "),
+            },
+            {
+              label: "Stars",
+              path: "stars",
+              content: (v: any) => <Rate value={v} readonly />,
+            },
+            {
+              label: "Other Tools",
+              path: "other_tools",
+              arrayKey: "name",
+              content: (v: any) =>
+                v.map((item: any, idx: string) => (
+                  <Card
+                    style={{ width: 360, marginBottom: 10 }}
+                    title={
+                      <div data-path={`other_tools.${idx}.name`}>
+                        {item.name}
+                      </div>
+                    }
+                    key={item.name}
+                    extra={<Link>More</Link>}
+                  >
+                    <div data-path={`other_tools.${idx}.description`}>
+                      {item.description}
+                    </div>
+                    <br />
+                  </Card>
+                )),
+            },
+            { label: "Diff Component API" },
             {
               label: "data1",
               path: "data1",
@@ -506,7 +417,7 @@ function App() {
               label: "refreshKey",
               path: "refreshKey",
             },
-            { label: "vizItems的api" },
+            { label: "VizItems API" },
             {
               label: "label",
               path: "label",
@@ -546,7 +457,6 @@ function App() {
           style={{
             border: "1px dashed gray",
           }}
-
         />
       </div>
     </div>

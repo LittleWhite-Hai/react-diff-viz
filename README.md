@@ -1,36 +1,34 @@
-# react-diff-viz
+# <img src="./public/diff.ico" height="20" /> react-diff-viz
 
-react-diff-viz 是一个用于比较和展示复杂对象差异的 React 应用程序。
+react-diff-viz is a React component that compares and renders complex object differences
 
-## 项目描述
+## Features
 
-这个应用程序允许用户可视化地比较两个复杂的 JavaScript 对象之间的差异。
+> This component integrates diff algorithm and visual rendering, features are as follows
+
+- The left and right columns display the data, aligned to the height of corresponding field, and colored the different fields
+- The component comes with the diff function. You can customize the diff function for fields
+- The component has its own rendering function. You can customize rendering functions for fields
+- Supports comparison of nested objects and arrays
+
+## Dependencies
+
+- react (peer dependency)
+- react-dom (peer dependency)
+- lodash (peer dependency)
 
 ## Demo
 
 https://littlewhite-hai.github.io/react-diff-viz/
 ![demo](./docs/public/demo.png)
 
-## 主要功能
-
-- 比较两个复杂对象的差异
-- 自定义字段比较逻辑
-- 灵活的数据展示方式
-- 支持嵌套对象和数组的比较
-
-## 技术栈
-
-- React
-- TypeScript
-- CSS
-
-## 安装
+## Install
 
 ```bash
 npm install react-diff-viz
 ```
 
-## 使用
+## Usage
 
 ```tsx
 import Diff from "react-diff-viz";
