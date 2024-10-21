@@ -168,7 +168,7 @@ function App() {
           height: "125px",
         }}
       >
-        <h1 style={{ marginTop: "10px" }}>react-diff-viz </h1>
+        <h1 style={{ marginTop: "10px" }}><img src="public/diff.ico" style={{ marginBottom: -22, marginRight: "10px" }}></img>react-diff-viz </h1>
         <div style={{ marginTop: "10px", display: "flex" }}>
           <div style={{ marginLeft: "30px" }}>
             <a
@@ -290,8 +290,6 @@ function App() {
           data2={formData}
           refreshKey={count}
           singleMode={false}
-          data1Title="Before Data"
-          data2Title="Current Data"
           vizItems={[
             { label: "Basic Information" },
             { label: "Component Name", path: "name" },
