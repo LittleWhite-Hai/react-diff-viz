@@ -2,6 +2,55 @@
 
 react-diff-viz is a React component that compares and renders complex object differences
 
+## Install
+
+```bash
+npm install react-diff-viz
+```
+
+## Usage
+
+```tsx
+import Diff from "react-diff-viz";
+
+// diff data1 and data2 ,then render
+<Diff
+  data1={{
+    name: "John",
+    age: 30,
+    address: {
+      city: "New York",
+      country: "USA",
+    },
+  }}
+  data2={{
+    name: "John",
+    age: 31,
+    address: {
+      city: "New York",
+      country: "USA",
+    },
+  }}
+  vizItems={[
+    {
+      path: "name",
+      label: "name",
+    },
+    {
+      path: "age",
+      label: "age",
+    },
+    {
+      path: "address",
+      label: "address",
+      content: (v) => {
+        return v.city + " of " + v.country;
+      },
+    },
+  ]}
+/>;
+```
+
 ## Features
 
 > This component integrates diff algorithm and visual rendering, features are as follows
@@ -51,56 +100,6 @@ https://littlewhite-hai.github.io/react-diff-viz/
 | content               | (v,ext)=>ReactNode         | Customize the data rendering method                                                                                                       |
 | arrayKey              | string                     | Key for arrays, used to mark this data as array type                                                                                      |
 | alignAlignType        | "lcs" \| "data2" \| "none" | Array alignment method, default is longest common subsequence ([lcs](https://en.wikipedia.org/wiki/Longest_common_subsequence)) alignment |
-
-## Install
-
-```bash
-npm install react-diff-viz
-```
-
-## Usage
-
-```tsx
-import Diff from "react-diff-viz";
-
-const data1 = {
-  name: "John",
-  age: 30,
-  address: {
-    city: "New York",
-    country: "USA",
-  },
-};
-
-const data2 = {
-  name: "John",
-  age: 31,
-  address: {
-    city: "New York",
-    country: "USA",
-  },
-};
-
-const vizItems = [
-  {
-    path: "name",
-    label: "name",
-  },
-  {
-    path: "age",
-    label: "age",
-  },
-  {
-    path: "address",
-    label: "address",
-    content: (v) => {
-      return v.city + " of " + v.country;
-    },
-  },
-];
-
-<Diff data1={data1} data2={data2} vizItems={vizItems} />;
-```
 
 ## License
 

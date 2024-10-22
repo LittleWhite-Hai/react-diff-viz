@@ -1,17 +1,14 @@
 import { ReactNode } from "react";
-import { Path } from "./path-type";
 
 export type DataTypeBase = {
   [key: string]: any;
 };
 
-export type PathType<T> = undefined | Path<T> | "";
-
 export type ExtType<T> = {
   data1: T;
   data2: T;
   type: "data1" | "data2" | "";
-  path: PathType<T>;
+  path: string | undefined;
   index?: number;
 };
 export type IsEqualFuncType = (
@@ -37,7 +34,7 @@ export type ContentType<T> =
 
 export type VizItem<T extends DataTypeBase> = {
   label: LabelType<T>;
-  path?: PathType<T>;
+  path?: string;
   key?: string;
   visible?: VisibleType<T>;
   foldable?: boolean;

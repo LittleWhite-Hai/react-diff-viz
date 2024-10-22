@@ -25,7 +25,7 @@ const FormItem = Form.Item;
 const programmingCascaderOptions = [
   {
     value: "frontend",
-    label: "前端开发",
+    label: "Frontend",
     children: [
       {
         value: "javascript",
@@ -63,7 +63,7 @@ const programmingCascaderOptions = [
   },
   {
     value: "backend",
-    label: "后端开发",
+    label: "Backend",
     children: [
       {
         value: "java",
@@ -111,7 +111,7 @@ const programmingCascaderOptions = [
   },
   {
     value: "database",
-    label: "数据库",
+    label: "Database",
     children: [
       {
         value: "sql",
@@ -149,11 +149,11 @@ const programmingCascaderOptions = [
 <FormItem
   label="Tech Stack"
   field="tech_stack"
-  rules={[{ type: "array", required: true, message: "请选择技术栈" }]}
+  rules={[{ type: "array", required: true, message: "please select" }]}
 >
   <Cascader
     showSearch
-    placeholder="请选择技术栈"
+    placeholder="please select"
     allowClear
     options={programmingCascaderOptions}
   />
@@ -306,7 +306,7 @@ export default function MyForm(props: any) {
             options={programmingCascaderOptions}
           />
         </FormItem>
-        <Form.Item label="工具对比" labelCol={{ span: 7 }}>
+        <Form.Item label="Other Tools" labelCol={{ span: 7 }}>
           <Form.List field="other_tools">
             {(fields, { add, remove, move }) => {
               return (

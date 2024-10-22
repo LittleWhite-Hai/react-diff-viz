@@ -212,14 +212,15 @@ export function getObjectPathArrayMap(data: any) {
   const mapResult: Record<string, Array<any>> = {};
 
   function traverse(obj: any, path: string = "") {
+    if (typeof obj !== "object" || obj === null || obj === undefined) {
+      return;
+    }
     if (Array.isArray(obj)) {
       mapResult[path] = obj;
     }
     for (const [key, value] of Object.entries(obj)) {
       const newPath = path ? `${path}.${key}` : key;
-      if (typeof obj === "object") {
-        traverse(value, newPath);
-      }
+      traverse(value, newPath);
     }
   }
 

@@ -20,7 +20,6 @@ import {
 } from "./types";
 import { headerBlueTipStyle, headerStyle, titleStyle } from "./styles";
 
-
 function getFieldPathMap<T extends DataTypeBase>(vizItems: VizItems<T>) {
   const isEqualMap: Record<string, IsEqualFuncType> = {};
   const arrayAlignLCSMap: Record<string, string> = {};
@@ -71,7 +70,9 @@ function getFieldContent<T extends DataTypeBase>(
       ) as any;
       if (res.map) {
         return res.map((i: any, idx: any) => (
-          <div data-path={ext.path + "." + idx} key={ext.path + "." + idx}>{i}</div>
+          <div data-path={ext.path + "." + idx} key={ext.path + "." + idx}>
+            {i}
+          </div>
         ));
       } else {
         return res;
@@ -417,15 +418,12 @@ export default function Diff<T extends DataTypeBase>(props: {
   }, [diffRes, wrapperRef1, wrapperRef2, refreshKey]);
 
   const [leftWidth, setLeftWidth] = useState<number>(
-    // @ts-ignore
     parseInt((colStyle.width ?? "650") as string)
   );
   const [rightWidth, setRightWidth] = useState<number>(
-    // @ts-ignore
     parseInt((colStyle.width ?? "650") as string)
   );
   const [oldLeftWidth, setOldLeftWidth] = useState<number>(
-    // @ts-ignore
     parseInt((colStyle.width ?? "650") as string)
   );
 

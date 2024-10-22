@@ -8,7 +8,9 @@
     ],
     "jsx": "react",
     "declaration": true,
-    "outDir": "./dist",
+    "declarationDir": "./dist",   
+    "moduleResolution":"node",
+    "outDir": "./tsc-dist",
     "strict": true,
     "esModuleInterop": true
   },

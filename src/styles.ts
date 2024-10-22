@@ -2,16 +2,16 @@ import { CSSProperties } from "react";
 
 export const titleStyle: CSSProperties = {
   textAlign: "left",
-  paddingLeft: "14px",
+  paddingLeft: "15px",
   marginBottom: "18px",
   height: "24px",
   fontWeight: "bold",
   fontSize: "19px",
 };
 export const headerStyle: CSSProperties = {
-  paddingLeft: "10px",
-  marginTop: "10px",
-  marginBottom: "4px",
+  paddingLeft: "16px",
+  marginTop: "12px",
+  marginBottom: "6px",
   height: "24px",
   fontWeight: "bold",
   fontSize: "17px",

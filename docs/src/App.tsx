@@ -168,7 +168,13 @@ function App() {
           height: "125px",
         }}
       >
-        <h1 style={{ marginTop: "10px" }}><img src="public/diff.ico" style={{ marginBottom: -22, marginRight: "10px" }}></img>react-diff-viz </h1>
+        <h1 style={{ marginTop: "10px" }}>
+          <img
+            src="public/diff.ico"
+            style={{ marginBottom: -22, marginRight: "10px" }}
+          ></img>
+          react-diff-viz{" "}
+        </h1>
         <div style={{ marginTop: "10px", display: "flex" }}>
           <div style={{ marginLeft: "30px" }}>
             <a
@@ -348,7 +354,7 @@ function App() {
             {
               label: "Tech Stack",
               path: "tech_stack",
-              content: (v: any) => v.join(", "),
+              content: (v: any) => v?.join(", "),
             },
             {
               label: "Stars",
