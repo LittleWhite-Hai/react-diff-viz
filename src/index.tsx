@@ -159,8 +159,8 @@ function RenderFieldItem<T extends DataTypeBase>(props: {
         data-path-label={fieldItem.path}
         style={{
           textAlign: "left",
-          paddingLeft: "16px",
           color: "gray",
+          height: "min-content",
           ...labelStyle,
         }}
       >
@@ -257,17 +257,19 @@ export default function Diff<T extends DataTypeBase>(props: {
     const allElements2: Array<HTMLElement> = Array.from(
       wrapperRef2.current?.querySelectorAll(`[data-path]`) ?? []
     );
+
     const allColoredElements: Array<HTMLElement> = Array.from(
       containerWrapperRef.current?.querySelectorAll(`[data-colored-path]`) ?? []
     );
     allColoredElements.forEach((ele) => {
       ele.style.backgroundColor = "unset";
-      ele.style.borderRight = "unset";
+      // ele.style.borderRight = "unset";
     });
 
     // path对应dom关系
     const data1DomMap: Record<string, HTMLElement[]> = {};
     const data2DomMap: Record<string, HTMLElement[]> = {};
+
 
     // path对应的最高dom
     const pathMaxHeightMap: Record<string, number> = {};
@@ -312,41 +314,94 @@ export default function Diff<T extends DataTypeBase>(props: {
       });
     }
 
+
+    const allLabelElements1: Array<HTMLElement> = Array.from(
+      wrapperRef1.current?.querySelectorAll(`[data-path-label]`) ?? []
+    );
+    const allLabelElements2: Array<HTMLElement> = Array.from(
+      wrapperRef2.current?.querySelectorAll(`[data-path-label]`) ?? []
+    );
+    // path-label对应dom关系
+    const data1LabelDomMap: Record<string, HTMLElement[]> = {};
+    const data2LabelDomMap: Record<string, HTMLElement[]> = {};
+    {
+      // 统计container1里的path对应dom关系和max高度
+      allLabelElements1.forEach((ele) => {
+        const path = ele.getAttribute("data-path-label");
+        if (path) {
+          if (data1LabelDomMap[path]) {
+            data1LabelDomMap[path].push(ele);
+          } else {
+            data1LabelDomMap[path] = [ele];
+          }
+        }
+      });
+    }
+
+    {
+      // 统计container2里的path对应dom关系和max高度
+      allLabelElements2.forEach((ele) => {
+        const path = ele.getAttribute("data-path-label");
+        if (path) {
+          if (data2LabelDomMap[path]) {
+            data2LabelDomMap[path].push(ele);
+          } else {
+            data2LabelDomMap[path] = [ele];
+          }
+        }
+      });
+    }
+
     // 着色
     Object.entries(diffRes).forEach(([key, val]: [string, string]) => {
       const pathDomList1 = data1DomMap[key];
       const pathDomList2 = data2DomMap[key];
+      const pathLabelDomList1 = data1LabelDomMap[key];
+      const pathLabelDomList2 = data2LabelDomMap[key];
 
       pathDomList1?.forEach((dom) => {
-        const contentElement = (
-          dom.querySelectorAll(`[data-path]`).length
-            ? dom.querySelectorAll(`[data-path-label]`)?.[0] ?? dom
-            : dom
-        ) as HTMLElement;
-
-        if (!contentElement.style) {
-          return;
-        }
-        if (["CHANGED", "REMOVED"].includes(val)) {
-          contentElement.setAttribute("data-colored-path", key);
-          contentElement.style.backgroundColor = "rgb(253, 226, 226)";
+        if (dom.querySelectorAll(`[data-path]`).length) {
+          return
+        } else {
+          if (["CHANGED", "REMOVED"].includes(val)) {
+            dom.setAttribute("data-colored-path", key);
+            dom.style.backgroundColor = "rgb(253, 226, 226)";
+          }
         }
       });
+      pathLabelDomList1?.forEach((dom) => {
+        if (dom.querySelectorAll(`[data-path-label]`).length) {
+          return;
+        } else {
+          if (["CHANGED", "REMOVED"].includes(val)) {
+            dom.setAttribute("data-colored-path", key);
+            dom.style.backgroundColor = "rgb(253, 226, 226)";
+          }
+        }
+      });
+
       pathDomList2?.forEach((dom) => {
-        const contentElement = (
-          dom.querySelectorAll(`[data-path]`).length
-            ? dom.querySelectorAll(`[data-path-label]`)?.[0] ?? dom
-            : dom
-        ) as HTMLElement;
-
-        if (!contentElement.style) {
-          return;
-        }
-
-        if (["CHANGED", "CREATED"].includes(val)) {
-          contentElement.style.backgroundColor = "rgb(217, 245, 214)";
+        if (dom.querySelectorAll(`[data-path]`).length) {
+          return
+        } else {
+          if (["CHANGED", "CREATED"].includes(val)) {
+            dom.setAttribute("data-colored-path", key);
+            dom.style.backgroundColor = "rgb(217, 245, 214)";
+          }
         }
       });
+      pathLabelDomList2?.forEach((dom) => {
+        if (dom.querySelectorAll(`[data-path-label]`).length) {
+          return;
+        } else {
+          if (["CHANGED", "CREATED"].includes(val)) {
+            dom.setAttribute("data-colored-path", key);
+            dom.style.backgroundColor = "rgb(217, 245, 214)";
+          }
+        }
+      });
+
+
     });
 
     // 对齐高度1
@@ -439,6 +494,8 @@ export default function Diff<T extends DataTypeBase>(props: {
     >
       <div
         style={{
+          marginLeft: "16px",
+          marginRight: "16px",
           ...colStyle,
           width: leftWidth + "px",
           overflow: "hidden",
@@ -470,8 +527,8 @@ export default function Diff<T extends DataTypeBase>(props: {
           backgroundColor: dragStartEvent ? "rgb(83, 129, 238)" : "gray",
           cursor: "col-resize",
           flex: "1",
-          marginRight: "1%",
-          marginLeft: "1%",
+          // marginRight: "1%",
+          // marginLeft: "1%",
           maxWidth: "4px",
           minWidth: "4px",
         }}
@@ -492,6 +549,8 @@ export default function Diff<T extends DataTypeBase>(props: {
       ></div>
       <div
         style={{
+          marginLeft: "16px",
+          marginRight: "16px",
           ...colStyle,
           flex: 1,
           overflow: "hidden",

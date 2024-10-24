@@ -1,103 +1,9 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
-import Diff from "react-diff-viz";
+import Diff from "../../src/index";
 import Form from "./form";
 import { Card, Link, Rate } from "@arco-design/web-react";
 
-const data1 = {
-  组件名称: "react-diff-viz",
-  创建时间: 1729348627970,
-  简介: "功能强大的、集成数据diff算法与数据渲染的组件",
-  包体积: "131kb",
-  技术栈: "react",
-  npm依赖: ["react", "lodash"],
-  和其他组件的区别:
-    "不同于jsdiff和microdiff仅提供diff算法，react-diff-viz还有数据渲染能力",
-  是否为ts项目: true,
-  基础类型: "默认使用===比较基础类型，若将strictMode设置为true，则忽略类型差异",
-  对象类型: "子元素均不变则认为相等，否则认为不相等",
-  数组类型: "先对齐两数组，再逐个比较数组元素",
-  数组对齐方式: [
-    {
-      对齐方式: "最长公共子序列lcs",
-      算法: "寻找data1和data2的lcs，并使它们对齐lcs",
-      默认方式: true,
-    },
-    {
-      对齐方式: "提供数组key，以data2的顺序为基准",
-      算法: "改变data1的顺序，使data1与data2一致",
-    },
-  ],
-  自定义diff算法: "用户可定制数据diff算法，使用isEqual函数",
-
-  data1: "用于比较的数据（一般是原始数据）",
-  data2: "用于比较的数据（一般是新数据）",
-  vizItems: "描述需要渲染的数据，包括diff方式和渲染方式",
-  colStyle: "所有data1和data2外侧dom的整体样式",
-  labelStyle: "每一项data的label样式",
-  contentStyle: "每一项data的content样式",
-  strictMode:
-    "严格模式，默认开启，关闭后diff算法会忽略数据类型差异，如0=null=undefined=false",
-  singleMode: "仅查看data2，默认false",
-  refreshKey: "改变Key以触发重新染色和高度对齐",
-
-  label: "数据的标题，若仅传入label，则渲染一个分隔标题",
-  path: "数据的路径",
-
-  foldable: "是否折叠",
-  isEqual: "用户可定制数据diff算法",
-  content: "渲染方式",
-  arrayKey: "数组的key，用于标记本数据为数组类型",
-  alignAlignType: "数组对齐方式，默认为最长公共子序列lcs对齐",
-} as any;
-
-const data2 = {
-  组件名称: "react-diff-viz",
-  创建时间: 1729348647970,
-  简介: "功能强大的、集成数据diff算法与数据渲染的组件",
-  包体积: "131kb",
-  技术栈: "react",
-  npm依赖: ["react", "lodash", "?"],
-  和其他组件的区别:
-    "不同于jsdiff和microdiff仅提供diff算法，react-diff-viz还有数据渲染能力",
-  是否为ts项目: true,
-  基础类型: "默认使用===比较基础类型，若将strictMode设置为true，则忽略类型差异",
-  对象类型: "子元素均不变则认为相等，否则认为不相等",
-  数组类型: "先对齐两数组，再逐个比较数组元素",
-  数组对齐方式: [
-    { 对齐方式: "不对齐数组，直接使用原数组进行比较" },
-    {
-      对齐方式: "最长公共子序列lcs",
-      算法: "寻找data1和data2的lcs，并使它们对齐lcs",
-      默认方式: true,
-    },
-    {
-      对齐方式: "提供数组key，以data2的顺序为基准",
-      算法: "改变data1的顺序，使data1与data2一致",
-    },
-  ],
-  自定义diff算法: "用户可定制数据diff算法，使用isEqual函数",
-
-  data1: "用于比较的数据（一般是原始数据）",
-  data2: "用于比较的数据（一般是新数据）",
-  vizItems: "描述需要渲染的数据，包括diff方式和渲染方式",
-  colStyle: "所有data1和data2外侧dom的整体样式",
-  labelStyle: "每一项data的label样式",
-  contentStyle: "每一项data的content样式",
-  strictMode:
-    "严格模式，默认开启，关闭后diff算法会忽略数据类型差异，如0=null=undefined=false",
-  singleMode: "仅查看data2，默认false",
-  refreshKey: "改变Key以触发重新染色和高度对齐",
-
-  label: "数据的标题，若仅传入label，则渲染一个分隔标题",
-  path: "数据的路径",
-  visible: "是否渲染",
-  foldable: "是否折叠",
-  isEqual: "用户可定制数据diff算法",
-  content: "渲染方式",
-  arrayKey: "数组的key，用于标记本数据为数组类型",
-  alignAlignType: "数组对齐方式，默认为最长公共子序列lcs对齐",
-} as any;
 
 const initialFormData = {
   name: "react-diff-viz",
@@ -385,6 +291,7 @@ function App() {
                 )),
             },
             { label: "Diff Component API" },
+
             {
               label: "data1",
               path: "data1",

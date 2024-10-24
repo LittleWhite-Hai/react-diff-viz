@@ -13,6 +13,25 @@ npm install react-diff-viz
 ```tsx
 import Diff from "react-diff-viz";
 
+// describe the content to be rendered
+const vizItems = [
+    {
+      path: "name",
+      label: "name",
+    },
+    {
+      path: "age",
+      label: "age",
+    },
+    {
+      path: "address",
+      label: "address",
+      content: (v) => {
+        return v.city + " of " + v.country;
+      },
+    },
+  ]
+
 // diff data1 and data2 ,then render
 <Diff
   data1={{
@@ -31,23 +50,7 @@ import Diff from "react-diff-viz";
       country: "USA",
     },
   }}
-  vizItems={[
-    {
-      path: "name",
-      label: "name",
-    },
-    {
-      path: "age",
-      label: "age",
-    },
-    {
-      path: "address",
-      label: "address",
-      content: (v) => {
-        return v.city + " of " + v.country;
-      },
-    },
-  ]}
+  vizItems={vizItems}
 />;
 ```
 

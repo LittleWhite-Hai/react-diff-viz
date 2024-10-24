@@ -2,13 +2,13 @@ import { CSSProperties } from "react";
 
 export const titleStyle: CSSProperties = {
   textAlign: "left",
-  paddingLeft: "15px",
+  // paddingLeft: "15px",
   marginBottom: "18px",
   height: "24px",
   fontSize: "19px",
 };
 export const headerStyle: CSSProperties = {
-  paddingLeft: "16px",
+  // paddingLeft: "16px",
   marginTop: "12px",
   marginBottom: "6px",
   height: "24px",
