@@ -153,9 +153,10 @@ function RenderFieldItem<T extends DataTypeBase>(props: {
   ) : (
     <div
       data-path={fieldItem.path}
-      style={{ display: "flex", marginBottom: "6px" }}
+      style={{ display: "flex", marginBottom: "15px" }}
     >
       <div
+        data-path-label={fieldItem.path}
         style={{
           textAlign: "left",
           paddingLeft: "16px",
@@ -264,42 +265,6 @@ export default function Diff<T extends DataTypeBase>(props: {
       ele.style.borderRight = "unset";
     });
 
-    // {
-    //   // 给所有数组元素添加data-path
-    //   const allArrayItemElements1: Array<HTMLElement> = []
-    //   allElements1.forEach((ele) => {
-    //     const path = ele.getAttribute("data-path");
-    //     const listChildren = ele.lastElementChild?.children
-    //     if (path && arrayMap[path] && listChildren) {
-    //       for (const idx in listChildren) {
-    //         const child = listChildren[idx] as HTMLElement
-    //         if (child instanceof HTMLElement && !child.getAttribute("data-path")) {
-    //           child.setAttribute("data-path", path + "." + idx);
-    //           allArrayItemElements1.push(child);
-    //         }
-
-    //       }
-    //     }
-    //   });
-    //   allElements1.push(...allArrayItemElements1);
-
-    //   const allArrayItemElements2: Array<HTMLElement> = []
-    //   allElements2.forEach((ele) => {
-    //     const path = ele.getAttribute("data-path");
-    //     const listChildren = ele.lastElementChild?.children
-    //     if (path && arrayMap[path] && listChildren) {
-    //       for (const idx in listChildren) {
-    //         const child = listChildren[idx] as HTMLElement
-    //         if (child instanceof HTMLElement && !child.getAttribute("data-path")) {
-    //           child.setAttribute("data-path", path + "." + idx);
-    //           allArrayItemElements2.push(child);
-    //         }
-    //       }
-    //     }
-    //   });
-    //   allElements2.push(...allArrayItemElements2);
-    // }
-
     // path对应dom关系
     const data1DomMap: Record<string, HTMLElement[]> = {};
     const data2DomMap: Record<string, HTMLElement[]> = {};
@@ -353,31 +318,33 @@ export default function Diff<T extends DataTypeBase>(props: {
       const pathDomList2 = data2DomMap[key];
 
       pathDomList1?.forEach((dom) => {
-        const contentElement = (dom.lastElementChild ?? dom) as HTMLElement;
+        const contentElement = (
+          dom.querySelectorAll(`[data-path]`).length
+            ? dom.querySelectorAll(`[data-path-label]`)?.[0] ?? dom
+            : dom
+        ) as HTMLElement;
+
         if (!contentElement.style) {
           return;
         }
         if (["CHANGED", "REMOVED"].includes(val)) {
           contentElement.setAttribute("data-colored-path", key);
-          if (dom.querySelectorAll(`[data-path]`).length) {
-            contentElement.style.borderRight = "3px solid rgb(253, 226, 226)";
-          } else {
-            contentElement.style.backgroundColor = "rgb(253, 226, 226)";
-          }
+          contentElement.style.backgroundColor = "rgb(253, 226, 226)";
         }
       });
       pathDomList2?.forEach((dom) => {
-        const contentElement = (dom.lastElementChild ?? dom) as HTMLElement;
+        const contentElement = (
+          dom.querySelectorAll(`[data-path]`).length
+            ? dom.querySelectorAll(`[data-path-label]`)?.[0] ?? dom
+            : dom
+        ) as HTMLElement;
+
         if (!contentElement.style) {
           return;
         }
+
         if (["CHANGED", "CREATED"].includes(val)) {
-          contentElement.setAttribute("data-colored-path", key);
-          if (dom.querySelectorAll(`[data-path]`).length) {
-            contentElement.style.borderRight = "3px solid rgb(217, 245, 214)";
-          } else {
-            contentElement.style.backgroundColor = "rgb(217, 245, 214)";
-          }
+          contentElement.style.backgroundColor = "rgb(217, 245, 214)";
         }
       });
     });

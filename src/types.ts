@@ -32,7 +32,7 @@ export type ContentType<T> =
   | ReactNode
   | ((data: any, record: T, ext: ExtType<T>) => ReactNode);
 
-export type VizItem<T extends DataTypeBase> = {
+export type VizItem<T = DataTypeBase> = {
   label: LabelType<T>;
   path?: string;
   key?: string;
@@ -43,4 +43,4 @@ export type VizItem<T extends DataTypeBase> = {
   arrayKey?: string;
   alignAlignType?: "lcs" | "data2" | "none";
 };
-export type VizItems<T extends DataTypeBase> = Array<VizItem<T>>;
+export type VizItems<T = DataTypeBase> = Array<VizItem<T>>;

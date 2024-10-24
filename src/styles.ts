@@ -5,7 +5,6 @@ export const titleStyle: CSSProperties = {
   paddingLeft: "15px",
   marginBottom: "18px",
   height: "24px",
-  fontWeight: "bold",
   fontSize: "19px",
 };
 export const headerStyle: CSSProperties = {
