@@ -167,16 +167,16 @@ function RenderFieldItem<T extends DataTypeBase>(props: {
       >
         {getPathLabel(data, fieldItem.label, fieldItem.arrayKey, ext)}
       </div>
-      <div
-        // 染色和对齐高度(如果该dom有子元素也标记了data-path，则不染色和对齐高度)
-        data-path={fieldItem.path}
-        style={{
-          textAlign: "left",
-          marginLeft: "10px",
-          ...contentStyle,
-        }}
-      >
-        {getFieldContent(data, fieldItem.content, fieldItem.arrayKey, ext)}
+      <div style={{ marginLeft: "10px", ...contentStyle }}>
+        <div
+          // 染色和对齐高度(如果该dom有子元素也标记了data-path，则不染色和对齐高度)
+          data-path={fieldItem.path}
+          style={{
+            textAlign: "left",
+          }}
+        >
+          {getFieldContent(data, fieldItem.content, fieldItem.arrayKey, ext)}
+        </div>
       </div>
     </div>
   );
@@ -222,7 +222,7 @@ export default function Diff<T extends DataTypeBase>(props: {
     data2Title = "Current Data",
     colStyle = { width: "650px" },
     labelStyle = { width: "30%" },
-    contentStyle = {},
+    contentStyle = { width: "65%" },
     style,
   } = props;
 

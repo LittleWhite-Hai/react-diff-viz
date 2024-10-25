@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
-import Diff from "../../src/index";
+import Diff from "react-diff-viz";
 import Form from "./form";
 import { Card, Link, Rate } from "@arco-design/web-react";
-
 
 const initialFormData = {
   name: "react-diff-viz",
@@ -363,7 +362,6 @@ function App() {
             },
           ]}
           labelStyle={{ width: "25%" }}
-          contentStyle={{ width: "70%" }}
           colStyle={{ width: "650px" }}
           style={{
             border: "1px dashed gray",
