@@ -404,7 +404,7 @@ export function alignAndDiff(props: {
   return { diffRes, alignedData1, alignedData2 };
 }
 
-function align(props: {
+export function align(props: {
   data1: any;
   data2: any;
   isEqualMap: Record<string, IsEqualFuncType>;

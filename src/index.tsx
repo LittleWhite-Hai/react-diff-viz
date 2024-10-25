@@ -8,7 +8,7 @@ import React, {
 } from "react";
 import { throttle } from "lodash";
 
-import { alignAndDiff, getValueByPath } from "./diff-algorithm";
+import { align, alignAndDiff, diff, getValueByPath } from "./diff-algorithm";
 import {
   ExtType,
   DataTypeBase,
@@ -152,10 +152,11 @@ function RenderFieldItem<T extends DataTypeBase>(props: {
     </div>
   ) : (
     <div
-      data-path={fieldItem.path}
+      // data-path={fieldItem.path}
       style={{ display: "flex", marginBottom: "15px" }}
     >
       <div
+        // 仅染色
         data-path-label={fieldItem.path}
         style={{
           textAlign: "left",
@@ -167,9 +168,11 @@ function RenderFieldItem<T extends DataTypeBase>(props: {
         {getPathLabel(data, fieldItem.label, fieldItem.arrayKey, ext)}
       </div>
       <div
+        // 染色和对齐高度(如果该dom有子元素也标记了data-path，则不染色和对齐高度)
+        data-path={fieldItem.path}
         style={{
           textAlign: "left",
-          paddingLeft: "6px",
+          marginLeft: "10px",
           ...contentStyle,
         }}
       >
@@ -219,7 +222,7 @@ export default function Diff<T extends DataTypeBase>(props: {
     data2Title = "Current Data",
     colStyle = { width: "650px" },
     labelStyle = { width: "30%" },
-    contentStyle = { width: "65%" },
+    contentStyle = {},
     style,
   } = props;
 
@@ -270,7 +273,6 @@ export default function Diff<T extends DataTypeBase>(props: {
     const data1DomMap: Record<string, HTMLElement[]> = {};
     const data2DomMap: Record<string, HTMLElement[]> = {};
 
-
     // path对应的最高dom
     const pathMaxHeightMap: Record<string, number> = {};
 
@@ -313,7 +315,6 @@ export default function Diff<T extends DataTypeBase>(props: {
         }
       });
     }
-
 
     const allLabelElements1: Array<HTMLElement> = Array.from(
       wrapperRef1.current?.querySelectorAll(`[data-path-label]`) ?? []
@@ -361,7 +362,7 @@ export default function Diff<T extends DataTypeBase>(props: {
 
       pathDomList1?.forEach((dom) => {
         if (dom.querySelectorAll(`[data-path]`).length) {
-          return
+          return;
         } else {
           if (["CHANGED", "REMOVED"].includes(val)) {
             dom.setAttribute("data-colored-path", key);
@@ -382,7 +383,7 @@ export default function Diff<T extends DataTypeBase>(props: {
 
       pathDomList2?.forEach((dom) => {
         if (dom.querySelectorAll(`[data-path]`).length) {
-          return
+          return;
         } else {
           if (["CHANGED", "CREATED"].includes(val)) {
             dom.setAttribute("data-colored-path", key);
@@ -400,8 +401,6 @@ export default function Diff<T extends DataTypeBase>(props: {
           }
         }
       });
-
-
     });
 
     // 对齐高度1
@@ -579,3 +578,5 @@ export default function Diff<T extends DataTypeBase>(props: {
     </div>
   );
 }
+Diff.align = align;
+Diff.diff = diff;
