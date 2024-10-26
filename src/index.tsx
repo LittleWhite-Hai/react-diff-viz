@@ -465,7 +465,7 @@ export default function Diff<T extends DataTypeBase>(props: {
       setDragStartEvent(undefined);
       setTimeout(() => {
         // 拖拽后，重新对齐高度
-        alignAndColorDoms();
+        // alignAndColorDoms();
       }, 60);
     };
     const handleMouseMove = throttle((e: MouseEvent) => {
@@ -493,7 +493,7 @@ export default function Diff<T extends DataTypeBase>(props: {
       ref={containerWrapperRef}
       style={{
         display: "flex",
-        width: parseInt(String(colStyle.width ?? "650")) * 2 + 100 + "px",
+        // width: parseInt(String(colStyle.width ?? "650")) * 2 + 100 + "px",
         ...style,
       }}
     >
@@ -501,31 +501,36 @@ export default function Diff<T extends DataTypeBase>(props: {
         style={{
           marginLeft: "16px",
           marginRight: "16px",
-          ...colStyle,
-          width: leftWidth + "px",
-          overflow: "hidden",
           display: singleMode ? "none" : "block",
+          width: leftWidth + "px",
+          overflowX: "scroll",
         }}
-        ref={wrapperRef1}
       >
-        {showTitle && <div style={titleStyle}>{data1Title}</div>}
-        {data1 &&
-          vizItems.map((field) => {
-            const label =
-              typeof field.label === "string" ? field.label : field.key ?? "";
-            return (
-              <RenderFieldItem<T>
-                key={field.path + label}
-                data={alignedData1}
-                data1={alignedData1}
-                data2={alignedData2}
-                contentStyle={contentStyle}
-                labelStyle={labelStyle}
-                fieldItem={field}
-                type="data1"
-              />
-            );
-          })}
+        <div
+          style={{
+            ...colStyle,
+          }}
+          ref={wrapperRef1}
+        >
+          {showTitle && <div style={titleStyle}>{data1Title}</div>}
+          {data1 &&
+            vizItems.map((field) => {
+              const label =
+                typeof field.label === "string" ? field.label : field.key ?? "";
+              return (
+                <RenderFieldItem<T>
+                  key={field.path + label}
+                  data={alignedData1}
+                  data1={alignedData1}
+                  data2={alignedData2}
+                  contentStyle={contentStyle}
+                  labelStyle={labelStyle}
+                  fieldItem={field}
+                  type="data1"
+                />
+              );
+            })}
+        </div>
       </div>
       <div
         style={{
@@ -543,13 +548,13 @@ export default function Diff<T extends DataTypeBase>(props: {
           setDragStartEvent(e);
           body!.style.cursor = "col-resize";
           body!.style.userSelect = "none";
-          containerWrapperRef.current
-            ?.querySelectorAll(`[data-path]`)
-            .forEach((i) => {
-              if (i instanceof HTMLElement) {
-                i.style.height = "unset";
-              }
-            });
+          // containerWrapperRef.current
+          //   ?.querySelectorAll(`[data-path]`)
+          //   .forEach((i) => {
+          //     if (i instanceof HTMLElement) {
+          //       i.style.height = "unset";
+          //     }
+          //   });
           setOldLeftWidth(leftWidth);
         }}
       ></div>
@@ -557,31 +562,36 @@ export default function Diff<T extends DataTypeBase>(props: {
         style={{
           marginLeft: "16px",
           marginRight: "16px",
-          ...colStyle,
-          flex: 1,
-          overflow: "hidden",
+          display: singleMode ? "none" : "block",
           width: rightWidth + "px",
+          overflowX: "scroll",
         }}
-        ref={wrapperRef2}
       >
-        {showTitle && <div style={titleStyle}>{data2Title}</div>}
-        {data2 &&
-          vizItems.map((field) => {
-            const label =
-              typeof field.label === "string" ? field.label : field.key ?? "";
-            return (
-              <RenderFieldItem
-                key={field.path + label}
-                data={alignedData2}
-                data1={alignedData1}
-                data2={alignedData2}
-                contentStyle={contentStyle}
-                labelStyle={labelStyle}
-                fieldItem={field}
-                type="data2"
-              />
-            );
-          })}
+        <div
+          style={{
+            ...colStyle,
+          }}
+          ref={wrapperRef2}
+        >
+          {showTitle && <div style={titleStyle}>{data2Title}</div>}
+          {data2 &&
+            vizItems.map((field) => {
+              const label =
+                typeof field.label === "string" ? field.label : field.key ?? "";
+              return (
+                <RenderFieldItem
+                  key={field.path + label}
+                  data={alignedData2}
+                  data1={alignedData1}
+                  data2={alignedData2}
+                  contentStyle={contentStyle}
+                  labelStyle={labelStyle}
+                  fieldItem={field}
+                  type="data2"
+                />
+              );
+            })}
+        </div>
       </div>
     </div>
   );
