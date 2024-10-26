@@ -212,8 +212,6 @@ export default function Diff<T extends DataTypeBase>(props: {
 }) {
   const {
     vizItems,
-    data1 = props.data2,
-    data2,
     strictMode = true,
     singleMode = false,
     showTitle = true,
@@ -221,10 +219,18 @@ export default function Diff<T extends DataTypeBase>(props: {
     data1Title = "Before Data",
     data2Title = "Current Data",
     colStyle = { width: "650px" },
-    labelStyle = { minWidth: "30%" },
+    labelStyle = { minWidth: "25%" },
     contentStyle = {},
     style,
   } = props;
+  let { data1, data2 } = props;
+  if (singleMode) {
+    if (data1 && !data2) {
+      data2 = data1;
+    } else if (!data1 && data2) {
+      data1 = data2;
+    }
+  }
 
   const { diffRes, alignedData1, alignedData2, arrayMap } = useMemo(() => {
     const {
@@ -244,7 +250,7 @@ export default function Diff<T extends DataTypeBase>(props: {
       arrayNoAlignMap,
       strictMode,
     });
-
+    console.log("diff-res", res);
     return { ...res, arrayMap };
   }, [data1, data2, vizItems]);
 
@@ -452,7 +458,6 @@ export default function Diff<T extends DataTypeBase>(props: {
     useState<React.MouseEvent<HTMLDivElement, MouseEvent>>();
   const mainRef = useRef<any>(null);
 
-
   useEffect(() => {
     const handleMouseUp = () => {
       body!.style.cursor = "unset";
@@ -487,8 +492,8 @@ export default function Diff<T extends DataTypeBase>(props: {
     <div
       ref={containerWrapperRef}
       style={{
-        width: "1500px",
         display: "flex",
+        width: parseInt(String(colStyle.width ?? "650")) * 2 + 100 + "px",
         ...style,
       }}
     >
@@ -504,22 +509,23 @@ export default function Diff<T extends DataTypeBase>(props: {
         ref={wrapperRef1}
       >
         {showTitle && <div style={titleStyle}>{data1Title}</div>}
-        {vizItems.map((field) => {
-          const label =
-            typeof field.label === "string" ? field.label : field.key ?? "";
-          return (
-            <RenderFieldItem<T>
-              key={field.path + label}
-              data={alignedData1}
-              data1={alignedData1}
-              data2={alignedData2}
-              contentStyle={contentStyle}
-              labelStyle={labelStyle}
-              fieldItem={field}
-              type="data1"
-            />
-          );
-        })}
+        {data1 &&
+          vizItems.map((field) => {
+            const label =
+              typeof field.label === "string" ? field.label : field.key ?? "";
+            return (
+              <RenderFieldItem<T>
+                key={field.path + label}
+                data={alignedData1}
+                data1={alignedData1}
+                data2={alignedData2}
+                contentStyle={contentStyle}
+                labelStyle={labelStyle}
+                fieldItem={field}
+                type="data1"
+              />
+            );
+          })}
       </div>
       <div
         style={{
@@ -559,22 +565,23 @@ export default function Diff<T extends DataTypeBase>(props: {
         ref={wrapperRef2}
       >
         {showTitle && <div style={titleStyle}>{data2Title}</div>}
-        {vizItems.map((field) => {
-          const label =
-            typeof field.label === "string" ? field.label : field.key ?? "";
-          return (
-            <RenderFieldItem
-              key={field.path + label}
-              data={alignedData2}
-              data1={alignedData1}
-              data2={alignedData2}
-              contentStyle={contentStyle}
-              labelStyle={labelStyle}
-              fieldItem={field}
-              type="data2"
-            />
-          );
-        })}
+        {data2 &&
+          vizItems.map((field) => {
+            const label =
+              typeof field.label === "string" ? field.label : field.key ?? "";
+            return (
+              <RenderFieldItem
+                key={field.path + label}
+                data={alignedData2}
+                data1={alignedData1}
+                data2={alignedData2}
+                contentStyle={contentStyle}
+                labelStyle={labelStyle}
+                fieldItem={field}
+                type="data2"
+              />
+            );
+          })}
       </div>
     </div>
   );
