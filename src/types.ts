@@ -32,6 +32,7 @@ export type ContentType<T> =
   | ReactNode
   | ((data: any, record: T, ext: ExtType<T>) => ReactNode);
 
+
 export type VizItem<T = DataTypeBase> = {
   label: LabelType<T>;
   path?: string;
@@ -43,4 +44,14 @@ export type VizItem<T = DataTypeBase> = {
   arrayKey?: string;
   alignAlignType?: "lcs" | "data2" | "none";
 };
+/**
+ * array of VizItem:
+ * label: Title of the data, if only label is provided, it renders a separator title
+ * path: Path of the data
+ * visible: If false, the item will not be displayed
+ * isEqual: User can customize the data diff algorithm
+ * content: Rendering method
+ * arrayKey: Key for arrays, used to mark this data as array type
+ * alignAlignType: Array alignment method, default is longest common subsequence (lcs) alignment
+ */
 export type VizItems<T = DataTypeBase> = Array<VizItem<T>>;

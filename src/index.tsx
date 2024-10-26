@@ -182,32 +182,39 @@ function RenderFieldItem<T extends DataTypeBase>(props: {
   );
 }
 
+/**
+ * The Diff component is used to compare and display the differences between two sets of data
+ * 
+ * @param 
+ * @param vizItems - Describes the rendering method and diff calculation method for the data
+ * @param data1 - The first set of data for comparison
+ * @param data2 - The second set of data for comparison
+ * @param strictMode - Strict mode, enabled by default. When disabled, the diff algorithm ignores data type differences, e.g., 0="0"
+ * @param singleMode - Only display data2
+ * @param showTitle - Whether to display the title at the top
+ * @param data1Title - Title for data1
+ * @param data2Title - Title for data2
+ * @param refreshKey - Change this key to trigger recoloring and height alignment
+ * @param colStyle - Overall style for data1 and data2 columns
+ * @param labelStyle - Style for each data label
+ * @param contentStyle - Style for each data content
+ * @param style - Style for the diff component
+ * @returns react node component 
+ */
+
 export default function Diff<T extends DataTypeBase>(props: {
-  // 描述数据的渲染方式及diff计算方式
   vizItems: VizItems<T>;
-  // 用于比较的数据1，如果不传，则等于data2
   data1?: T;
-  // 用于比较的数据2
   data2: T;
-  // 严格模式，默认开启，关闭后diff算法会忽略数据类型差异，如0="0"
   strictMode?: boolean;
-  // 仅展示数据2
   singleMode?: boolean;
-  // 是否展示最上方的标题
   showTitle?: boolean;
-  // 数据1的标题
   data1Title?: string;
-  // 数据2的标题
   data2Title?: string;
-  // 改变Key以触发重新染色和高度对齐
   refreshKey?: number;
-  // data1和data2的整体样式
   colStyle?: React.CSSProperties;
-  // 每条数据label的样式
   labelStyle?: React.CSSProperties;
-  // 每条数据content的样式
   contentStyle?: React.CSSProperties;
-  // diff组件整体样式
   style?: React.CSSProperties;
 }) {
   const {
@@ -472,7 +479,8 @@ export default function Diff<T extends DataTypeBase>(props: {
       if (!dragStartEvent) return;
       const leftWidth = oldLeftWidth - (dragStartEvent.clientX - e.clientX);
       setLeftWidth(leftWidth);
-      setRightWidth(containerWrapperRef.current!.clientWidth - leftWidth);
+      // setRightWidth(containerWrapperRef.current!.clientWidth - 32 - 4 - leftWidth);
+
     }, 16);
 
     if (dragStartEvent) {
@@ -493,7 +501,7 @@ export default function Diff<T extends DataTypeBase>(props: {
       ref={containerWrapperRef}
       style={{
         display: "flex",
-        // width: parseInt(String(colStyle.width ?? "650")) * 2 + 100 + "px",
+        width: parseInt(String(colStyle.width ?? "650")) * 2 + 100 + "px",
         ...style,
       }}
     >
@@ -502,7 +510,8 @@ export default function Diff<T extends DataTypeBase>(props: {
           marginLeft: "16px",
           marginRight: "16px",
           display: singleMode ? "none" : "block",
-          width: leftWidth + "px",
+          minWidth: leftWidth + "px",
+          maxWidth: leftWidth + "px",
           overflowX: "scroll",
         }}
       >
@@ -545,6 +554,7 @@ export default function Diff<T extends DataTypeBase>(props: {
         }}
         ref={mainRef}
         onMouseDown={(e) => {
+          e.persist()
           setDragStartEvent(e);
           body!.style.cursor = "col-resize";
           body!.style.userSelect = "none";
@@ -563,7 +573,7 @@ export default function Diff<T extends DataTypeBase>(props: {
           marginLeft: "16px",
           marginRight: "16px",
           display: singleMode ? "none" : "block",
-          width: rightWidth + "px",
+          // width: rightWidth + "px",
           overflowX: "scroll",
         }}
       >

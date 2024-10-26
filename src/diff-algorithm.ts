@@ -404,6 +404,17 @@ export function alignAndDiff(props: {
   return { diffRes, alignedData1, alignedData2 };
 }
 
+/**
+ * Align data
+ * @param props An object containing the following properties:
+ *   - data1: The first data object to be aligned
+ *   - data2: The second data object to be aligned
+ *   - isEqualMap: A map of custom equality functions for specific paths
+ *   - arrayAlignLCSMap: A map of paths to use LCS alignment for arrays
+ *   - arrayAlignCurrentDataMap: A map of paths to use current data alignment for arrays
+ *   - arrayNoAlignMap: A map of paths where arrays should not be aligned
+ * @returns An object containing the aligned versions of arr1 and arr2
+ */
 export function align(props: {
   data1: any;
   data2: any;
@@ -440,12 +451,12 @@ export function align(props: {
 }
 
 /**
- *
- * @param data1
- * @param data2
- * @returns  diff结果的结构：
- * a.b.c:"CHANGED"
- * a.c.0.d:"REMOVED"
+ * Compare two data objects and generate a difference result
+ * @param data1 The first data object to compare
+ * @param data2 The second data object to compare
+ * @param isEqualMap A map of custom equality check functions
+ * @param strictMode Whether to use strict mode for comparison
+ * @returns An object containing the difference status for each data path
  */
 export function diff(
   data1: any,

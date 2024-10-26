@@ -9,7 +9,7 @@ const initialFormData = {
   introduction:
     "react-diff-viz is a React component that compares and renders complex object differences",
   link: "https://github.com/LittleWhite-Hai/react-diff-viz",
-  package_size: 133,
+  package_size: 43,
   create_time: [1727765900000, 2897765900000],
   npm_dependencies: ["react", "react-dom", "lodash"],
   build_tool: "vite",
@@ -146,47 +146,52 @@ function App() {
       </div>
 
       <div>
-        <div
-          style={{ display: "flex", justifyContent: "end", width: "1500px" }}
-        >
-          <a
-            onClick={(e) => {
-              e.preventDefault();
-              setFormVisible(!formVisible);
-            }}
-            style={{
-              marginRight: "20px",
-              cursor: "pointer",
-            }}
-          >
-            {formVisible ? "Show Diff" : "Show Editor"}
-          </a>
-          <a
-            href=""
-            onClick={(e) => {
-              e.preventDefault();
-              setFormData(initialFormData);
-            }}
-            style={{
-              cursor: "pointer",
-              marginRight: "20px",
-            }}
-          >
-            Reset Data
-          </a>
+        <div style={{ display: "flex", justifyContent: "end", width: "1500px" }}>
+          <div>
+            <div style={{ display: "flex", justifyContent: "end" }}><a href="https://github.com/LittleWhite-Hai/react-diff-viz/blob/main/docs/src/App.tsx" target="_blank">Demo Code Source</a></div>
 
-          <a
-            href=""
-            onClick={(e) => {
-              e.preventDefault();
-              setCount(count + 1);
-            }}
-            style={{
-              cursor: "pointer",
-            }}
-          >
-            Align And Color
-          </a>
+            <div style={{ display: "flex", justifyContent: "end" }}>
+              <a
+                onClick={(e) => {
+                  e.preventDefault();
+                  setFormVisible(!formVisible);
+                }}
+                style={{
+                  marginRight: "20px",
+                  cursor: "pointer",
+                }}
+              >
+                {formVisible ? "Show Diff" : "Show Editor"}
+              </a>
+              <a
+                href=""
+                onClick={(e) => {
+                  e.preventDefault();
+                  setFormData(initialFormData);
+                }}
+                style={{
+                  cursor: "pointer",
+                  marginRight: "20px",
+                }}
+              >
+                Reset Data
+              </a>
+
+              <a
+                href=""
+                onClick={(e) => {
+                  e.preventDefault();
+                  setCount(count + 1);
+                }}
+                style={{
+                  cursor: "pointer",
+                }}
+              >
+                Align And Color
+              </a>
+            </div>
+
+          </div>
         </div>
         <div
           style={{
@@ -364,9 +369,12 @@ function App() {
           style={{
             border: "1px dashed gray",
           }}
+          colStyle={{
+            width: "700px",
+          }}
         />
       </div>
-    </div>
+    </div >
   );
 }
 

@@ -183,7 +183,8 @@ export default function MyForm(props: any) {
       console.log("initialFormData: ", initialValues);
       formRef.current.setFieldsValue({
         ...initialValues,
-        name: "React-diff-viz",
+
+        build_tool: "Rollup",
         create_time: [1727765900000, 2897165900000],
         other_tools: [
           {
