@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
-import Diff from "react-diff-viz";
+import Diff from "../../src/index";
 import Form from "./form";
 import { Card, Link, Rate } from "@arco-design/web-react";
 
@@ -361,8 +361,6 @@ function App() {
               path: "alignAlignType",
             },
           ]}
-          labelStyle={{ width: "25%" }}
-          colStyle={{ width: "650px" }}
           style={{
             border: "1px dashed gray",
           }}

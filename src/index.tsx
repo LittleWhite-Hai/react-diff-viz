@@ -221,8 +221,8 @@ export default function Diff<T extends DataTypeBase>(props: {
     data1Title = "Before Data",
     data2Title = "Current Data",
     colStyle = { width: "650px" },
-    labelStyle = { width: "30%" },
-    contentStyle = { width: "65%" },
+    labelStyle = { minWidth: "30%" },
+    contentStyle = {},
     style,
   } = props;
 
@@ -452,12 +452,6 @@ export default function Diff<T extends DataTypeBase>(props: {
     useState<React.MouseEvent<HTMLDivElement, MouseEvent>>();
   const mainRef = useRef<any>(null);
 
-  const handleMouseMove = throttle((e: MouseEvent) => {
-    if (!dragStartEvent) return;
-    const leftWidth = oldLeftWidth - (dragStartEvent.clientX - e.clientX);
-    setLeftWidth(leftWidth);
-    setRightWidth(containerWrapperRef.current!.clientWidth - leftWidth);
-  }, 16);
 
   useEffect(() => {
     const handleMouseUp = () => {
@@ -469,6 +463,12 @@ export default function Diff<T extends DataTypeBase>(props: {
         alignAndColorDoms();
       }, 60);
     };
+    const handleMouseMove = throttle((e: MouseEvent) => {
+      if (!dragStartEvent) return;
+      const leftWidth = oldLeftWidth - (dragStartEvent.clientX - e.clientX);
+      setLeftWidth(leftWidth);
+      setRightWidth(containerWrapperRef.current!.clientWidth - leftWidth);
+    }, 16);
 
     if (dragStartEvent) {
       document.addEventListener("mousemove", handleMouseMove);
@@ -480,6 +480,7 @@ export default function Diff<T extends DataTypeBase>(props: {
       document.removeEventListener("mouseup", handleMouseUp);
     };
   }, [dragStartEvent]);
+
   const body = useMemo(() => document.querySelector("body"), []);
 
   return (
