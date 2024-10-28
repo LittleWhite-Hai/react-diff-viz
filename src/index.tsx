@@ -184,8 +184,8 @@ function RenderFieldItem<T extends DataTypeBase>(props: {
 
 /**
  * The Diff component is used to compare and display the differences between two sets of data
- * 
- * @param 
+ *
+ * @param
  * @param vizItems - Describes the rendering method and diff calculation method for the data
  * @param data1 - The first set of data for comparison
  * @param data2 - The second set of data for comparison
@@ -195,11 +195,11 @@ function RenderFieldItem<T extends DataTypeBase>(props: {
  * @param data1Title - Title for data1
  * @param data2Title - Title for data2
  * @param refreshKey - Change this key to trigger recoloring and height alignment
- * @param colStyle - Overall style for data1 and data2 columns
  * @param labelStyle - Style for each data label
  * @param contentStyle - Style for each data content
- * @param style - Style for the diff component
- * @returns react node component 
+ * @param colStyle - Overall style for data1 and data2 columns(width only support px)
+ * @param style - Style for the diff component(width only support px)
+ * @returns react node component
  */
 
 export default function Diff<T extends DataTypeBase>(props: {
@@ -225,10 +225,10 @@ export default function Diff<T extends DataTypeBase>(props: {
     refreshKey = 0,
     data1Title = "Before Data",
     data2Title = "Current Data",
-    colStyle = { width: "650px" },
+    colStyle = {},
     labelStyle = { minWidth: "25%" },
     contentStyle = {},
-    style,
+    style = {},
   } = props;
   let { data1, data2 } = props;
   if (singleMode) {
@@ -238,6 +238,22 @@ export default function Diff<T extends DataTypeBase>(props: {
       data1 = data2;
     }
   }
+
+  const [colWidth, width] = useMemo(() => {
+    const width = parseInt(
+      String(style.width ?? style.minWidth ?? style.maxWidth)
+    );
+    const colWidth = parseInt(
+      String(colStyle.width ?? colStyle.minWidth ?? colStyle.maxWidth)
+    );
+
+    if (!isNaN(width) && width) {
+      return [(width - 100) / 2, width];
+    } else if (!isNaN(colWidth) && colWidth) {
+      return [colWidth, colWidth * 2 + 100];
+    }
+    return [650, 1350];
+  }, [colStyle, style]);
 
   const { diffRes, alignedData1, alignedData2, arrayMap } = useMemo(() => {
     const {
@@ -451,15 +467,9 @@ export default function Diff<T extends DataTypeBase>(props: {
     }, 18);
   }, [diffRes, wrapperRef1, wrapperRef2, refreshKey]);
 
-  const [leftWidth, setLeftWidth] = useState<number>(
-    parseInt((colStyle.width ?? "650") as string)
-  );
-  const [rightWidth, setRightWidth] = useState<number>(
-    parseInt((colStyle.width ?? "650") as string)
-  );
-  const [oldLeftWidth, setOldLeftWidth] = useState<number>(
-    parseInt((colStyle.width ?? "650") as string)
-  );
+  const [leftWidth, setLeftWidth] = useState<number>(colWidth);
+
+  const [oldLeftWidth, setOldLeftWidth] = useState<number>(colWidth);
 
   const [dragStartEvent, setDragStartEvent] =
     useState<React.MouseEvent<HTMLDivElement, MouseEvent>>();
@@ -478,9 +488,7 @@ export default function Diff<T extends DataTypeBase>(props: {
     const handleMouseMove = throttle((e: MouseEvent) => {
       if (!dragStartEvent) return;
       const leftWidth = oldLeftWidth - (dragStartEvent.clientX - e.clientX);
-      setLeftWidth(leftWidth);
-      // setRightWidth(containerWrapperRef.current!.clientWidth - 32 - 4 - leftWidth);
-
+      setLeftWidth(Math.max(leftWidth, 0));
     }, 16);
 
     if (dragStartEvent) {
@@ -501,7 +509,7 @@ export default function Diff<T extends DataTypeBase>(props: {
       ref={containerWrapperRef}
       style={{
         display: "flex",
-        width: parseInt(String(colStyle.width ?? "650")) * 2 + 100 + "px",
+        width: width + "px",
         ...style,
       }}
     >
@@ -518,6 +526,7 @@ export default function Diff<T extends DataTypeBase>(props: {
         <div
           style={{
             ...colStyle,
+            width: colWidth + "px",
           }}
           ref={wrapperRef1}
         >
@@ -547,24 +556,15 @@ export default function Diff<T extends DataTypeBase>(props: {
           backgroundColor: dragStartEvent ? "rgb(83, 129, 238)" : "gray",
           cursor: "col-resize",
           flex: "1",
-          // marginRight: "1%",
-          // marginLeft: "1%",
           maxWidth: "4px",
           minWidth: "4px",
         }}
         ref={mainRef}
         onMouseDown={(e) => {
-          e.persist()
+          e.persist();
           setDragStartEvent(e);
           body!.style.cursor = "col-resize";
           body!.style.userSelect = "none";
-          // containerWrapperRef.current
-          //   ?.querySelectorAll(`[data-path]`)
-          //   .forEach((i) => {
-          //     if (i instanceof HTMLElement) {
-          //       i.style.height = "unset";
-          //     }
-          //   });
           setOldLeftWidth(leftWidth);
         }}
       ></div>
@@ -572,14 +572,13 @@ export default function Diff<T extends DataTypeBase>(props: {
         style={{
           marginLeft: "16px",
           marginRight: "16px",
-          display: singleMode ? "none" : "block",
-          // width: rightWidth + "px",
           overflowX: "scroll",
         }}
       >
         <div
           style={{
             ...colStyle,
+            width: colWidth + "px",
           }}
           ref={wrapperRef2}
         >

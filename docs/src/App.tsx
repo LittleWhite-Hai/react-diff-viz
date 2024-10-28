@@ -146,9 +146,18 @@ function App() {
       </div>
 
       <div>
-        <div style={{ display: "flex", justifyContent: "end", width: "1500px" }}>
+        <div
+          style={{ display: "flex", justifyContent: "end", width: "1500px" }}
+        >
           <div>
-            <div style={{ display: "flex", justifyContent: "end" }}><a href="https://github.com/LittleWhite-Hai/react-diff-viz/blob/main/docs/src/App.tsx" target="_blank">Demo Code Source</a></div>
+            <div style={{ display: "flex", justifyContent: "end" }}>
+              <a
+                href="https://github.com/LittleWhite-Hai/react-diff-viz/blob/main/docs/src/App.tsx"
+                target="_blank"
+              >
+                Demo Code Source
+              </a>
+            </div>
 
             <div style={{ display: "flex", justifyContent: "end" }}>
               <a
@@ -190,7 +199,6 @@ function App() {
                 Align And Color
               </a>
             </div>
-
           </div>
         </div>
         <div
@@ -369,12 +377,9 @@ function App() {
           style={{
             border: "1px dashed gray",
           }}
-          colStyle={{
-            width: "700px",
-          }}
         />
       </div>
-    </div >
+    </div>
   );
 }
 
