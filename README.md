@@ -102,7 +102,7 @@ https://littlewhite-hai.github.io/react-diff-viz/
 | isEqual               | (v1,v2)=>boolean           | Customize the data diff algorithm                                                                                                         |
 | content               | (v,ext)=>ReactNode         | Customize the data rendering method                                                                                                       |
 | arrayKey              | string                     | Key for arrays, used to mark this data as array type                                                                                      |
-| alignAlignType        | "lcs" \| "data2" \| "none" | Array alignment method, default is longest common subsequence ([lcs](https://en.wikipedia.org/wiki/Longest_common_subsequence)) alignment |
+| arrayAlignType        | "lcs" \| "data2" \| "none" | Array alignment method, default is longest common subsequence ([lcs](https://en.wikipedia.org/wiki/Longest_common_subsequence)) alignment |
 
 ## License
 

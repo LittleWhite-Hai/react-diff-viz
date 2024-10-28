@@ -1,8 +1,6 @@
 import _ from "lodash";
 import { IsEqualFuncType } from "./types";
 
-const EMPTY_SYMBOL = Symbol.for("EMPTY_SYMBOL");
-
 export function getValueByPath(
   obj: Record<string, any>,
   path: string | undefined
@@ -65,11 +63,11 @@ function alignByLCS<T>(props: {
   listKey: string;
   // isEqualMap: Record<string, IsEqualFuncType>;
   // listKeyMap: Record<string, string>;
-}): [(T | typeof EMPTY_SYMBOL)[], (T | typeof EMPTY_SYMBOL)[]] {
+}): [(T | undefined)[], (T | undefined)[]] {
   const { arr1, arr2, lcs, listKey } = props;
 
-  const alignedArr1: (T | typeof EMPTY_SYMBOL)[] = [];
-  const alignedArr2: (T | typeof EMPTY_SYMBOL)[] = [];
+  const alignedArr1: (T | undefined)[] = [];
+  const alignedArr2: (T | undefined)[] = [];
   let arrIdx1 = 0;
   let arrOffset1 = 0;
   let arrIdx2 = 0;
@@ -100,12 +98,12 @@ function alignByLCS<T>(props: {
       arrIdx2++;
     }
     while (arrIdx1 < arrIdx2) {
-      alignedArr1.push(EMPTY_SYMBOL);
+      alignedArr1.push(undefined);
       arrOffset1++;
       arrIdx1++;
     }
     while (arrIdx2 < arrIdx1) {
-      alignedArr2.push(EMPTY_SYMBOL);
+      alignedArr2.push(undefined);
       arrOffset2++;
       arrIdx2++;
     }
@@ -124,12 +122,12 @@ function alignByLCS<T>(props: {
     arrIdx2++;
   }
   while (arrIdx1 < arrIdx2) {
-    alignedArr1.push(EMPTY_SYMBOL);
+    alignedArr1.push(undefined);
     arrOffset1++;
     arrIdx1++;
   }
   while (arrIdx2 < arrIdx1) {
-    alignedArr2.push(EMPTY_SYMBOL);
+    alignedArr2.push(undefined);
     arrOffset2++;
     arrIdx2++;
   }
@@ -176,10 +174,10 @@ function alignByArr2(props: {
     const subArr1 = map1.get(k) ?? [];
     const subArr2 = map2.get(k) ?? [];
     while (subArr1.length < subArr2.length) {
-      subArr1.push(EMPTY_SYMBOL);
+      subArr1.push(undefined);
     }
     while (subArr1.length > subArr2.length) {
-      subArr2.push(EMPTY_SYMBOL);
+      subArr2.push(undefined);
     }
     result1.push(...subArr1);
     result2.push(...subArr2);

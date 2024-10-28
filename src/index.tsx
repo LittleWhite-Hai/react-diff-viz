@@ -33,13 +33,15 @@ function getFieldPathMap<T extends DataTypeBase>(vizItems: VizItems<T>) {
       isEqualMap[path] = field.isEqual;
     }
     if (typeof field.arrayKey === "string") {
-      if (field.alignAlignType === "lcs") {
+      if (field.arrayAlignType === "lcs") {
         arrayAlignLCSMap[path] = field.arrayKey;
-      } else if (field.alignAlignType === "data2") {
+      } else if (field.arrayAlignType === "data2") {
         arrayAlignCurrentDataMap[path] = field.arrayKey;
-      } else if (field.alignAlignType === "none") {
-        arrayNoAlignMap[path] = true;
       }
+      arrayMap[path] = true;
+    }
+    if (field.arrayAlignType === "none") {
+      arrayNoAlignMap[path] = true;
       arrayMap[path] = true;
     }
   });

@@ -47,7 +47,7 @@ const initialFormData = {
   isEqual: "User can customize the data diff algorithm",
   content: "Rendering method",
   arrayKey: "Key for arrays, used to mark this data as array type",
-  alignAlignType:
+  arrayAlignType:
     "Array alignment method, default is longest common subsequence (lcs) alignment",
 };
 function App() {
@@ -261,6 +261,7 @@ function App() {
             {
               label: "Npm Dependencies",
               path: "npm_dependencies",
+              arrayAlignType: "none",
               content: (v: any) => v.join(", "),
             },
             {
@@ -370,8 +371,8 @@ function App() {
               path: "arrayKey",
             },
             {
-              label: "alignAlignType",
-              path: "alignAlignType",
+              label: "arrayAlignType",
+              path: "arrayAlignType",
             },
           ]}
           style={{
