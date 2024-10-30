@@ -145,18 +145,13 @@ function App() {
         </div>
       </div>
 
-      <div>
+      <div style={{ marginLeft: "60px" }}>
         <div
-          style={{ display: "flex", justifyContent: "end", width: "1500px" }}
+          style={{ display: "flex", justifyContent: "end", width: "1360px", marginBottom: "2px" }}
         >
           <div>
             <div style={{ display: "flex", justifyContent: "end" }}>
-              <a
-                href="https://github.com/LittleWhite-Hai/react-diff-viz/blob/main/docs/src/App.tsx"
-                target="_blank"
-              >
-                Demo Code Source
-              </a>
+
             </div>
 
             <div style={{ display: "flex", justifyContent: "end" }}>
@@ -168,6 +163,7 @@ function App() {
                 style={{
                   marginRight: "20px",
                   cursor: "pointer",
+                  color: "gray"
                 }}
               >
                 {formVisible ? "Show Diff" : "Show Editor"}
@@ -181,12 +177,21 @@ function App() {
                 style={{
                   cursor: "pointer",
                   marginRight: "20px",
+                  color: "gray"
                 }}
               >
                 Reset Data
               </a>
-
               <a
+                href="https://github.com/LittleWhite-Hai/react-diff-viz/blob/main/docs/src/App.tsx"
+                target="_blank"
+                style={{
+                  color: "gray"
+                }}
+              >
+                Demo Code Source
+              </a>
+              {/* <a
                 href=""
                 onClick={(e) => {
                   e.preventDefault();
@@ -197,7 +202,7 @@ function App() {
                 }}
               >
                 Align And Color
-              </a>
+              </a> */}
             </div>
           </div>
         </div>
@@ -376,7 +381,7 @@ function App() {
             },
           ]}
           style={{
-            border: "1px dashed gray",
+            border: "6px solid #e5e5e5",
           }}
         />
       </div>

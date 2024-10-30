@@ -223,7 +223,7 @@ export default function Diff<T extends DataTypeBase>(props: {
     vizItems,
     strictMode = true,
     singleMode = false,
-    showTitle = true,
+    showTitle = false,
     refreshKey = 0,
     data1Title = "Before Data",
     data2Title = "Current Data",

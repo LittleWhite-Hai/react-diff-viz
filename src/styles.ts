@@ -8,9 +8,8 @@ export const titleStyle: CSSProperties = {
   fontSize: "19px",
 };
 export const headerStyle: CSSProperties = {
-  // paddingLeft: "16px",
-  marginTop: "12px",
-  marginBottom: "6px",
+  paddingTop: "15px",
+  paddingBottom: "15px",
   height: "24px",
   fontWeight: "bold",
   fontSize: "17px",
