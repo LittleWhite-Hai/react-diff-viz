@@ -147,12 +147,15 @@ function App() {
 
       <div style={{ marginLeft: "60px" }}>
         <div
-          style={{ display: "flex", justifyContent: "end", width: "1360px", marginBottom: "2px" }}
+          style={{
+            display: "flex",
+            justifyContent: "end",
+            width: "1360px",
+            marginBottom: "2px",
+          }}
         >
           <div>
-            <div style={{ display: "flex", justifyContent: "end" }}>
-
-            </div>
+            <div style={{ display: "flex", justifyContent: "end" }}></div>
 
             <div style={{ display: "flex", justifyContent: "end" }}>
               <a
@@ -163,7 +166,7 @@ function App() {
                 style={{
                   marginRight: "20px",
                   cursor: "pointer",
-                  color: "gray"
+                  color: "gray",
                 }}
               >
                 {formVisible ? "Show Diff" : "Show Editor"}
@@ -177,7 +180,7 @@ function App() {
                 style={{
                   cursor: "pointer",
                   marginRight: "20px",
-                  color: "gray"
+                  color: "gray",
                 }}
               >
                 Reset Data
@@ -186,7 +189,7 @@ function App() {
                 href="https://github.com/LittleWhite-Hai/react-diff-viz/blob/main/docs/src/App.tsx"
                 target="_blank"
                 style={{
-                  color: "gray"
+                  color: "gray",
                 }}
               >
                 Demo Code Source
@@ -295,14 +298,14 @@ function App() {
                     style={{ width: 360, marginBottom: 10 }}
                     title={
                       <div data-path={`other_tools.${idx}.name`}>
-                        {item.name}
+                        {item?.name}
                       </div>
                     }
-                    key={item.name}
+                    key={item?.name}
                     extra={<Link>More</Link>}
                   >
                     <div data-path={`other_tools.${idx}.description`}>
-                      {item.description}
+                      {item?.description}
                     </div>
                     <br />
                   </Card>
