@@ -172,20 +172,6 @@ function App() {
                 {formVisible ? "Show Diff" : "Show Editor"}
               </a>
               <a
-                href=""
-                onClick={(e) => {
-                  e.preventDefault();
-                  setFormData(initialFormData);
-                }}
-                style={{
-                  cursor: "pointer",
-                  marginRight: "20px",
-                  color: "gray",
-                }}
-              >
-                Reset Data
-              </a>
-              <a
                 href="https://github.com/LittleWhite-Hai/react-diff-viz/blob/main/docs/src/App.tsx"
                 target="_blank"
                 style={{
