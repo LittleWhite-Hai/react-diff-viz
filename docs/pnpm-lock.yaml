@@ -15,7 +15,7 @@ specifiers:
   json-edit-react: ^1.17.1
   lodash: ^4.17.21
   react: ^18.3.1
-  react-diff-viz: ^1.2.1
+  react-diff-viz: ^1.2.10
   react-dom: ^18.3.1
   typescript: ^5.6.3
   typescript-eslint: ^8.11.0
@@ -28,7 +28,7 @@ dependencies:
   json-edit-react: 1.17.1_react@18.3.1
   lodash: 4.17.21
   react: 18.3.1
-  react-diff-viz: 1.2.1_v6mbkm5ol3kmhlgt36wzh52zpu
+  react-diff-viz: 1.2.10_v6mbkm5ol3kmhlgt36wzh52zpu
   react-dom: 18.3.1_react@18.3.1
 
 devDependencies:
@@ -2487,8 +2487,8 @@ packages:
       react: 18.3.1
     dev: false
 
-  /react-diff-viz/1.2.1_v6mbkm5ol3kmhlgt36wzh52zpu:
-    resolution: {integrity: sha512-BiH+IPxTt8rBI8aTCLqk3eXsUUW1Nn3wcCzQh1Uub6I/gTtZCBwusPt+D9V0vt759vjFU59DceP2bmjNX6Wz8A==}
+  /react-diff-viz/1.2.10_v6mbkm5ol3kmhlgt36wzh52zpu:
+    resolution: {integrity: sha512-aHSTBXE9XqPIDIwMqIsuMkSrHHDg86scDkm9CbTT2NArAVSZp1/U9Ajx83OegEEt6gEgtQWfX8ffsNG7c97RXw==}
     peerDependencies:
       lodash: ^4.17.21 || ^4.17.11 || ^3.10.1
       react: ^16.8.0 || ^17.0.0 || ^18.2.0
