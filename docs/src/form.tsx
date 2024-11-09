@@ -184,7 +184,7 @@ export default function MyForm(props: any) {
       formRef.current.setFieldsValue({
         ...initialValues,
 
-        build_tool: "Rollup",
+        stars: "4.5",
         create_time: [1727765900000, 2897165900000],
         other_tools: [
           {
@@ -280,7 +280,7 @@ export default function MyForm(props: any) {
           rules={[{ required: true, type: "number" }]}
           wrapperCol={{ span: 1 }}
         >
-          <Rate />
+          <Rate allowHalf />
         </FormItem>
 
         <FormItem

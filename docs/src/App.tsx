@@ -12,7 +12,7 @@ const initialFormData = {
   package_size: 43,
   create_time: [1727765900000, 2897765900000],
   npm_dependencies: ["react", "react-dom", "lodash"],
-  build_tool: "vite",
+  build_tool: "rollup",
   tech_stack: ["frontend", "javascript", "react"],
   stars: 5,
   is_support_array: true,
@@ -166,7 +166,7 @@ function App() {
                 style={{
                   marginRight: "20px",
                   cursor: "pointer",
-                  color: "gray",
+                  color: "green",
                 }}
               >
                 {formVisible ? "Show Diff" : "Show Editor"}
