@@ -272,7 +272,7 @@ function App() {
             {
               label: "Stars",
               path: "stars",
-              content: (v: any) => <Rate value={v} readonly />,
+              content: (v: any) => <Rate value={v} readonly allowHalf />,
             },
             {
               label: "Other Tools",
