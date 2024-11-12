@@ -5,6 +5,6 @@ import "./index.css";
 import React from "react";
 
 createRoot(document.getElementById("root")!).render(
-  <App />
-  // <DiffWrapperDemo />
+  // <App />
+  <DiffWrapperDemo />
 );

@@ -1,9 +1,111 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./App.css";
-import Diff from "./diff/index";
+import Diff from "../../src/index";
 import Form from "./form";
 import { Card, Link, Rate } from "@arco-design/web-react";
 const DiffWrapper = Diff.DiffWrapper;
+const align = Diff.align;
+const a = [
+  {
+    category: "柑橘类",
+    items: [
+      { id: 1, name: "橙子" },
+      { id: 2, name: "柚子" },
+      { id: 3, name: "柠檬" },
+    ],
+  },
+  {
+    category: "瓜类",
+    items: [
+      { id: 4, name: "西瓜" },
+      { id: 5, name: "哈密瓜" },
+    ],
+  },
+  {
+    category: "浆果类",
+    items: [
+      { id: 6, name: "葡萄" },
+      { id: 7, name: "樱桃" },
+      { id: 8, name: "蓝莓" },
+      { id: 9, name: "草莓" },
+    ],
+  },
+  {
+    category: "热带水果",
+    items: [{ id: 10, name: "菠萝" }],
+  },
+  {
+    category: "异域水果",
+    items: [
+      { id: 11, name: "芒果" },
+      { id: 12, name: "火龙果" },
+    ],
+  },
+  {
+    category: "其他水果",
+    items: [
+      { id: 13, name: "猕猴桃" },
+      { id: 14, name: "无花果" },
+      { id: 15, name: "石榴" },
+    ],
+  },
+];
+const b = [
+  {
+    category: "柑橘类",
+    items: [
+      { id: 1, name: "橙子" },
+      { id: 2, name: "柚子" },
+      { id: 3, name: "柠檬" },
+    ],
+  },
+  {
+    category: "瓜类",
+    items: [
+      // { id: 4, name: "西瓜" },
+      { id: 5, name: "哈密瓜" },
+    ],
+  },
+  {
+    category: "浆果类",
+    items: [
+      { id: 6, name: "葡萄" },
+      { id: 7, name: "樱桃" },
+      { id: 8, name: "蓝莓" },
+      { id: 9, name: "草莓" },
+    ],
+  },
+  {
+    category: "热带水果",
+    items: [{ id: 10, name: "菠萝" }],
+  },
+  {
+    category: "异域水果",
+    items: [
+      { id: 11, name: "芒果" },
+      { id: 12, name: "火龙果" },
+    ],
+  },
+  {
+    category: "其他水果",
+    items: [
+      { id: 13, name: "猕猴桃" },
+      { id: 14, name: "无花果" },
+      { id: 15, name: "石榴" },
+    ],
+  },
+];
+console.log(
+  "align",
+  align({
+    data1: { x: a },
+    data2: { x: b },
+    arrayAlignLCSMap: {
+      "[]": "category",
+      "[].items.[]": "name",
+    },
+  })
+);
 
 const initialFormData = {
   name: "react-diff-viz",
@@ -220,7 +322,7 @@ function App() {
 
   const [formData, setFormData] = useState(initialFormData);
   useEffect(() => {
-    console.log("formData", formData);
+    // console.log("formData", formData);
   }, [formData]);
 
   const wrapperRef1 = useRef<HTMLDivElement>(null);

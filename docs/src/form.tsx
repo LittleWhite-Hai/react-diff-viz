@@ -179,8 +179,6 @@ export default function MyForm(props: any) {
   const [values, setValues] = useState<any>(initialValues);
   useEffect(() => {
     setTimeout(() => {
-      console.log("props: ", props);
-      console.log("initialFormData: ", initialValues);
       formRef.current.setFieldsValue({
         ...initialValues,
 
@@ -203,7 +201,6 @@ export default function MyForm(props: any) {
   const onValuesChange = (changeValue: any, values: any) => {
     setFormData(values);
     setValues(values);
-    console.log("onValuesChange: ", changeValue, values);
   };
 
   return (

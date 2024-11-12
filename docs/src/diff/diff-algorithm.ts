@@ -202,7 +202,7 @@ function alignByArr2(props: {
  */
 
 /**
- * 获取对象路径值的映射,仅获取Array的值
+ * 获取对象路径值的映射,仅获取Array的值，如果有数组嵌套，则仅获取最外层的数组
  * @param data
  * @returns
  */
@@ -215,10 +215,14 @@ export function getObjectPathArrayMap(data: any) {
     }
     if (Array.isArray(obj)) {
       mapResult[path] = obj;
+      return;
     }
     for (const [key, value] of Object.entries(obj)) {
-      const newPath = path ? `${path}.${key}` : key;
-      traverse(value, newPath);
+      if (path) {
+        traverse(value, `${path}.${key}`);
+      } else {
+        traverse(value, key);
+      }
     }
   }
 
@@ -249,18 +253,16 @@ function getRegPath(path: string) {
     .join(".");
 }
 
-function getPathKey(
-  path: string,
-  regPath: string,
-  map: Record<string, string | boolean>
-) {
-  return map[path] || map[regPath];
+function getPathKey(fullPath: string, map: Record<string, string | boolean>) {
+  const regPath = getRegPath(fullPath);
+  return map[fullPath] || map[regPath];
 }
 
-// 计算两个对象中的所有需对齐的数组，返回对齐后需要修改的数据
-function calcArrayAlign(props: {
+// 递归对齐对象中的数组，会修改data1和data2
+function alignArray(props: {
   data1: any;
   data2: any;
+  pathPrefix?: string;
   arrayAlignLCSMap: Record<string, string>;
   arrayAlignCurrentDataMap: Record<string, string>;
   arrayNoAlignMap: Record<string, true>;
@@ -268,46 +270,57 @@ function calcArrayAlign(props: {
   const {
     data1,
     data2,
+    pathPrefix = "",
     arrayAlignLCSMap,
     arrayAlignCurrentDataMap,
     arrayNoAlignMap,
   } = props;
   const { mapResult: mapResult1 } = getObjectPathArrayMap(data1);
   const { mapResult: mapResult2 } = getObjectPathArrayMap(data2);
-  const alignedResult1: DataArrayType = [];
-  const alignedResult2: DataArrayType = [];
 
   Object.keys(mapResult1).forEach((path) => {
     if (mapResult2[path]) {
-      const regPath = getRegPath(path);
-      if (getPathKey(path, regPath, arrayNoAlignMap)) {
+      const fullPath = pathPrefix + path;
+      let alignedArr1 = data1[path];
+      let alignedArr2 = data2[path];
+      if (getPathKey(fullPath, arrayNoAlignMap)) {
         // do nothing
-      } else if (getPathKey(path, regPath, arrayAlignCurrentDataMap)) {
-        const listKey = getPathKey(path, regPath, arrayAlignCurrentDataMap);
-        const [alignedArr1, alignedArr2] = alignByArr2({
+      } else if (getPathKey(fullPath, arrayAlignCurrentDataMap)) {
+        const listKey = getPathKey(fullPath, arrayAlignCurrentDataMap);
+        [alignedArr1, alignedArr2] = alignByArr2({
           arr1: mapResult1[path],
           arr2: mapResult2[path],
           // todo:支持boolean
           idKey: String(listKey),
         });
-        alignedResult1.push({ path, value: alignedArr1 });
-        alignedResult2.push({ path, value: alignedArr2 });
       } else {
         // 默认使用LCS方法
-        const listKey = getPathKey(path, regPath, arrayAlignLCSMap) as string;
+        const listKey = getPathKey(fullPath, arrayAlignLCSMap) as string;
         const lcs = getLCS(mapResult1[path], mapResult2[path], listKey);
-        const [alignedArr1, alignedArr2] = alignByLCS({
+
+        [alignedArr1, alignedArr2] = alignByLCS({
           arr1: mapResult1[path],
           arr2: mapResult2[path],
           lcs,
           listKey,
         });
-        alignedResult1.push({ path, value: alignedArr1 });
-        alignedResult2.push({ path, value: alignedArr2 });
       }
+
+      for (let i = 0; i < alignedArr1.length && i < alignedArr2.length; i++) {
+        alignArray({
+          ...props,
+          data1: alignedArr1[i],
+          data2: alignedArr2[i],
+          pathPrefix: pathPrefix + i + ".",
+        });
+      }
+
+      data1[path] = alignedArr1;
+      data2[path] = alignedArr2;
     }
   });
-  return [alignedResult1, alignedResult2];
+
+  return [data1, data2];
 }
 
 type DiffItemType = "CHANGED" | "CREATED" | "REMOVED" | "UNCHANGED";
@@ -414,9 +427,8 @@ export function alignAndDiff<T = any>(props: {
   arrayNoAlignMap?: Record<string, true>;
   strictMode?: boolean;
 }) {
-  const { alignedData1, alignedData2 } = align({
+  const [alignedData1, alignedData2] = align({
     ...props,
-    isEqualMap: props.isEqualMap ?? {},
     arrayAlignLCSMap: props.arrayAlignLCSMap ?? {},
     arrayAlignCurrentDataMap: props.arrayAlignCurrentDataMap ?? {},
     arrayNoAlignMap: props.arrayNoAlignMap ?? {},
@@ -444,39 +456,24 @@ export function alignAndDiff<T = any>(props: {
 export function align<T = any>(props: {
   data1: T;
   data2: T;
-  isEqualMap: Record<string, IsEqualFuncType>;
-  arrayAlignLCSMap: Record<string, string>;
-  arrayAlignCurrentDataMap: Record<string, string>;
-  arrayNoAlignMap: Record<string, true>;
+  arrayAlignLCSMap?: Record<string, string>;
+  arrayAlignCurrentDataMap?: Record<string, string>;
+  arrayNoAlignMap?: Record<string, true>;
 }) {
   const {
     data1,
     data2,
-    isEqualMap,
-    arrayAlignLCSMap,
-    arrayAlignCurrentDataMap,
-    arrayNoAlignMap,
+    arrayAlignLCSMap = {},
+    arrayAlignCurrentDataMap = {},
+    arrayNoAlignMap = {},
   } = props;
-  const [alignedResult1, alignedResult2] = calcArrayAlign({
-    data1,
-    data2,
+  return alignArray({
+    data1: _.cloneDeep(data1),
+    data2: _.cloneDeep(data2),
     arrayAlignLCSMap,
     arrayAlignCurrentDataMap,
     arrayNoAlignMap,
   });
-
-  const alignedData1: any = _.cloneDeep(data1);
-  const alignedData2: any = _.cloneDeep(data2);
-  alignedResult1.forEach((item) => {
-    alignedData1[item.path] = item.value;
-  });
-  alignedResult2.forEach((item) => {
-    alignedData2[item.path] = item.value;
-  });
-  return { alignedData1, alignedData2 } as {
-    alignedData1: T;
-    alignedData2: T;
-  };
 }
 
 /**
