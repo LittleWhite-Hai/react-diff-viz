@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
-import Diff from "../../src/index";
+import Diff from "./diff/index";
 import Form from "./form";
 import { Card, Link, Rate } from "@arco-design/web-react";
 
