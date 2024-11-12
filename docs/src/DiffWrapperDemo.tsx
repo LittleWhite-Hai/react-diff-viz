@@ -225,7 +225,7 @@ function App() {
 
   const wrapperRef1 = useRef<HTMLDivElement>(null);
   const wrapperRef2 = useRef<HTMLDivElement>(null);
-  const diffRes = Diff.diff(initialFormData, formData, {}, true);
+  const diffRes = Diff.diff(initialFormData, formData);
 
   return (
     <div>

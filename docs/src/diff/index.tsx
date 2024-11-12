@@ -622,7 +622,7 @@ export default function Diff<T extends DataTypeBase>(props: {
  *
  */
 
-function DiffWrapper<T extends DataTypeBase>(props: {
+function DiffWrapper(props: {
   children: React.ReactNode;
   diffRes: DiffResType;
   wrapperRef1: React.RefObject<HTMLDivElement>;

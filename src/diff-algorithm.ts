@@ -236,6 +236,27 @@ type DataArrayType = {
   value: any[];
 }[];
 
+function getRegPath(path: string) {
+  return path
+    .split(".")
+    .map((i) => {
+      if (/^\d+$/.test(i)) {
+        return "[]";
+      } else {
+        return i;
+      }
+    })
+    .join(".");
+}
+
+function getPathKey(
+  path: string,
+  regPath: string,
+  map: Record<string, string | boolean>
+) {
+  return map[path] || map[regPath];
+}
+
 // 计算两个对象中的所有需对齐的数组，返回对齐后需要修改的数据
 function calcArrayAlign(props: {
   data1: any;
@@ -258,10 +279,11 @@ function calcArrayAlign(props: {
 
   Object.keys(mapResult1).forEach((path) => {
     if (mapResult2[path]) {
-      if (arrayNoAlignMap[path]) {
+      const regPath = getRegPath(path);
+      if (getPathKey(path, regPath, arrayNoAlignMap)) {
         // do nothing
-      } else if (arrayAlignCurrentDataMap[path]) {
-        const listKey = arrayAlignCurrentDataMap[path];
+      } else if (getPathKey(path, regPath, arrayAlignCurrentDataMap)) {
+        const listKey = getPathKey(path, regPath, arrayAlignCurrentDataMap);
         const [alignedArr1, alignedArr2] = alignByArr2({
           arr1: mapResult1[path],
           arr2: mapResult2[path],
@@ -272,7 +294,7 @@ function calcArrayAlign(props: {
         alignedResult2.push({ path, value: alignedArr2 });
       } else {
         // 默认使用LCS方法
-        const listKey = arrayAlignLCSMap[path];
+        const listKey = getPathKey(path, regPath, arrayAlignLCSMap) as string;
         const lcs = getLCS(mapResult1[path], mapResult2[path], listKey);
         const [alignedArr1, alignedArr2] = alignByLCS({
           arr1: mapResult1[path],
@@ -383,21 +405,27 @@ function setNodeDiffRes(
   }
 }
 
-export function alignAndDiff(props: {
-  data1: any;
-  data2: any;
-  isEqualMap: Record<string, IsEqualFuncType>;
-  arrayAlignLCSMap: Record<string, string>;
-  arrayAlignCurrentDataMap: Record<string, string>;
-  arrayNoAlignMap: Record<string, true>;
-  strictMode: boolean;
+export function alignAndDiff<T = any>(props: {
+  data1: T;
+  data2: T;
+  isEqualMap?: Record<string, IsEqualFuncType>;
+  arrayAlignLCSMap?: Record<string, string>;
+  arrayAlignCurrentDataMap?: Record<string, string>;
+  arrayNoAlignMap?: Record<string, true>;
+  strictMode?: boolean;
 }) {
-  const { alignedData1, alignedData2 } = align(props);
+  const { alignedData1, alignedData2 } = align({
+    ...props,
+    isEqualMap: props.isEqualMap ?? {},
+    arrayAlignLCSMap: props.arrayAlignLCSMap ?? {},
+    arrayAlignCurrentDataMap: props.arrayAlignCurrentDataMap ?? {},
+    arrayNoAlignMap: props.arrayNoAlignMap ?? {},
+  });
   const diffRes = diff(
     alignedData1,
     alignedData2,
-    props.isEqualMap,
-    props.strictMode
+    props.isEqualMap ?? {},
+    props.strictMode ?? true
   );
   return { diffRes, alignedData1, alignedData2 };
 }
@@ -413,9 +441,9 @@ export function alignAndDiff(props: {
  *   - arrayNoAlignMap: A map of paths where arrays should not be aligned
  * @returns An object containing the aligned versions of arr1 and arr2
  */
-export function align(props: {
-  data1: any;
-  data2: any;
+export function align<T = any>(props: {
+  data1: T;
+  data2: T;
   isEqualMap: Record<string, IsEqualFuncType>;
   arrayAlignLCSMap: Record<string, string>;
   arrayAlignCurrentDataMap: Record<string, string>;
@@ -437,15 +465,18 @@ export function align(props: {
     arrayNoAlignMap,
   });
 
-  const alignedData1 = _.cloneDeep(data1);
-  const alignedData2 = _.cloneDeep(data2);
+  const alignedData1: any = _.cloneDeep(data1);
+  const alignedData2: any = _.cloneDeep(data2);
   alignedResult1.forEach((item) => {
     alignedData1[item.path] = item.value;
   });
   alignedResult2.forEach((item) => {
     alignedData2[item.path] = item.value;
   });
-  return { alignedData1, alignedData2 };
+  return { alignedData1, alignedData2 } as {
+    alignedData1: T;
+    alignedData2: T;
+  };
 }
 
 /**
@@ -459,8 +490,8 @@ export function align(props: {
 export function diff(
   data1: any,
   data2: any,
-  isEqualMap: Record<string, IsEqualFuncType>,
-  strictMode: boolean
+  isEqualMap?: Record<string, IsEqualFuncType>,
+  strictMode?: boolean
 ) {
   const { arrayResult: arrayPathValue1 } = getObjectPathValueMap(data1);
   const { arrayResult: arrayPathValue2 } = getObjectPathValueMap(data2);
@@ -502,7 +533,7 @@ export function diff(
         isEqualFundamentalData(
           arrayPathValue1[i].value,
           arrayPathValue2[j].value,
-          strictMode
+          strictMode ?? true
         )
       ) {
         setNodeDiffRes(diffRes, arrayPathValue1[i].path, "UNCHANGED");
@@ -522,7 +553,7 @@ export function diff(
     j++;
   }
   // 用户自定义的isEqual会覆盖原本的diff计算
-  Object.entries(isEqualMap).forEach(([path, isEqualFunc]) => {
+  Object.entries(isEqualMap ?? {}).forEach(([path, isEqualFunc]) => {
     const a = getValueByPath(data1, path);
     const b = getValueByPath(data2, path);
     const isEqual = isEqualFunc(a, b, {
