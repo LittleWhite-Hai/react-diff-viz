@@ -289,7 +289,7 @@ function calcArrayAlign(props: {
 }
 
 type DiffItemType = "CHANGED" | "CREATED" | "REMOVED" | "UNCHANGED";
-type DiffResType = Record<string, DiffItemType>;
+export type DiffResType = Record<string, DiffItemType>;
 
 type BaseType = string | number | Date | null | undefined | boolean;
 /**

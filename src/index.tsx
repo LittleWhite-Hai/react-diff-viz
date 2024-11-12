@@ -8,7 +8,13 @@ import React, {
 } from "react";
 import { throttle } from "lodash";
 
-import { align, alignAndDiff, diff, getValueByPath } from "./diff-algorithm";
+import {
+  align,
+  alignAndDiff,
+  diff,
+  DiffResType,
+  getValueByPath,
+} from "./diff-algorithm";
 import {
   ExtType,
   DataTypeBase,
@@ -25,7 +31,6 @@ function getFieldPathMap<T extends DataTypeBase>(vizItems: VizItems<T>) {
   const arrayAlignLCSMap: Record<string, string> = {};
   const arrayAlignCurrentDataMap: Record<string, string> = {};
   const arrayNoAlignMap: Record<string, true> = {};
-  const arrayMap: Record<string, true> = {};
 
   vizItems.forEach((field) => {
     const path: string = field.path ?? "";
@@ -38,11 +43,9 @@ function getFieldPathMap<T extends DataTypeBase>(vizItems: VizItems<T>) {
       } else if (field.arrayAlignType === "data2") {
         arrayAlignCurrentDataMap[path] = field.arrayKey;
       }
-      arrayMap[path] = true;
     }
     if (field.arrayAlignType === "none") {
       arrayNoAlignMap[path] = true;
-      arrayMap[path] = true;
     }
   });
   return {
@@ -50,7 +53,6 @@ function getFieldPathMap<T extends DataTypeBase>(vizItems: VizItems<T>) {
     arrayAlignLCSMap,
     arrayAlignCurrentDataMap,
     arrayNoAlignMap,
-    arrayMap,
   };
 }
 
@@ -257,13 +259,12 @@ export default function Diff<T extends DataTypeBase>(props: {
     return [650, 1350];
   }, [colStyle, style]);
 
-  const { diffRes, alignedData1, alignedData2, arrayMap } = useMemo(() => {
+  const { diffRes, alignedData1, alignedData2 } = useMemo(() => {
     const {
       isEqualMap,
       arrayAlignLCSMap,
       arrayAlignCurrentDataMap,
       arrayNoAlignMap,
-      arrayMap,
     } = getFieldPathMap(vizItems);
 
     const res = alignAndDiff({
@@ -276,7 +277,7 @@ export default function Diff<T extends DataTypeBase>(props: {
       strictMode,
     });
     console.log("diff-res", res);
-    return { ...res, arrayMap };
+    return res;
   }, [data1, data2, vizItems]);
 
   const containerWrapperRef = useRef<HTMLDivElement>(null);
@@ -454,7 +455,7 @@ export default function Diff<T extends DataTypeBase>(props: {
         }
       }
     });
-  }, [diffRes, arrayMap, wrapperRef1, wrapperRef2]);
+  }, [diffRes, wrapperRef1, wrapperRef2]);
 
   useEffect(() => {
     containerWrapperRef.current
@@ -475,7 +476,6 @@ export default function Diff<T extends DataTypeBase>(props: {
 
   const [dragStartEvent, setDragStartEvent] =
     useState<React.MouseEvent<HTMLDivElement, MouseEvent>>();
-  const mainRef = useRef<any>(null);
 
   useEffect(() => {
     const handleMouseUp = () => {
@@ -561,7 +561,6 @@ export default function Diff<T extends DataTypeBase>(props: {
           maxWidth: "4px",
           minWidth: "4px",
         }}
-        ref={mainRef}
         onMouseDown={(e) => {
           e.persist();
           setDragStartEvent(e);
@@ -607,5 +606,7 @@ export default function Diff<T extends DataTypeBase>(props: {
     </div>
   );
 }
+
 Diff.align = align;
 Diff.diff = diff;
+Diff.alignAndDiff = alignAndDiff;
