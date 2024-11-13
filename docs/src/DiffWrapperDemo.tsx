@@ -1,111 +1,32 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./App.css";
-import Diff from "../../src/index";
+import Diff from "./diff/index";
 import Form from "./form";
 import { Card, Link, Rate } from "@arco-design/web-react";
+import { case1, case2, case3, case4, case5 } from "../../test/align";
+
 const DiffWrapper = Diff.DiffWrapper;
 const align = Diff.align;
-const a = [
-  {
-    category: "柑橘类",
-    items: [
-      { id: 1, name: "橙子" },
-      { id: 2, name: "柚子" },
-      { id: 3, name: "柠檬" },
-    ],
-  },
-  {
-    category: "瓜类",
-    items: [
-      { id: 4, name: "西瓜" },
-      { id: 5, name: "哈密瓜" },
-    ],
-  },
-  {
-    category: "浆果类",
-    items: [
-      { id: 6, name: "葡萄" },
-      { id: 7, name: "樱桃" },
-      { id: 8, name: "蓝莓" },
-      { id: 9, name: "草莓" },
-    ],
-  },
-  {
-    category: "热带水果",
-    items: [{ id: 10, name: "菠萝" }],
-  },
-  {
-    category: "异域水果",
-    items: [
-      { id: 11, name: "芒果" },
-      { id: 12, name: "火龙果" },
-    ],
-  },
-  {
-    category: "其他水果",
-    items: [
-      { id: 13, name: "猕猴桃" },
-      { id: 14, name: "无花果" },
-      { id: 15, name: "石榴" },
-    ],
-  },
-];
-const b = [
-  {
-    category: "柑橘类",
-    items: [
-      { id: 1, name: "橙子" },
-      { id: 2, name: "柚子" },
-      { id: 3, name: "柠檬" },
-    ],
-  },
-  {
-    category: "瓜类",
-    items: [
-      // { id: 4, name: "西瓜" },
-      { id: 5, name: "哈密瓜" },
-    ],
-  },
-  {
-    category: "浆果类",
-    items: [
-      { id: 6, name: "葡萄" },
-      { id: 7, name: "樱桃" },
-      { id: 8, name: "蓝莓" },
-      { id: 9, name: "草莓" },
-    ],
-  },
-  {
-    category: "热带水果",
-    items: [{ id: 10, name: "菠萝" }],
-  },
-  {
-    category: "异域水果",
-    items: [
-      { id: 11, name: "芒果" },
-      { id: 12, name: "火龙果" },
-    ],
-  },
-  {
-    category: "其他水果",
-    items: [
-      { id: 13, name: "猕猴桃" },
-      { id: 14, name: "无花果" },
-      { id: 15, name: "石榴" },
-    ],
-  },
-];
-console.log(
-  "align",
-  align({
-    data1: { x: a },
-    data2: { x: b },
-    arrayAlignLCSMap: {
-      "[]": "category",
-      "[].items.[]": "name",
-    },
-  })
-);
+const alignAndDiff = Diff.alignAndDiff;
+
+function testAlign(casen: { a: any; b: any; msg: string }) {
+  const res = alignAndDiff({
+    data1: casen.a,
+    data2: casen.b,
+    arrayAlignLCSMap: { "[]": "category", "[].items.[]": "name" },
+  });
+  console.log("res:", {
+    ...res,
+    diffRes: Object.entries(res.diffRes).filter((x) => x[1] !== "UNCHANGED"),
+  });
+  console.log("msg:", casen.msg);
+  console.log("--------------------------------");
+}
+testAlign(case1);
+testAlign(case2);
+testAlign(case3);
+testAlign(case4);
+testAlign(case5);
 
 const initialFormData = {
   name: "react-diff-viz",

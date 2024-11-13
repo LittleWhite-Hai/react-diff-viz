@@ -213,12 +213,14 @@ export function getObjectPathArrayMap(data: any) {
     if (typeof obj !== "object" || obj === null || obj === undefined) {
       return;
     }
-    if (Array.isArray(obj)) {
+    if (path && Array.isArray(obj)) {
       mapResult[path] = obj;
       return;
     }
     for (const [key, value] of Object.entries(obj)) {
-      if (path) {
+      if (!key) {
+        continue;
+      } else if (path) {
         traverse(value, `${path}.${key}`);
       } else {
         traverse(value, key);
@@ -234,11 +236,6 @@ export function getObjectPathArrayMap(data: any) {
 
   return { mapResult, arrayResult };
 }
-
-type DataArrayType = {
-  path: string;
-  value: any[];
-}[];
 
 function getRegPath(path: string) {
   return path
@@ -467,6 +464,24 @@ export function align<T = any>(props: {
     arrayAlignCurrentDataMap = {},
     arrayNoAlignMap = {},
   } = props;
+  //alignArray 无法处理恰好是数组情形，所以需要单独处理
+  if (Array.isArray(data1) && Array.isArray(data2)) {
+    const [newData1, newData2] = alignArray({
+      data1: { xx: data1 },
+      data2: { xx: data2 },
+      arrayAlignLCSMap: Object.fromEntries(
+        Object.entries(arrayAlignLCSMap).map(([k, v]) => [`xx.${k}`, v])
+      ),
+      arrayAlignCurrentDataMap: Object.fromEntries(
+        Object.entries(arrayAlignCurrentDataMap).map(([k, v]) => [`xx.${k}`, v])
+      ),
+      arrayNoAlignMap: Object.fromEntries(
+        Object.entries(arrayNoAlignMap).map(([k, v]) => [`xx.${k}`, v])
+      ),
+    });
+    return [newData1.xx, newData2.xx];
+  }
+
   return alignArray({
     data1: _.cloneDeep(data1),
     data2: _.cloneDeep(data2),
@@ -492,6 +507,7 @@ export function diff(
 ) {
   const { arrayResult: arrayPathValue1 } = getObjectPathValueMap(data1);
   const { arrayResult: arrayPathValue2 } = getObjectPathValueMap(data2);
+
   // 对于arrayPathValue1和arrayPathValue2，如果path相同，则比较value，如果value不同，则diffRes[path] = "CHANGED"
   // 子节点遍历完成之后，根据子节点的结果，给父节点打diff标记
   // 比如a.b.c.d的结果是"CHANGED"或"REMOVED"或"CREATED"，则diffRes["a.b.c"] = "CHANGED"
