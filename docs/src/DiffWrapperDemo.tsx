@@ -2,8 +2,20 @@ import React, { useEffect, useRef, useState } from "react";
 import "./App.css";
 import Diff from "./diff/index";
 import Form from "./form";
-import { Card, Link, Rate } from "@arco-design/web-react";
+import {
+  Card,
+  Link,
+  Rate,
+  Grid,
+  Typography,
+  Button,
+  Space,
+  Badge,
+  Steps,
+  Table,
+} from "@arco-design/web-react";
 import { case1, case2, case3, case4, case5 } from "../../test/align";
+import _ from "lodash";
 
 const DiffWrapper = Diff.DiffWrapper;
 const align = Diff.align;
@@ -237,6 +249,215 @@ const vizItems = [
     path: "arrayAlignType",
   },
 ];
+
+const originData = {
+  currentStep: 2,
+  tech: {
+    配置模式: "自定义",
+    采集分辨率: "720*1280",
+    采集帧率: "15 fps",
+    编码分辨率: "720*1280",
+    编码码率最小值: "300 bps",
+    编码码率最大值: "800 bps",
+    编码码率默认值: "1500 bps",
+    编码帧率: "15 fpx",
+  },
+  device: {
+    设备名称: "摄像头-A103",
+    编码profile: "high",
+    设备状态: "运行中",
+    在线时长: "72小时",
+  },
+  users: [
+    {
+      key: "1",
+      name: "Jane Doe",
+      salary: 23000,
+      address: "32 Park Road, London",
+      email: "jane.doe@example.com",
+    },
+    {
+      key: "2",
+      name: "Alisa Ross",
+      salary: 25000,
+      address: "35 Park Road, London",
+      email: "alisa.ross@example.com",
+    },
+    {
+      key: "3",
+      name: "Kevin Sandra",
+      salary: 22000,
+      address: "31 Park Road, London",
+      email: "kevin.sandra@example.com",
+    },
+    {
+      key: "4",
+      name: "Ed Hellen",
+      salary: 17000,
+      address: "42 Park Road, London",
+      email: "ed.hellen@example.com",
+    },
+    {
+      key: "5",
+      name: "William Smith",
+      salary: 27000,
+      address: "62 Park Road, London",
+      email: "william.smith@example.com",
+    },
+  ],
+};
+const modifyedData = _.cloneDeep(originData);
+modifyedData.tech.编码分辨率 = "2080*1920";
+modifyedData.users.splice(0, 1);
+// modifyedData.currentStep = 1;
+
+function DescList(props: { data: { label: string; value: string }[] }) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexWrap: "wrap",
+        gap: "16px",
+        width: "100%",
+      }}
+    >
+      {props.data.map((item) => (
+        <div
+          key={item.label}
+          style={{ display: "flex", minWidth: "300px" }}
+          data-path={"tech." + item.label}
+        >
+          <div style={{ width: "120px", color: "gray", textAlign: "right" }}>
+            {item.label}:
+          </div>
+          <div style={{ marginLeft: "10px", color: "rgb(29,33,41)" }}>
+            {item.value}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+function RenderDetail(props: { data: any }) {
+  console.log("props.data123", props.data);
+  return (
+    <div
+      style={{
+        width: "850px",
+        background: "rgb(242,243,245)",
+        padding: "10px 20px",
+      }}
+    >
+      <Card style={{ marginBottom: "20px" }}>
+        <Typography.Title
+          heading={6}
+          style={{
+            marginTop: "0px",
+            textAlign: "left",
+            marginBottom: "20px",
+          }}
+        >
+          审批状态
+        </Typography.Title>
+
+        <Steps
+          current={props.data.currentStep}
+          lineless
+          data-path="currentStep"
+        >
+          <Steps.Step title="提交修改" />
+          <Steps.Step title="审批中" />
+          <Steps.Step title="修改完成" />
+        </Steps>
+      </Card>
+      <Card style={{ marginBottom: "20px" }}>
+        <Typography.Title
+          heading={6}
+          style={{
+            marginTop: "0px",
+            textAlign: "left",
+            marginBottom: "20px",
+          }}
+        >
+          配置信息
+        </Typography.Title>
+
+        <DescList
+          data={Object.entries(props.data.tech).map((i) => ({
+            label: i[0],
+            value: i[1],
+          }))}
+        />
+        <Typography.Title
+          heading={6}
+          style={{
+            marginTop: "50px",
+            textAlign: "left",
+            marginBottom: "10px",
+          }}
+        >
+          配置信息
+        </Typography.Title>
+
+        <DescList
+          data={Object.entries(props.data.device).map((i) => ({
+            label: i[0],
+            value: i[1],
+          }))}
+        />
+      </Card>
+
+      <Card>
+        <Typography.Title
+          heading={6}
+          style={{
+            marginTop: "0px",
+            textAlign: "left",
+            marginBottom: "10px",
+          }}
+        >
+          表格
+        </Typography.Title>
+        <Table
+          data={props.data.users}
+          columns={[
+            {
+              title: "Name",
+              dataIndex: "name",
+              render: (col: any, item: any, index: number) => (
+                <div data-path={`users.${index}.name`}>{col}</div>
+              ),
+            },
+            {
+              title: "Salary",
+              dataIndex: "salary",
+              render: (col: any, item: any, index: number) => (
+                <div data-path={`users.${index}.salary`}>
+                  {col ? col + "元" : ""}
+                </div>
+              ),
+            },
+            {
+              title: "Address",
+              dataIndex: "address",
+              render: (col: any, item: any, index: number) => (
+                <div data-path={`users.${index}.address`}>{col}</div>
+              ),
+            },
+            {
+              title: "Email",
+              dataIndex: "email",
+              render: (col: any, item: any, index: number) => (
+                <div data-path={`users.${index}.email`}>{col}</div>
+              ),
+            },
+          ]}
+        />
+      </Card>
+    </div>
+  );
+}
+
 function App() {
   const [count, setCount] = useState(0);
   const [formVisible, setFormVisible] = useState(false);
@@ -248,10 +469,50 @@ function App() {
 
   const wrapperRef1 = useRef<HTMLDivElement>(null);
   const wrapperRef2 = useRef<HTMLDivElement>(null);
-  const diffRes = Diff.diff(initialFormData, formData);
+  const diffRes = Diff.alignAndDiff({ data1: originData, data2: modifyedData });
+  console.log("diffRes", diffRes);
 
   return (
     <div>
+      <a
+        style={{
+          cursor: "pointer",
+        }}
+        onClick={(e) => {
+          e.preventDefault();
+
+          setCount(count + 1);
+        }}
+      >
+        刷新diff结果
+      </a>
+      <DiffWrapper
+        style={{ display: "flex" }}
+        diffRes={diffRes.diffRes}
+        refreshKey={count}
+        wrapperRef1={wrapperRef1}
+        wrapperRef2={wrapperRef2}
+      >
+        <div ref={wrapperRef1}>
+          <RenderDetail data={diffRes.alignedData1} />
+        </div>
+        <div ref={wrapperRef2}>
+          <RenderDetail
+            data={{
+              ...diffRes.alignedData2,
+              users: diffRes.alignedData2.users.map(
+                (i) =>
+                  i ?? {
+                    key: "",
+                    name: "",
+                    address: "",
+                    email: "",
+                  }
+              ),
+            }}
+          />
+        </div>
+      </DiffWrapper>
       <a
         onClick={(e) => {
           e.preventDefault();
@@ -265,18 +526,7 @@ function App() {
       >
         {formVisible ? "Show Diff" : "Show Editor"}
       </a>
-      <a
-        style={{
-          cursor: "pointer",
-        }}
-        onClick={(e) => {
-          e.preventDefault();
 
-          setCount(count + 1);
-        }}
-      >
-        count + 1
-      </a>
       <div
         style={{
           display: formVisible ? "block" : "none",
@@ -284,44 +534,6 @@ function App() {
       >
         <Form setFormData={setFormData} initialValues={initialFormData} />
       </div>
-
-      <DiffWrapper
-        wrapperRef1={wrapperRef1}
-        wrapperRef2={wrapperRef2}
-        diffRes={diffRes}
-        refreshKey={count}
-        style={{
-          width: "1500px",
-          display: "flex",
-          justifyContent: "space-between",
-          height: "125px",
-        }}
-      >
-        <div ref={wrapperRef1} style={{ width: "600px" }}>
-          {vizItems.map((item) => {
-            return (
-              <div key={item.label} style={{ display: "flex" }}>
-                <div style={{ minWidth: "150px" }}> {item.label}</div>
-                <div data-path={item.path}>
-                  {item.path && JSON.stringify(initialFormData[item.path])}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-        <div ref={wrapperRef2} style={{ width: "600px" }}>
-          {vizItems.map((item) => {
-            return (
-              <div key={item.label} style={{ display: "flex" }}>
-                <div style={{ minWidth: "150px" }}> {item.label}</div>
-                <div data-path={item.path}>
-                  {item.path && JSON.stringify(formData[item.path])}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </DiffWrapper>
     </div>
   );
 }
