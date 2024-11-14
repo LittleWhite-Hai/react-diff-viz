@@ -327,7 +327,7 @@ type BaseType = string | number | Date | null | undefined | boolean;
 /**
  *
  * @param data
- * 获取给定对象路径值的映射,仅获取叶子节点的值
+ * 获取给定对象路径值的映射,分别获取叶子节点和非叶子节点的值；非叶子节点在mapObjectResult中
  * 例子：
  * 输入：data:{age:2,name:"张三",address:{city:"上海",area:"浦东"}}
  * 输出：{
@@ -339,6 +339,7 @@ type BaseType = string | number | Date | null | undefined | boolean;
  */
 export function getObjectPathValueMap(data: any) {
   const mapResult = new Map<string, BaseType>();
+  const mapObjectResult = new Map<string, any>();
 
   function traverse(obj: any, path: string = "") {
     if (
@@ -360,8 +361,10 @@ export function getObjectPathValueMap(data: any) {
       if (
         typeof value === "object" &&
         value !== null &&
+        value !== undefined &&
         !(obj instanceof Date)
       ) {
+        mapObjectResult.set(newPath, value);
         traverse(value, newPath);
       } else {
         if (obj instanceof Date) {
@@ -379,7 +382,11 @@ export function getObjectPathValueMap(data: any) {
     .sort((a, b) => a[0].localeCompare(b[0]))
     .map(([path, value]) => ({ path, value }));
 
-  return { mapResult, arrayResult };
+  const arrayObjectResult = Array.from(mapObjectResult.entries())
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .map(([path, value]) => ({ path, value }));
+
+  return { mapResult, arrayResult, mapObjectResult, arrayObjectResult };
 }
 
 // 根据叶子节点的diff结果，设置父节点的diff结果
@@ -491,6 +498,9 @@ export function align<T = any>(props: {
   });
 }
 
+function isNullOrUndefined(value: any) {
+  return value === null || value === undefined;
+}
 /**
  * Compare two data objects and generate a difference result
  * @param data1 The first data object to compare
@@ -505,8 +515,16 @@ export function diff(
   isEqualMap?: Record<string, IsEqualFuncType>,
   strictMode?: boolean
 ) {
-  const { arrayResult: arrayPathValue1 } = getObjectPathValueMap(data1);
-  const { arrayResult: arrayPathValue2 } = getObjectPathValueMap(data2);
+  const {
+    arrayResult: arrayPathValue1,
+    arrayObjectResult: arrayObjectResult1,
+    mapObjectResult: mapObjectResult1,
+  } = getObjectPathValueMap(data1);
+  const {
+    arrayResult: arrayPathValue2,
+    arrayObjectResult: arrayObjectResult2,
+    mapObjectResult: mapObjectResult2,
+  } = getObjectPathValueMap(data2);
 
   // 对于arrayPathValue1和arrayPathValue2，如果path相同，则比较value，如果value不同，则diffRes[path] = "CHANGED"
   // 子节点遍历完成之后，根据子节点的结果，给父节点打diff标记
@@ -565,6 +583,26 @@ export function diff(
     setNodeDiffRes(diffRes, arrayPathValue2[j].path, "CREATED");
     j++;
   }
+
+  // 标记父节点的REMOVED和CREATED情况
+  const combinedArray = Array.from(
+    new Set([
+      ...arrayObjectResult1.map((x) => x.path),
+      ...arrayObjectResult2.map((x) => x.path),
+    ])
+  );
+  for (let i = 0; i < combinedArray.length; i++) {
+    const path = combinedArray[i];
+    const d1 = mapObjectResult1.get(path);
+    const d2 = mapObjectResult2.get(path);
+
+    if (isNullOrUndefined(d1) && !isNullOrUndefined(d2)) {
+      diffRes[path] = "CREATED";
+    } else if (!isNullOrUndefined(d1) && isNullOrUndefined(d2)) {
+      diffRes[path] = "REMOVED";
+    }
+  }
+
   // 用户自定义的isEqual会覆盖原本的diff计算
   Object.entries(isEqualMap ?? {}).forEach(([path, isEqualFunc]) => {
     const a = getValueByPath(data1, path);
