@@ -308,7 +308,7 @@ function alignArray(props: {
           ...props,
           data1: alignedArr1[i],
           data2: alignedArr2[i],
-          pathPrefix: pathPrefix + i + ".",
+          pathPrefix: fullPath + "." + i + ".",
         });
       }
 

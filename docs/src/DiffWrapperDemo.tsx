@@ -14,7 +14,7 @@ import {
   Steps,
   Table,
 } from "@arco-design/web-react";
-import { case1, case2, case3, case4, case5 } from "../../test/align";
+import { case1, case2, case3, case4, case5, case6 } from "../../test/align";
 import _ from "lodash";
 
 const DiffWrapper = Diff.DiffWrapper;
@@ -25,7 +25,7 @@ function testAlign(casen: { a: any; b: any; msg: string }) {
   const res = alignAndDiff({
     data1: casen.a,
     data2: casen.b,
-    arrayAlignLCSMap: { "[]": "category", "[].items.[]": "name" },
+    arrayAlignLCSMap: { "": "category", "items.[]": "name" },
   });
   console.log("res:", {
     ...res,
@@ -34,11 +34,11 @@ function testAlign(casen: { a: any; b: any; msg: string }) {
   console.log("msg:", casen.msg);
   console.log("--------------------------------");
 }
-testAlign(case1);
-testAlign(case2);
-testAlign(case3);
-testAlign(case4);
-testAlign(case5);
+// testAlign(case1);
+// testAlign(case2);
+// testAlign(case3);
+// testAlign(case4);
+// testAlign(case5);
 
 const initialFormData = {
   name: "react-diff-viz",
@@ -471,9 +471,9 @@ function App() {
 
   const wrapperRef1 = useRef<HTMLDivElement>(null);
   const wrapperRef2 = useRef<HTMLDivElement>(null);
-  const diffRes = alignAndDiff({ data1: originData, data2: modifyedData });
-  console.log("diffRes", diffRes);
-
+  // const diffRes = alignAndDiff({ data1: originData, data2: modifyedData });
+  // console.log("diffRes", diffRes);
+  return "34";
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "end" }}>
