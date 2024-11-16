@@ -309,6 +309,7 @@ const originData = {
 const modifyedData = _.cloneDeep(originData);
 modifyedData.tech.编码分辨率 = "2080*1920";
 modifyedData.users.splice(0, 1);
+modifyedData.users[2].name = "Kevin Sandr";
 // modifyedData.currentStep = 1;
 
 function DescList(props: { data: { label: string; value: string }[] }) {
@@ -370,7 +371,7 @@ function RenderDetail(props: { data: any }) {
           <Steps.Step title="修改完成" />
         </Steps>
       </Card>
-      <Card style={{ marginBottom: "20px" }}>
+      <Card style={{ marginBottom: "20px" }} data-path="tech">
         <Typography.Title
           heading={6}
           style={{
@@ -407,7 +408,7 @@ function RenderDetail(props: { data: any }) {
         />
       </Card>
 
-      <Card>
+      <Card data-path="users">
         <Typography.Title
           heading={6}
           style={{
@@ -460,6 +461,7 @@ function RenderDetail(props: { data: any }) {
 
 function App() {
   const [count, setCount] = useState(0);
+  const [disable, setDisable] = useState(false);
   const [formVisible, setFormVisible] = useState(false);
 
   const [formData, setFormData] = useState(initialFormData);
@@ -469,27 +471,45 @@ function App() {
 
   const wrapperRef1 = useRef<HTMLDivElement>(null);
   const wrapperRef2 = useRef<HTMLDivElement>(null);
-  const diffRes = Diff.alignAndDiff({ data1: originData, data2: modifyedData });
+  const diffRes = alignAndDiff({ data1: originData, data2: modifyedData });
   console.log("diffRes", diffRes);
 
   return (
     <div>
-      <a
-        style={{
-          cursor: "pointer",
-        }}
-        onClick={(e) => {
-          e.preventDefault();
+      <div style={{ display: "flex", justifyContent: "end" }}>
+        <a
+          style={{
+            cursor: "pointer",
+            marginRight: "20px",
+            color: "green",
+          }}
+          onClick={(e) => {
+            e.preventDefault();
 
-          setCount(count + 1);
-        }}
-      >
-        刷新diff结果
-      </a>
+            setDisable(!disable);
+          }}
+        >
+          {disable ? "启用diff" : "禁用diff"}
+        </a>
+        <a
+          style={{
+            cursor: "pointer",
+            color: "green",
+          }}
+          onClick={(e) => {
+            e.preventDefault();
+
+            setCount(count + 1);
+          }}
+        >
+          刷新diff结果
+        </a>
+      </div>
       <DiffWrapper
         style={{ display: "flex" }}
         diffRes={diffRes.diffRes}
         refreshKey={count}
+        disableColoring={disable}
         wrapperRef1={wrapperRef1}
         wrapperRef2={wrapperRef2}
       >
