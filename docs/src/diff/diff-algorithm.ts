@@ -623,14 +623,11 @@ function isEqualFundamentalData(a: BaseType, b: BaseType, strictMode: boolean) {
     return a === b;
   }
   if (
-    ["0", 0, null, undefined, NaN, false].includes(a as any) &&
-    ["0", 0, null, undefined, NaN, false].includes(b as any)
+    ["", null, undefined, NaN].includes(a as any) &&
+    ["", null, undefined, NaN].includes(b as any)
   ) {
     return true;
   }
-  if (a === b || String(a) === String(b)) {
-    return true;
-  }
 
-  return false;
+  return a === b;
 }

@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 import Diff from "./diff/index";
 import Form from "./form";
@@ -14,31 +15,12 @@ import {
   Steps,
   Table,
 } from "@arco-design/web-react";
-import { case1, case2, case3, case4, case5, case6 } from "../../test/align";
 import _ from "lodash";
+import { JsonEditor } from "json-edit-react";
 
 const DiffWrapper = Diff.DiffWrapper;
-const align = Diff.align;
-const alignAndDiff = Diff.alignAndDiff;
 
-function testAlign(casen: { a: any; b: any; msg: string }) {
-  const res = alignAndDiff({
-    data1: casen.a,
-    data2: casen.b,
-    arrayAlignLCSMap: { "": "category", "items.[]": "name" },
-  });
-  console.log("res:", {
-    ...res,
-    diffRes: Object.entries(res.diffRes).filter((x) => x[1] !== "UNCHANGED"),
-  });
-  console.log("msg:", casen.msg);
-  console.log("--------------------------------");
-}
-// testAlign(case1);
-// testAlign(case2);
-// testAlign(case3);
-// testAlign(case4);
-// testAlign(case5);
+const alignAndDiff = Diff.alignAndDiff;
 
 const initialFormData = {
   name: "react-diff-viz",
@@ -92,165 +74,7 @@ const initialFormData = {
     "Array alignment method, default is longest common subsequence (lcs) alignment",
 };
 
-const vizItems = [
-  { label: "Basic Information" },
-  { label: "Component Name", path: "name" },
-  { label: "Introduction", path: "introduction" },
-  {
-    label: "Link",
-    path: "link",
-    content: (v: string) => (
-      <Link
-        href={v}
-        target="_blank"
-        hoverable={false}
-        onClick={() => {
-          open(v);
-        }}
-      >
-        Click to Jump
-      </Link>
-    ),
-  },
-  {
-    label: "Maintenance Time",
-    path: "create_time",
-    content: (v: string) => {
-      if (v) {
-        return (
-          <span>
-            <span data-path="create_time.0">
-              {new Date(v[0]).toLocaleDateString()}
-            </span>
-            <span> ~ </span>
-            <span data-path="create_time.1">
-              {new Date(v[1]).toLocaleDateString()}
-            </span>
-          </span>
-        );
-      }
-    },
-  },
-  {
-    label: "Package Size",
-    path: "package_size",
-    content: (v: string) => v + " kb",
-  },
-  {
-    label: "Npm Dependencies",
-    path: "npm_dependencies",
-    arrayAlignType: "none",
-    content: (v: string[]) => v.join(", "),
-  },
-  {
-    label: "Support Array Diff",
-    path: "is_support_array",
-    content: (v: string) => (v ? "Yes" : "No"),
-  },
-  { label: "Build Tool", path: "build_tool" },
-  {
-    label: "Tech Stack",
-    path: "tech_stack",
-    content: (v: string[]) => v?.join(", "),
-  },
-  {
-    label: "Stars",
-    path: "stars",
-    content: (v: any) => <Rate value={v} readonly allowHalf />,
-  },
-  {
-    label: "Other Tools",
-    path: "other_tools",
-    arrayKey: "name",
-    content: (v: any) =>
-      v.map((item: any, idx: string) => (
-        <Card
-          style={{ width: 360, marginBottom: 10 }}
-          title={<div data-path={`other_tools.${idx}.name`}>{item?.name}</div>}
-          key={item?.name}
-          extra={<Link>More</Link>}
-        >
-          <div data-path={`other_tools.${idx}.description`}>
-            {item?.description}
-          </div>
-          <br />
-        </Card>
-      )),
-  },
-  { label: "Diff Component API" },
-
-  {
-    label: "data1",
-    path: "data1",
-  },
-  {
-    label: "data2",
-    path: "data2",
-  },
-  {
-    label: "vizItems",
-    path: "vizItems",
-  },
-  {
-    label: "colStyle",
-    path: "colStyle",
-  },
-  {
-    label: "labelStyle",
-    path: "labelStyle",
-  },
-  {
-    label: "contentStyle",
-    path: "contentStyle",
-  },
-  {
-    label: "strictMode",
-    path: "strictMode",
-  },
-  {
-    label: "singleMode",
-    path: "singleMode",
-  },
-  {
-    label: "refreshKey",
-    path: "refreshKey",
-  },
-  { label: "VizItems API" },
-  {
-    label: "label",
-    path: "label",
-  },
-  {
-    label: "path",
-    path: "path",
-  },
-  {
-    label: "visible",
-    path: "visible",
-  },
-  {
-    label: "foldable",
-    path: "foldable",
-  },
-  {
-    label: "isEqual",
-    path: "isEqual",
-  },
-  {
-    label: "content",
-    path: "content",
-  },
-  {
-    label: "arrayKey",
-    path: "arrayKey",
-  },
-  {
-    label: "arrayAlignType",
-    path: "arrayAlignType",
-  },
-];
-
-const originData = {
+const d1 = {
   currentStep: 2,
   tech: {
     配置模式: "自定义",
@@ -306,10 +130,10 @@ const originData = {
     },
   ],
 };
-const modifyedData = _.cloneDeep(originData);
-modifyedData.tech.编码分辨率 = "2080*1920";
-modifyedData.users.splice(0, 1);
-modifyedData.users[2].name = "Kevin Sandr";
+const d2 = _.cloneDeep(d1);
+d2.tech.编码分辨率 = "2080*1920";
+d2.users.splice(0, 1);
+d2.users[2].name = "Kevin Sandr";
 // modifyedData.currentStep = 1;
 
 function DescList(props: { data: { label: string; value: string }[] }) {
@@ -384,10 +208,12 @@ function RenderDetail(props: { data: any }) {
         </Typography.Title>
 
         <DescList
-          data={Object.entries(props.data.tech).map((i) => ({
-            label: i[0],
-            value: i[1],
-          }))}
+          data={
+            Object.entries(props.data.tech).map((i) => ({
+              label: i[0],
+              value: i[1],
+            })) as any
+          }
         />
         <Typography.Title
           heading={6}
@@ -401,10 +227,12 @@ function RenderDetail(props: { data: any }) {
         </Typography.Title>
 
         <DescList
-          data={Object.entries(props.data.device).map((i) => ({
-            label: i[0],
-            value: i[1],
-          }))}
+          data={
+            Object.entries(props.data.device).map((i) => ({
+              label: i[0],
+              value: i[1],
+            })) as any
+          }
         />
       </Card>
 
@@ -463,6 +291,8 @@ function App() {
   const [count, setCount] = useState(0);
   const [disable, setDisable] = useState(false);
   const [formVisible, setFormVisible] = useState(false);
+  const [originData, setOriginData] = useState(d1);
+  const [modifiedData, setModifiedData] = useState(d2);
 
   const [formData, setFormData] = useState(initialFormData);
   useEffect(() => {
@@ -471,11 +301,20 @@ function App() {
 
   const wrapperRef1 = useRef<HTMLDivElement>(null);
   const wrapperRef2 = useRef<HTMLDivElement>(null);
-  // const diffRes = alignAndDiff({ data1: originData, data2: modifyedData });
-  // console.log("diffRes", diffRes);
-  return "34";
+  const diffRes = useMemo(
+    () =>
+      alignAndDiff({
+        data1: originData,
+        data2: modifiedData,
+        strictMode: false,
+      }),
+    [originData, modifiedData]
+  );
+  const [c, setc] = useState(false);
   return (
     <div>
+      <Button onClick={() => setc(!c)}>查看JSON数据</Button>
+
       <div style={{ display: "flex", justifyContent: "end" }}>
         <a
           style={{
@@ -505,6 +344,31 @@ function App() {
           刷新diff结果
         </a>
       </div>
+      <div
+        style={{
+          marginTop: "20px",
+          justifyContent: "center",
+          width: "50%",
+          // position: "absolute",
+          display: c ? "none" : "flex",
+          background: "white",
+          zIndex: 1000,
+        }}
+      >
+        <JsonEditor
+          collapse={c}
+          collapseAnimationTime={0}
+          data={originData}
+          setData={(data) => setOriginData(data as any)}
+        />
+        <div style={{ width: "50px" }}></div>
+        <JsonEditor
+          collapse={c}
+          collapseAnimationTime={0}
+          data={modifiedData}
+          setData={(data) => setModifiedData(data as any)} // optional
+        />
+      </div>
       <DiffWrapper
         style={{ display: "flex" }}
         diffRes={diffRes.diffRes}
@@ -521,7 +385,7 @@ function App() {
             data={{
               ...diffRes.alignedData2,
               users: diffRes.alignedData2.users.map(
-                (i) =>
+                (i: any) =>
                   i ?? {
                     key: "",
                     name: "",
@@ -533,27 +397,6 @@ function App() {
           />
         </div>
       </DiffWrapper>
-      <a
-        onClick={(e) => {
-          e.preventDefault();
-          setFormVisible(!formVisible);
-        }}
-        style={{
-          marginRight: "20px",
-          cursor: "pointer",
-          color: "green",
-        }}
-      >
-        {formVisible ? "Show Diff" : "Show Editor"}
-      </a>
-
-      <div
-        style={{
-          display: formVisible ? "block" : "none",
-        }}
-      >
-        <Form setFormData={setFormData} initialValues={initialFormData} />
-      </div>
     </div>
   );
 }
