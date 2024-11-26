@@ -182,386 +182,6 @@ function RenderFieldItem<T extends DataTypeBase>(props: {
 }
 
 /**
- * The Diff component is used to compare and display the differences between two sets of data
- *
- * @param
- * @param vizItems - Describes the rendering method and diff calculation method for the data
- * @param data1 - The first set of data for comparison
- * @param data2 - The second set of data for comparison
- * @param strictMode - Strict mode, enabled by default. When disabled, the diff algorithm ignores data type differences, e.g., 0="0"
- * @param singleMode - Only display data2
- * @param showTitle - Whether to display the title at the top
- * @param data1Title - Title for data1
- * @param data2Title - Title for data2
- * @param refreshKey - Change this key to trigger recoloring and height alignment
- * @param labelStyle - Style for each data label
- * @param contentStyle - Style for each data content
- * @param colStyle - Overall style for data1 and data2 columns(width only support px)
- * @param style - Style for the diff component(width only support px)
- * @returns react node component
- */
-
-export default function Diff<T extends DataTypeBase>(props: {
-  vizItems: VizItems<T>;
-  data1?: T;
-  data2: T;
-  strictMode?: boolean;
-  singleMode?: boolean;
-  showTitle?: boolean;
-  data1Title?: string;
-  data2Title?: string;
-  refreshKey?: number;
-  colStyle?: React.CSSProperties;
-  labelStyle?: React.CSSProperties;
-  contentStyle?: React.CSSProperties;
-  style?: React.CSSProperties;
-}) {
-  const {
-    vizItems,
-    strictMode = true,
-    singleMode = false,
-    showTitle = false,
-    refreshKey = 0,
-    data1Title = "Before Data",
-    data2Title = "Current Data",
-    colStyle = {},
-    labelStyle = { minWidth: "25%" },
-    contentStyle = {},
-    style = {},
-  } = props;
-  let { data1, data2 } = props;
-  if (singleMode) {
-    if (data1 && !data2) {
-      data2 = data1;
-    } else if (!data1 && data2) {
-      data1 = data2;
-    }
-  }
-
-  const [colWidth, width] = useMemo(() => {
-    const width = parseInt(
-      String(style.width ?? style.minWidth ?? style.maxWidth)
-    );
-    const colWidth = parseInt(
-      String(colStyle.width ?? colStyle.minWidth ?? colStyle.maxWidth)
-    );
-
-    if (!isNaN(width) && width) {
-      return [(width - 100) / 2, width];
-    } else if (!isNaN(colWidth) && colWidth) {
-      return [colWidth, colWidth * 2 + 100];
-    }
-    return [650, 1350];
-  }, [colStyle, style]);
-
-  const { diffRes, alignedData1, alignedData2 } = useMemo(() => {
-    const {
-      isEqualMap,
-      arrayAlignLCSMap,
-      arrayAlignCurrentDataMap,
-      arrayNoAlignMap,
-    } = getFieldPathMap(vizItems);
-
-    const res = alignAndDiff({
-      data1: data1,
-      data2: data2,
-      isEqualMap,
-      arrayAlignLCSMap,
-      arrayAlignCurrentDataMap,
-      arrayNoAlignMap,
-      strictMode,
-    });
-    console.log("diff-res", res);
-    return res;
-  }, [data1, data2, vizItems]);
-
-  const containerWrapperRef = useRef<HTMLDivElement>(null);
-  const wrapperRef1 = useRef<HTMLDivElement>(null);
-  const wrapperRef2 = useRef<HTMLDivElement>(null);
-
-  const alignAndColorDoms = useCallback(() => {
-    // 所有的path元素
-    const allElements1: Array<HTMLElement> = Array.from(
-      wrapperRef1.current?.querySelectorAll(`[data-path]`) ?? []
-    );
-    const allElements2: Array<HTMLElement> = Array.from(
-      wrapperRef2.current?.querySelectorAll(`[data-path]`) ?? []
-    );
-
-    const allColoredElements: Array<HTMLElement> = Array.from(
-      containerWrapperRef.current?.querySelectorAll(`[data-colored-path]`) ?? []
-    );
-    allColoredElements.forEach((ele) => {
-      if (
-        ["rgb(253, 226, 226)", "rgb(217, 245, 214)"].includes(
-          ele.style.backgroundColor
-        )
-      ) {
-        ele.style.backgroundColor = "unset";
-      }
-      if (
-        [
-          "4px solid rgb(253, 226, 226)",
-          "4px solid rgb(217, 245, 214)",
-        ].includes(ele.style.borderRight)
-      ) {
-        ele.style.borderRight = "unset";
-        ele.style.paddingRight = "unset";
-      }
-    });
-
-    // path对应dom关系
-    const data1DomMap: Record<string, HTMLElement[]> = {};
-    const data2DomMap: Record<string, HTMLElement[]> = {};
-
-    // path对应的最高dom
-    const pathMaxHeightMap: Record<string, number> = {};
-
-    {
-      // 统计container1里的path对应dom关系和max高度
-      allElements1.forEach((ele) => {
-        const path = ele.getAttribute("data-path");
-        if (path) {
-          const rect = ele.getBoundingClientRect();
-          pathMaxHeightMap[path] = Math.max(
-            pathMaxHeightMap[path] ?? 0,
-            rect.height
-          );
-
-          if (data1DomMap[path]) {
-            data1DomMap[path].push(ele);
-          } else {
-            data1DomMap[path] = [ele];
-          }
-        }
-      });
-    }
-
-    {
-      // 统计container2里的path对应dom关系和max高度
-      allElements2.forEach((ele) => {
-        const path = ele.getAttribute("data-path");
-        if (path) {
-          const rect = ele.getBoundingClientRect();
-          pathMaxHeightMap[path] = Math.max(
-            pathMaxHeightMap[path] ?? 0,
-            rect.height
-          );
-
-          if (data2DomMap[path]) {
-            data2DomMap[path].push(ele);
-          } else {
-            data2DomMap[path] = [ele];
-          }
-        }
-      });
-    }
-
-    // 着色
-    Object.entries(diffRes).forEach(([key, val]: [string, string]) => {
-      const pathDomList1 = data1DomMap[key];
-      const pathDomList2 = data2DomMap[key];
-
-      pathDomList1?.forEach((dom) => {
-        if (["CHANGED", "REMOVED", "CREATED"].includes(val)) {
-          if (dom.querySelectorAll(`[data-path]`).length) {
-            // dom.setAttribute("data-colored-path", key);
-            // dom.style.borderRight = "4px solid rgb(253, 226, 226)";
-            // dom.style.paddingRight = "4px";
-          } else if (["CHANGED", "REMOVED"].includes(val)) {
-            dom.setAttribute("data-colored-path", key);
-            dom.style.backgroundColor = "rgb(253, 226, 226)";
-          }
-        }
-      });
-
-      pathDomList2?.forEach((dom) => {
-        if (["CHANGED", "CREATED", "REMOVED"].includes(val)) {
-          if (dom.querySelectorAll(`[data-path]`).length) {
-            // dom.setAttribute("data-colored-path", key);
-            // dom.style.borderRight = "4px solid rgb(217, 245, 214)";
-            // dom.style.paddingRight = "4px";
-          } else if (["CHANGED", "CREATED"].includes(val)) {
-            dom.setAttribute("data-colored-path", key);
-            dom.style.backgroundColor = "rgb(217, 245, 214)";
-          }
-        }
-      });
-    });
-
-    // 对齐高度1
-    allElements1.forEach((ele) => {
-      const path = ele.getAttribute("data-path");
-      if (path && !ele.querySelectorAll(`[data-path]`).length) {
-        const rect = ele.getBoundingClientRect();
-        if (pathMaxHeightMap[path] > rect.height) {
-          ele.style.height = Math.round(pathMaxHeightMap[path]) + "px";
-        }
-      }
-    });
-    // 对齐高度2
-    allElements2.forEach((ele) => {
-      const path = ele.getAttribute("data-path");
-      if (path && !ele.querySelectorAll(`[data-path]`).length) {
-        const rect = ele.getBoundingClientRect();
-        if (pathMaxHeightMap[path] > rect.height) {
-          ele.style.height = Math.round(pathMaxHeightMap[path]) + "px";
-        }
-      }
-    });
-  }, [diffRes, wrapperRef1, wrapperRef2]);
-
-  useEffect(() => {
-    containerWrapperRef.current
-      ?.querySelectorAll(`[data-path]`)
-      .forEach((i) => {
-        if (i instanceof HTMLElement) {
-          i.style.height = "unset";
-        }
-      });
-    setTimeout(() => {
-      alignAndColorDoms();
-    }, 18);
-  }, [diffRes, wrapperRef1, wrapperRef2, refreshKey]);
-
-  const [leftWidth, setLeftWidth] = useState<number>(colWidth);
-
-  const [oldLeftWidth, setOldLeftWidth] = useState<number>(colWidth);
-
-  const [dragStartEvent, setDragStartEvent] =
-    useState<React.MouseEvent<HTMLDivElement, MouseEvent>>();
-
-  useEffect(() => {
-    const handleMouseUp = () => {
-      body!.style.cursor = "unset";
-      body!.style.userSelect = "unset";
-      setDragStartEvent(undefined);
-      setTimeout(() => {
-        // 拖拽后，重新对齐高度
-        // alignAndColorDoms();
-      }, 60);
-    };
-    const handleMouseMove = throttle((e: MouseEvent) => {
-      if (!dragStartEvent) return;
-      const leftWidth = oldLeftWidth - (dragStartEvent.clientX - e.clientX);
-      setLeftWidth(Math.max(leftWidth, 0));
-    }, 16);
-
-    if (dragStartEvent) {
-      document.addEventListener("mousemove", handleMouseMove);
-      document.addEventListener("mouseup", handleMouseUp);
-    }
-
-    return () => {
-      document.removeEventListener("mousemove", handleMouseMove);
-      document.removeEventListener("mouseup", handleMouseUp);
-    };
-  }, [dragStartEvent]);
-
-  const body = useMemo(() => document.querySelector("body"), []);
-
-  return (
-    <div
-      ref={containerWrapperRef}
-      style={{
-        display: "flex",
-        width: width + "px",
-        ...style,
-      }}
-    >
-      <div
-        style={{
-          marginLeft: "16px",
-          marginRight: "16px",
-          display: singleMode ? "none" : "block",
-          minWidth: leftWidth + "px",
-          maxWidth: leftWidth + "px",
-          overflowX: "scroll",
-        }}
-      >
-        <div
-          style={{
-            ...colStyle,
-            width: colWidth + "px",
-          }}
-          ref={wrapperRef1}
-        >
-          {showTitle && <div style={titleStyle}>{data1Title}</div>}
-          {data1 &&
-            vizItems.map((field) => {
-              const label =
-                typeof field.label === "string" ? field.label : field.key ?? "";
-              return (
-                <RenderFieldItem<T>
-                  key={field.path + label}
-                  data={alignedData1}
-                  data1={alignedData1}
-                  data2={alignedData2}
-                  contentStyle={contentStyle}
-                  labelStyle={labelStyle}
-                  fieldItem={field}
-                  type="data1"
-                />
-              );
-            })}
-        </div>
-      </div>
-      <div
-        style={{
-          display: singleMode ? "none" : "",
-          backgroundColor: dragStartEvent ? "rgb(83, 129, 238)" : "gray",
-          cursor: "col-resize",
-          flex: "1",
-          maxWidth: "4px",
-          minWidth: "4px",
-        }}
-        onMouseDown={(e) => {
-          e.persist();
-          setDragStartEvent(e);
-          body!.style.cursor = "col-resize";
-          body!.style.userSelect = "none";
-          setOldLeftWidth(leftWidth);
-        }}
-      ></div>
-      <div
-        style={{
-          marginLeft: "16px",
-          marginRight: "16px",
-          overflowX: "scroll",
-        }}
-      >
-        <div
-          style={{
-            ...colStyle,
-            width: colWidth + "px",
-          }}
-          ref={wrapperRef2}
-        >
-          {showTitle && <div style={titleStyle}>{data2Title}</div>}
-          {data2 &&
-            vizItems.map((field) => {
-              const label =
-                typeof field.label === "string" ? field.label : field.key ?? "";
-              return (
-                <RenderFieldItem
-                  key={field.path + label}
-                  data={alignedData2}
-                  data1={alignedData1}
-                  data2={alignedData2}
-                  contentStyle={contentStyle}
-                  labelStyle={labelStyle}
-                  fieldItem={field}
-                  type="data2"
-                />
-              );
-            })}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/**
  * 使用范例：
  *
  * const diffRes = diff({
@@ -576,7 +196,7 @@ export default function Diff<T extends DataTypeBase>(props: {
  *
  */
 
-export function DiffWrapper(props: {
+function DiffWrapper(props: {
   children: React.ReactNode;
   diffRes: DiffResType;
   wrapperRef1: React.RefObject<HTMLDivElement>;
@@ -757,7 +377,239 @@ export function DiffWrapper(props: {
   );
 }
 
-Diff.align = align;
-Diff.diff = diff;
-Diff.alignAndDiff = alignAndDiff;
-Diff.DiffWrapper = DiffWrapper;
+/**
+ * The Diff component is used to compare and display the differences between two sets of data
+ *
+ * @param
+ * @param vizItems - Describes the rendering method and diff calculation method for the data
+ * @param data1 - The first set of data for comparison
+ * @param data2 - The second set of data for comparison
+ * @param strictMode - Strict mode, enabled by default. When disabled, the diff algorithm ignores data type differences, e.g., 0="0"
+ * @param singleMode - Only display data2
+ * @param showTitle - Whether to display the title at the top
+ * @param data1Title - Title for data1
+ * @param data2Title - Title for data2
+ * @param refreshKey - Change this key to trigger recoloring and height alignment
+ * @param labelStyle - Style for each data label
+ * @param contentStyle - Style for each data content
+ * @param colStyle - Overall style for data1 and data2 columns(width only support px)
+ * @param style - Style for the diff component(width only support px)
+ * @returns react node component
+ */
+export default function Diff<T extends DataTypeBase>(props: {
+  vizItems: VizItems<T>;
+  data1?: T;
+  data2: T;
+  strictMode?: boolean;
+  singleMode?: boolean;
+  showTitle?: boolean;
+  data1Title?: string;
+  data2Title?: string;
+  refreshKey?: number;
+  colStyle?: React.CSSProperties;
+  labelStyle?: React.CSSProperties;
+  contentStyle?: React.CSSProperties;
+  style?: React.CSSProperties;
+}) {
+  const {
+    vizItems,
+    strictMode = true,
+    singleMode = false,
+    showTitle = false,
+    refreshKey = 0,
+    data1Title = "Before Data",
+    data2Title = "Current Data",
+    colStyle = {},
+    labelStyle = { minWidth: "25%" },
+    contentStyle = {},
+    style = {},
+  } = props;
+  let { data1, data2 } = props;
+  if (singleMode) {
+    if (data1 && !data2) {
+      data2 = data1;
+    } else if (!data1 && data2) {
+      data1 = data2;
+    }
+  }
+
+  const [colWidth, width] = useMemo(() => {
+    const width = parseInt(
+      String(style.width ?? style.minWidth ?? style.maxWidth)
+    );
+    const colWidth = parseInt(
+      String(colStyle.width ?? colStyle.minWidth ?? colStyle.maxWidth)
+    );
+
+    if (!isNaN(width) && width) {
+      return [(width - 100) / 2, width];
+    } else if (!isNaN(colWidth) && colWidth) {
+      return [colWidth, colWidth * 2 + 100];
+    }
+    return [650, 1350];
+  }, [colStyle, style]);
+
+  const { diffRes, alignedData1, alignedData2 } = useMemo(() => {
+    const {
+      isEqualMap,
+      arrayAlignLCSMap,
+      arrayAlignCurrentDataMap,
+      arrayNoAlignMap,
+    } = getFieldPathMap(vizItems);
+
+    const res = alignAndDiff({
+      data1: data1,
+      data2: data2,
+      isEqualMap,
+      arrayAlignLCSMap,
+      arrayAlignCurrentDataMap,
+      arrayNoAlignMap,
+      strictMode,
+    });
+    console.log("diff-res", res);
+    return res;
+  }, [data1, data2, vizItems]);
+
+  const wrapperRef1 = useRef<HTMLDivElement>(null);
+  const wrapperRef2 = useRef<HTMLDivElement>(null);
+
+  const [leftWidth, setLeftWidth] = useState<number>(colWidth);
+
+  const [oldLeftWidth, setOldLeftWidth] = useState<number>(colWidth);
+
+  const [dragStartEvent, setDragStartEvent] =
+    useState<React.MouseEvent<HTMLDivElement, MouseEvent>>();
+
+  useEffect(() => {
+    const handleMouseUp = () => {
+      body!.style.cursor = "unset";
+      body!.style.userSelect = "unset";
+      setDragStartEvent(undefined);
+    };
+    const handleMouseMove = throttle((e: MouseEvent) => {
+      if (!dragStartEvent) return;
+      const leftWidth = oldLeftWidth - (dragStartEvent.clientX - e.clientX);
+      setLeftWidth(Math.max(leftWidth, 0));
+    }, 16);
+
+    if (dragStartEvent) {
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
+    }
+
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [dragStartEvent]);
+
+  const body = useMemo(() => document.querySelector("body"), []);
+
+  return (
+    <DiffWrapper
+      diffRes={diffRes}
+      wrapperRef1={wrapperRef1}
+      wrapperRef2={wrapperRef2}
+      refreshKey={refreshKey}
+      style={{
+        display: "flex",
+        width: width + "px",
+        ...style,
+      }}
+    >
+      <div
+        style={{
+          marginLeft: "16px",
+          marginRight: "16px",
+          display: singleMode ? "none" : "block",
+          minWidth: leftWidth + "px",
+          maxWidth: leftWidth + "px",
+          overflowX: "scroll",
+        }}
+      >
+        <div
+          style={{
+            ...colStyle,
+            width: colWidth + "px",
+          }}
+          ref={wrapperRef1}
+        >
+          {showTitle && <div style={titleStyle}>{data1Title}</div>}
+          {data1 &&
+            vizItems.map((field) => {
+              const label =
+                typeof field.label === "string" ? field.label : field.key ?? "";
+              return (
+                <RenderFieldItem<T>
+                  key={field.path + label}
+                  data={alignedData1}
+                  data1={alignedData1}
+                  data2={alignedData2}
+                  contentStyle={contentStyle}
+                  labelStyle={labelStyle}
+                  fieldItem={field}
+                  type="data1"
+                />
+              );
+            })}
+        </div>
+      </div>
+      <div
+        style={{
+          display: singleMode ? "none" : "",
+          backgroundColor: dragStartEvent ? "rgb(83, 129, 238)" : "gray",
+          cursor: "col-resize",
+          flex: "1",
+          maxWidth: "4px",
+          minWidth: "4px",
+        }}
+        onMouseDown={(e) => {
+          e.persist();
+          setDragStartEvent(e);
+          body!.style.cursor = "col-resize";
+          body!.style.userSelect = "none";
+          setOldLeftWidth(leftWidth);
+        }}
+      ></div>
+      <div
+        style={{
+          marginLeft: "16px",
+          marginRight: "16px",
+          overflowX: "scroll",
+        }}
+      >
+        <div
+          style={{
+            ...colStyle,
+            width: colWidth + "px",
+          }}
+          ref={wrapperRef2}
+        >
+          {showTitle && <div style={titleStyle}>{data2Title}</div>}
+          {data2 &&
+            vizItems.map((field) => {
+              const label =
+                typeof field.label === "string" ? field.label : field.key ?? "";
+              return (
+                <RenderFieldItem
+                  key={field.path + label}
+                  data={alignedData2}
+                  data1={alignedData1}
+                  data2={alignedData2}
+                  contentStyle={contentStyle}
+                  labelStyle={labelStyle}
+                  fieldItem={field}
+                  type="data2"
+                />
+              );
+            })}
+        </div>
+      </div>
+    </DiffWrapper>
+  );
+}
+export { align, diff, alignAndDiff, DiffWrapper };
+// Diff.align = align;
+// Diff.diff = diff;
+// Diff.alignAndDiff = alignAndDiff;
+// Diff.DiffWrapper = DiffWrapper;

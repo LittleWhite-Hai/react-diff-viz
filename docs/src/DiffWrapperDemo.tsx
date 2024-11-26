@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
-import Diff from "./diff/index";
-import Form from "./form";
+import Diff, { alignAndDiff, DiffWrapper } from "./diff/index";
+import SyntaxHighlighter from "react-syntax-highlighter";
 import {
   Card,
-  Link,
   Rate,
   Grid,
   Typography,
@@ -14,13 +13,14 @@ import {
   Badge,
   Steps,
   Table,
-} from "@arco-design/web-react";
+} from "antd";
 import _ from "lodash";
 import { JsonEditor } from "json-edit-react";
+import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
-const DiffWrapper = Diff.DiffWrapper;
+// const DiffWrapper = Diff.DiffWrapper;
 
-const alignAndDiff = Diff.alignAndDiff;
+// const alignAndDiff = Diff.alignAndDiff;
 
 const initialFormData = {
   name: "react-diff-viz",
@@ -164,7 +164,6 @@ function DescList(props: { data: { label: string; value: string }[] }) {
   );
 }
 function RenderDetail(props: { data: any }) {
-  console.log("props.data123", props.data);
   return (
     <div
       style={{
@@ -175,7 +174,7 @@ function RenderDetail(props: { data: any }) {
     >
       <Card style={{ marginBottom: "20px" }}>
         <Typography.Title
-          heading={6}
+          level={3}
           style={{
             marginTop: "0px",
             textAlign: "left",
@@ -185,19 +184,15 @@ function RenderDetail(props: { data: any }) {
           审批状态
         </Typography.Title>
 
-        <Steps
-          current={props.data.currentStep}
-          lineless
-          data-path="currentStep"
-        >
+        <Steps current={props.data.currentStep} data-path="currentStep">
           <Steps.Step title="提交修改" />
           <Steps.Step title="审批中" />
           <Steps.Step title="修改完成" />
         </Steps>
       </Card>
-      <Card style={{ marginBottom: "20px" }} data-path="tech">
+      <Card style={{ marginBottom: "20px" }}>
         <Typography.Title
-          heading={6}
+          level={3}
           style={{
             marginTop: "0px",
             textAlign: "left",
@@ -216,7 +211,7 @@ function RenderDetail(props: { data: any }) {
           }
         />
         <Typography.Title
-          heading={6}
+          level={3}
           style={{
             marginTop: "50px",
             textAlign: "left",
@@ -236,9 +231,9 @@ function RenderDetail(props: { data: any }) {
         />
       </Card>
 
-      <Card data-path="users">
+      <Card>
         <Typography.Title
-          heading={6}
+          level={3}
           style={{
             marginTop: "0px",
             textAlign: "left",
@@ -248,7 +243,7 @@ function RenderDetail(props: { data: any }) {
           表格
         </Typography.Title>
         <Table
-          data={props.data.users}
+          dataSource={props.data.users}
           columns={[
             {
               title: "Name",
@@ -290,14 +285,8 @@ function RenderDetail(props: { data: any }) {
 function App() {
   const [count, setCount] = useState(0);
   const [disable, setDisable] = useState(false);
-  const [formVisible, setFormVisible] = useState(false);
   const [originData, setOriginData] = useState(d1);
   const [modifiedData, setModifiedData] = useState(d2);
-
-  const [formData, setFormData] = useState(initialFormData);
-  useEffect(() => {
-    // console.log("formData", formData);
-  }, [formData]);
 
   const wrapperRef1 = useRef<HTMLDivElement>(null);
   const wrapperRef2 = useRef<HTMLDivElement>(null);
@@ -310,17 +299,29 @@ function App() {
       }),
     [originData, modifiedData]
   );
-  const [c, setc] = useState(false);
+  const [showJson, setShowJson] = useState(false);
   return (
     <div>
-      <Button onClick={() => setc(!c)}>查看JSON数据</Button>
-
+      {/* <CodeExample /> */}
       <div style={{ display: "flex", justifyContent: "end" }}>
         <a
           style={{
             cursor: "pointer",
             marginRight: "20px",
-            color: "green",
+            // color: "green",
+          }}
+          onClick={(e) => {
+            e.preventDefault();
+            setShowJson(!showJson);
+          }}
+        >
+          查看JSON
+        </a>
+        <a
+          style={{
+            cursor: "pointer",
+            marginRight: "20px",
+            // color: "green",
           }}
           onClick={(e) => {
             e.preventDefault();
@@ -328,9 +329,9 @@ function App() {
             setDisable(!disable);
           }}
         >
-          {disable ? "启用diff" : "禁用diff"}
+          {disable ? "启用DIFF" : "禁用DIFF"}
         </a>
-        <a
+        {/* <a
           style={{
             cursor: "pointer",
             color: "green",
@@ -342,63 +343,126 @@ function App() {
           }}
         >
           刷新diff结果
-        </a>
+        </a> */}
       </div>
-      <div
-        style={{
-          marginTop: "20px",
-          justifyContent: "center",
-          width: "50%",
-          // position: "absolute",
-          display: c ? "none" : "flex",
-          background: "white",
-          zIndex: 1000,
-        }}
-      >
-        <JsonEditor
-          collapse={c}
-          collapseAnimationTime={0}
-          data={originData}
-          setData={(data) => setOriginData(data as any)}
-        />
-        <div style={{ width: "50px" }}></div>
-        <JsonEditor
-          collapse={c}
-          collapseAnimationTime={0}
-          data={modifiedData}
-          setData={(data) => setModifiedData(data as any)} // optional
-        />
-      </div>
-      <DiffWrapper
-        style={{ display: "flex" }}
-        diffRes={diffRes.diffRes}
-        refreshKey={count}
-        disableColoring={disable}
-        wrapperRef1={wrapperRef1}
-        wrapperRef2={wrapperRef2}
-      >
-        <div ref={wrapperRef1}>
-          <RenderDetail data={diffRes.alignedData1} />
-        </div>
-        <div ref={wrapperRef2}>
-          <RenderDetail
-            data={{
-              ...diffRes.alignedData2,
-              users: diffRes.alignedData2.users.map(
-                (i: any) =>
-                  i ?? {
-                    key: "",
-                    name: "",
-                    address: "",
-                    email: "",
-                  }
-              ),
+      <div style={{ width: "1800px" }}>
+        <DiffWrapper
+          style={{ display: "flex" }}
+          diffRes={diffRes.diffRes}
+          refreshKey={count}
+          disableColoring={disable}
+          wrapperRef1={wrapperRef1}
+          wrapperRef2={wrapperRef2}
+        >
+          <div ref={wrapperRef1}>
+            <RenderDetail data={diffRes.alignedData1} />
+          </div>
+          <div
+            style={{
+              marginLeft: "10px",
+              marginRight: "10px",
+              justifyContent: "center",
+              minWidth: "800px",
+              height: "1050px",
+              overflow: "scroll",
+              display: showJson ? "block" : "none",
+              background: "white",
             }}
-          />
-        </div>
-      </DiffWrapper>
+          >
+            <div style={{ display: "flex" }}>
+              <JsonEditor
+                collapse={false}
+                collapseAnimationTime={0}
+                data={originData}
+                setData={(data) => setOriginData(data as any)}
+              />
+              <div style={{ width: "20px" }}></div>
+              <JsonEditor
+                collapse={false}
+                collapseAnimationTime={0}
+                data={modifiedData}
+                setData={(data) => setModifiedData(data as any)} // optional
+              />
+            </div>
+          </div>
+          <div ref={wrapperRef2}>
+            <RenderDetail
+              data={{
+                ...diffRes.alignedData2,
+                users: diffRes.alignedData2.users,
+              }}
+            />
+          </div>
+        </DiffWrapper>
+      </div>
     </div>
   );
 }
 
 export default App;
+
+function CodeExample() {
+  return (
+    <div style={{ marginTop: "20px" }}>
+      <SyntaxHighlighter
+        language="javascript"
+        style={docco}
+        customStyle={{
+          textAlign: "left",
+          padding: "20px",
+          width: "500px",
+        }}
+        codeTagProps={{
+          style: {
+            display: "block",
+            textAlign: "left",
+          },
+        }}
+        wrapLines={true}
+        showLineNumbers
+        lineProps={(lineNumber) => ({
+          style: {
+            display: "block",
+            backgroundColor:
+              lineNumber >= 3 && lineNumber <= 5 ? "#ffeb3b40" : "", // 这里设置你想要高亮的行号范围
+          },
+        })}
+        children={`function RenderData(data) {
+    return (
+      <div>
+        <div data-path="a">{data.a}</div>
+        <div data-path="b.c">{data.b.c}</div>
+        {/*  ...render dom by data */}
+      </div>
+    );
+  }
+  
+  function App(props: { data1: any; data2: any }) {
+    const res = useMemo(
+      () =>
+        alignAndDiff({
+          data1: props.data1,
+          data2: props.data2,
+        }),
+      [props.data1, props.data2]
+    );
+    const ref1 = useRef<HTMLDivElement>(null);
+    const ref2 = useRef<HTMLDivElement>(null);
+  
+    return (
+      <DiffWrapper diffRes={res.diffRes} wrapperRef1={ref1} wrapperRef2={ref2}>
+        <div ref={ref1}>
+          <RenderData data={props.data1} />
+        </div>
+        <div ref={ref2}>
+          <RenderData data={props.data2} />
+        </div>
+      </DiffWrapper>
+    );
+  }`}
+      >
+        {/* ff */}
+      </SyntaxHighlighter>
+    </div>
+  );
+}
