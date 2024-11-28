@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import "./App.css";
 import Diff, { alignAndDiff, DiffWrapper } from "./diff/index";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import {
@@ -282,7 +281,7 @@ function RenderDetail(props: { data: any }) {
   );
 }
 
-function App() {
+export default function DiffWrapperDemo() {
   const [count, setCount] = useState(0);
   const [disable, setDisable] = useState(false);
   const [originData, setOriginData] = useState(d1);
@@ -301,37 +300,44 @@ function App() {
   );
   const [showJson, setShowJson] = useState(false);
   return (
-    <div>
-      {/* <CodeExample /> */}
-      <div style={{ display: "flex", justifyContent: "end" }}>
-        <a
-          style={{
-            cursor: "pointer",
-            marginRight: "20px",
-            // color: "green",
-          }}
-          onClick={(e) => {
-            e.preventDefault();
-            setShowJson(!showJson);
-          }}
-        >
-          查看JSON
-        </a>
-        <a
-          style={{
-            cursor: "pointer",
-            marginRight: "20px",
-            // color: "green",
-          }}
-          onClick={(e) => {
-            e.preventDefault();
+    <div
+      style={{
+        width: "2100px",
+        display: "flex",
+        justifyContent: "center",
+      }}
+    >
+      <div>
+        {/* <CodeExample /> */}
+        <div style={{ display: "flex", justifyContent: "end" }}>
+          <a
+            style={{
+              cursor: "pointer",
+              marginRight: "20px",
+              // color: "green",
+            }}
+            onClick={(e) => {
+              e.preventDefault();
+              setShowJson(!showJson);
+            }}
+          >
+            查看JSON
+          </a>
+          <a
+            style={{
+              cursor: "pointer",
+              marginRight: "20px",
+              // color: "green",
+            }}
+            onClick={(e) => {
+              e.preventDefault();
 
-            setDisable(!disable);
-          }}
-        >
-          {disable ? "启用DIFF" : "禁用DIFF"}
-        </a>
-        {/* <a
+              setDisable(!disable);
+            }}
+          >
+            {disable ? "启用DIFF" : "禁用DIFF"}
+          </a>
+          {/* <a
           style={{
             cursor: "pointer",
             color: "green",
@@ -344,62 +350,61 @@ function App() {
         >
           刷新diff结果
         </a> */}
-      </div>
-      <div style={{ width: "1800px" }}>
-        <DiffWrapper
-          style={{ display: "flex" }}
-          diffRes={diffRes.diffRes}
-          refreshKey={count}
-          disableColoring={disable}
-          wrapperRef1={wrapperRef1}
-          wrapperRef2={wrapperRef2}
-        >
-          <div ref={wrapperRef1}>
-            <RenderDetail data={diffRes.alignedData1} />
-          </div>
-          <div
-            style={{
-              marginLeft: "10px",
-              marginRight: "10px",
-              justifyContent: "center",
-              minWidth: "800px",
-              height: "1050px",
-              overflow: "scroll",
-              display: showJson ? "block" : "none",
-              background: "white",
-            }}
+        </div>
+        <div>
+          <DiffWrapper
+            style={{ display: "flex" }}
+            diffRes={diffRes.diffRes}
+            refreshKey={count}
+            disableColoring={disable}
+            wrapperRef1={wrapperRef1}
+            wrapperRef2={wrapperRef2}
           >
-            <div style={{ display: "flex" }}>
-              <JsonEditor
-                collapse={false}
-                collapseAnimationTime={0}
-                data={originData}
-                setData={(data) => setOriginData(data as any)}
-              />
-              <div style={{ width: "20px" }}></div>
-              <JsonEditor
-                collapse={false}
-                collapseAnimationTime={0}
-                data={modifiedData}
-                setData={(data) => setModifiedData(data as any)} // optional
+            <div ref={wrapperRef1}>
+              <RenderDetail data={diffRes.alignedData1} />
+            </div>
+            <div
+              style={{
+                marginLeft: "10px",
+                marginRight: "10px",
+                justifyContent: "center",
+                minWidth: "800px",
+                height: "1050px",
+                overflow: "scroll",
+                display: showJson ? "block" : "none",
+                background: "white",
+              }}
+            >
+              <div style={{ display: "flex" }}>
+                <JsonEditor
+                  collapse={false}
+                  collapseAnimationTime={0}
+                  data={originData}
+                  setData={(data) => setOriginData(data as any)}
+                />
+                <div style={{ width: "20px" }}></div>
+                <JsonEditor
+                  collapse={false}
+                  collapseAnimationTime={0}
+                  data={modifiedData}
+                  setData={(data) => setModifiedData(data as any)} // optional
+                />
+              </div>
+            </div>
+            <div ref={wrapperRef2}>
+              <RenderDetail
+                data={{
+                  ...diffRes.alignedData2,
+                  users: diffRes.alignedData2.users,
+                }}
               />
             </div>
-          </div>
-          <div ref={wrapperRef2}>
-            <RenderDetail
-              data={{
-                ...diffRes.alignedData2,
-                users: diffRes.alignedData2.users,
-              }}
-            />
-          </div>
-        </DiffWrapper>
+          </DiffWrapper>
+        </div>
       </div>
     </div>
   );
 }
-
-export default App;
 
 function CodeExample() {
   return (
