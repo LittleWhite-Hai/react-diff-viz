@@ -1,14 +1,15 @@
 import DiffDemo from "./DiffDemo.tsx";
 import DiffWrapperDemo from "./DiffWrapperDemo.tsx";
 import "./index.css";
-import React from "react";
+import React, { useState } from "react";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { docco } from "react-syntax-highlighter/dist/cjs/styles/hljs";
-import { Typography } from "antd";
-import FQA from "./FQA.tsx";
+import { Card, Typography } from "antd";
+import { DiffFQA, DiffWrapperFQA } from "./FQA.tsx";
 const { Title } = Typography;
 
 export default function Demo() {
+  const [showDiffWrapper, setShowDiffWrapper] = useState(false);
   return (
     <div style={{ width: "100%", margin: "0 auto" }}>
       <div
@@ -99,33 +100,55 @@ export default function Demo() {
           </div>
         </div>
       </div>
-      <div style={{ width: "1350px", margin: "auto" }}>
-        <Title level={2} style={{ marginBottom: "0" }}>
-          {"<Diff />"}
-          <span style={{ fontSize: "13px", color: "gray", marginLeft: "12px" }}>
-            接入方式较简单，会接管总体的布局样式，并允许你进行一些样式调整
-          </span>
+      <div
+        style={{
+          width: "1350px",
+          margin: "auto",
+        }}
+      >
+        <Title level={3} style={{ marginTop: "0px" }}>
+          用于Diff和渲染两个JSON数据差异的组件，对自定义渲染具有良好支持，
+          为此它提供了两个组件
+          <div
+            style={{ display: "flex", marginTop: "40px", fontWeight: "400" }}
+          >
+            <Card
+              title="<Diff />"
+              bordered={false}
+              style={{
+                width: "45%",
+                marginRight: "10%",
+                background: showDiffWrapper ? "" : "rgb(217, 245, 214, 0.83)",
+                cursor: "pointer",
+              }}
+              onClick={() => setShowDiffWrapper(false)}
+            >
+              接入方式较简单，会接管总体的布局样式，并允许你进行一些样式调整
+            </Card>
+            <Card
+              title="<DiffWrapper />"
+              bordered={false}
+              style={{
+                width: "45%",
+                cursor: "pointer",
+                background: showDiffWrapper ? "rgb(217, 245, 214, 0.83)" : "",
+              }}
+              onClick={() => setShowDiffWrapper(true)}
+            >
+              相较于Diff的理解成本高些，需要在dom上标记数据路径，好处是你可以完全接管布局
+            </Card>
+          </div>
         </Title>
-
+      </div>
+      <div
+        style={{
+          display: showDiffWrapper ? "none" : "block",
+          width: "1350px",
+          margin: "auto",
+        }}
+      >
         <DiffDemo />
         <div>
-          <div>
-            <div style={{ display: "flex" }}>
-              <div
-                style={{
-                  paddingLeft: "20px",
-                  paddingRight: "20px",
-                  width: "400px",
-                }}
-              >
-                <Title level={4}>第一步</Title>
-                <div style={{ fontSize: "20px" }}>
-                  定义vizItems，描述待渲染的数据，以及自定义的渲染方法
-                </div>
-              </div>
-              <CodeExample1 />
-            </div>
-          </div>
           <div style={{ display: "flex" }}>
             <div
               style={{
@@ -134,33 +157,44 @@ export default function Demo() {
                 width: "400px",
               }}
             >
-              <Title level={4}>第二步</Title>
+              <Title level={4}>第一步</Title>
               <div style={{ fontSize: "20px" }}>
-                将data1，data2，及vizItems传入Diff组件
-                <br />
-                <br />
-                <br />
-                完成！
+                定义vizItems，描述待渲染的数据，以及自定义的渲染方法
               </div>
             </div>
-            <CodeExample2 />
+            <CodeExample1 />
           </div>
-
-          <Title level={4}>FQA</Title>
-          <FQA />
         </div>
+        <div style={{ display: "flex" }}>
+          <div
+            style={{
+              paddingLeft: "20px",
+              paddingRight: "20px",
+              width: "400px",
+            }}
+          >
+            <Title level={4}>第二步</Title>
+            <div style={{ fontSize: "20px" }}>
+              将data1，data2，及vizItems传入Diff组件
+              <br />
+              <br />
+              <br />
+              完成！
+            </div>
+          </div>
+          <CodeExample2 />
+        </div>
+
+        <Title level={4}>FQA</Title>
+        <DiffFQA />
       </div>
-      <br />
-      <br />
-      <br />
-      <div style={{ width: "1800px", margin: "auto" }}>
-        <Title level={2} style={{ marginBottom: "0" }}>
-          {"<DiffWrapper />"}
-          <span style={{ fontSize: "13px", color: "gray", marginLeft: "12px" }}>
-            适用于对布局有要求的场景
-            ，相较于Diff的理解成本高些，需要你在dom上标记数据路径，好处是你可以完全接管布局
-          </span>
-        </Title>
+      <div
+        style={{
+          display: showDiffWrapper ? "block" : "none",
+          width: "1600px",
+          margin: "auto",
+        }}
+      >
         <div
           style={{ width: "100%", display: "flex", justifyContent: "center" }}
         >
@@ -217,8 +251,9 @@ export default function Demo() {
             </div>
             <CodeExample4 />
           </div>
+          <Title level={4}>FQA</Title>
+          <DiffWrapperFQA />
         </div>
-        <div style={{ width: "1500px", margin: "auto" }}></div>
       </div>
     </div>
   );
@@ -327,8 +362,8 @@ function CodeExample3() {
         children={`import { diff, DiffWrapper } from "react-diff-viz";
 
 const diffRes = diff({ data1, data2 });
-const ref1 = useRef < HTMLDivElement > null;
-const ref2 = useRef < HTMLDivElement > null;
+const ref1 = useRef<HTMLDivElement>();
+const ref2 = useRef<HTMLDivElement>();
 return (
   <DiffWrapper diffRes={diffRes} wrapperRef1={ref1} wrapperRef2={ref2}>
     <div ref={ref1}>

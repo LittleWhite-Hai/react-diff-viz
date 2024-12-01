@@ -103,7 +103,7 @@ function RenderDetail(props: { data: any }) {
   return (
     <div
       style={{
-        width: "850px",
+        width: "700px",
         background: "rgb(242,243,245)",
         padding: "10px 20px",
       }}

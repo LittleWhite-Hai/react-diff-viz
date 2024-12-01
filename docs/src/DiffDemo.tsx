@@ -44,7 +44,6 @@ const initialFormData = {
     "Title of the data, if only label is provided, it renders a separator title",
   path: "Path of the data",
   visible: "If false, the item will not be displayed",
-  foldable: "Whether it can be folded",
   isEqual: "User can customize the data diff algorithm",
   content: "Rendering method",
   arrayKey: "Key for arrays, used to mark this data as array type",
@@ -114,6 +113,7 @@ export default function DiffDemo() {
       <div
         style={{
           display: formVisible ? "block" : "none",
+          backgroundColor: "white",
         }}
       >
         <Form setFormData={setFormData} initialValues={initialFormData} />
@@ -265,10 +265,6 @@ export default function DiffDemo() {
             path: "visible",
           },
           {
-            label: "foldable",
-            path: "foldable",
-          },
-          {
             label: "isEqual",
             path: "isEqual",
           },
@@ -286,7 +282,8 @@ export default function DiffDemo() {
           },
         ]}
         style={{
-          border: "6px solid #e5e5e5",
+          border: "6px solid white",
+          backgroundColor: "white",
         }}
       />
     </div>

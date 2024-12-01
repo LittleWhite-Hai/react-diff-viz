@@ -37,7 +37,6 @@ export type VizItem<T = DataTypeBase> = {
   path?: string;
   key?: string;
   visible?: VisibleType<T>;
-  foldable?: boolean;
   isEqual?: IsEqualFuncType;
   content?: ContentType<T>;
   arrayKey?: string;
