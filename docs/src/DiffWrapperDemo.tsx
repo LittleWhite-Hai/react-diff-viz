@@ -258,6 +258,7 @@ export default function DiffWrapperDemo() {
           >
             查看JSON
           </a>
+
           <a
             style={{
               cursor: "pointer",
@@ -271,6 +272,15 @@ export default function DiffWrapperDemo() {
             }}
           >
             {disable ? "启用DIFF" : "禁用DIFF"}
+          </a>
+          <a
+            href="https://github.com/LittleWhite-Hai/react-diff-viz/blob/main/docs/src/DiffWrapperDemo.tsx"
+            target="_blank"
+            style={{
+              color: "green",
+            }}
+          >
+            查看源码
           </a>
           {/* <a
           style={{

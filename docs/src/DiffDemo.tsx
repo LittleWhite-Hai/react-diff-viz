@@ -51,7 +51,7 @@ const initialFormData = {
   arrayAlignType:
     "Array alignment method, default is longest common subsequence (lcs) alignment",
 };
-function App() {
+export default function DiffDemo() {
   const [count, setCount] = useState(0);
   const [formVisible, setFormVisible] = useState(false);
 
@@ -62,42 +62,41 @@ function App() {
 
   return (
     <div>
-      <div style={{ marginLeft: "60px" }}>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "end",
-            width: "1360px",
-            marginBottom: "2px",
-          }}
-        >
-          <div>
-            <div style={{ display: "flex", justifyContent: "end" }}></div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "end",
+          width: "1360px",
+          marginBottom: "2px",
+        }}
+      >
+        <div>
+          <div style={{ display: "flex", justifyContent: "end" }}></div>
 
-            <div style={{ display: "flex", justifyContent: "end" }}>
-              <a
-                onClick={(e) => {
-                  e.preventDefault();
-                  setFormVisible(!formVisible);
-                }}
-                style={{
-                  marginRight: "20px",
-                  cursor: "pointer",
-                  color: "green",
-                }}
-              >
-                {formVisible ? "Show Diff" : "Show Editor"}
-              </a>
-              <a
-                href="https://github.com/LittleWhite-Hai/react-diff-viz/blob/main/docs/src/App.tsx"
-                target="_blank"
-                style={{
-                  color: "gray",
-                }}
-              >
-                Demo Code Source
-              </a>
-              {/* <a
+          <div style={{ display: "flex", justifyContent: "end" }}>
+            <a
+              onClick={(e) => {
+                e.preventDefault();
+                setFormVisible(!formVisible);
+              }}
+              style={{
+                marginRight: "20px",
+                cursor: "pointer",
+                color: "green",
+              }}
+            >
+              {formVisible ? "查看Diff" : "编辑数据"}
+            </a>
+            <a
+              href="https://github.com/LittleWhite-Hai/react-diff-viz/blob/main/docs/src/DiffDemo.tsx"
+              target="_blank"
+              style={{
+                color: "green",
+              }}
+            >
+              查看源码
+            </a>
+            {/* <a
                 href=""
                 onClick={(e) => {
                   e.preventDefault();
@@ -109,190 +108,187 @@ function App() {
               >
                 Align And Color
               </a> */}
-            </div>
           </div>
         </div>
-        <div
-          style={{
-            display: formVisible ? "block" : "none",
-          }}
-        >
-          <Form setFormData={setFormData} initialValues={initialFormData} />
-        </div>
-        <Diff
-          strictMode={false}
-          data1={initialFormData}
-          data2={formData}
-          refreshKey={count}
-          singleMode={false}
-          vizItems={[
-            { label: "Basic Information" },
-            { label: "Component Name", path: "name" },
-            { label: "Introduction", path: "introduction" },
-            {
-              label: "Link",
-              path: "link",
-              content: (v: any) => (
-                <Link
-                  href={v}
-                  target="_blank"
-                  hoverable={false}
-                  onClick={() => {
-                    open(v);
-                  }}
-                >
-                  Click to Jump
-                </Link>
-              ),
-            },
-            {
-              label: "Maintenance Time",
-              path: "create_time",
-              content: (v: any) => {
-                if (v) {
-                  return (
-                    <span>
-                      <span data-path="create_time.0">
-                        {new Date(v[0]).toLocaleDateString()}
-                      </span>
-                      <span> ~ </span>
-                      <span data-path="create_time.1">
-                        {new Date(v[1]).toLocaleDateString()}
-                      </span>
-                    </span>
-                  );
-                }
-              },
-            },
-            {
-              label: "Package Size",
-              path: "package_size",
-              content: (v: any) => v + " kb",
-            },
-            {
-              label: "Npm Dependencies",
-              path: "npm_dependencies",
-              arrayAlignType: "none",
-              content: (v: any) => v.join(", "),
-            },
-            {
-              label: "Support Array Diff",
-              path: "is_support_array",
-              content: (v: any) => (v ? "Yes" : "No"),
-            },
-            { label: "Build Tool", path: "build_tool" },
-            {
-              label: "Tech Stack",
-              path: "tech_stack",
-              content: (v: any) => v?.join(", "),
-            },
-            {
-              label: "Stars",
-              path: "stars",
-              content: (v: any) => <Rate value={v} readonly allowHalf />,
-            },
-            {
-              label: "Other Tools",
-              path: "other_tools",
-              arrayKey: "name",
-              content: (v: any) =>
-                v.map((item: any, idx: string) => (
-                  <Card
-                    style={{ width: 360, marginBottom: 10 }}
-                    title={
-                      <div data-path={`other_tools.${idx}.name`}>
-                        {item?.name}
-                      </div>
-                    }
-                    key={item?.name}
-                    extra={<Link>More</Link>}
-                  >
-                    <div data-path={`other_tools.${idx}.description`}>
-                      {item?.description}
-                    </div>
-                    <br />
-                  </Card>
-                )),
-            },
-            { label: "Diff Component API" },
-
-            {
-              label: "data1",
-              path: "data1",
-            },
-            {
-              label: "data2",
-              path: "data2",
-            },
-            {
-              label: "vizItems",
-              path: "vizItems",
-            },
-            {
-              label: "colStyle",
-              path: "colStyle",
-            },
-            {
-              label: "labelStyle",
-              path: "labelStyle",
-            },
-            {
-              label: "contentStyle",
-              path: "contentStyle",
-            },
-            {
-              label: "strictMode",
-              path: "strictMode",
-            },
-            {
-              label: "singleMode",
-              path: "singleMode",
-            },
-            {
-              label: "refreshKey",
-              path: "refreshKey",
-            },
-            { label: "VizItems API" },
-            {
-              label: "label",
-              path: "label",
-            },
-            {
-              label: "path",
-              path: "path",
-            },
-            {
-              label: "visible",
-              path: "visible",
-            },
-            {
-              label: "foldable",
-              path: "foldable",
-            },
-            {
-              label: "isEqual",
-              path: "isEqual",
-            },
-            {
-              label: "content",
-              path: "content",
-            },
-            {
-              label: "arrayKey",
-              path: "arrayKey",
-            },
-            {
-              label: "arrayAlignType",
-              path: "arrayAlignType",
-            },
-          ]}
-          style={{
-            border: "6px solid #e5e5e5",
-          }}
-        />
       </div>
+      <div
+        style={{
+          display: formVisible ? "block" : "none",
+        }}
+      >
+        <Form setFormData={setFormData} initialValues={initialFormData} />
+      </div>
+      <Diff
+        strictMode={false}
+        data1={initialFormData}
+        data2={formData}
+        refreshKey={count}
+        singleMode={false}
+        vizItems={[
+          { label: "Basic Information" },
+          { label: "Component Name", path: "name" },
+          { label: "Introduction", path: "introduction" },
+          {
+            label: "Link",
+            path: "link",
+            content: (v: any) => (
+              <Link
+                href={v}
+                target="_blank"
+                hoverable={false}
+                onClick={() => {
+                  open(v);
+                }}
+              >
+                Click to Jump
+              </Link>
+            ),
+          },
+          {
+            label: "Maintenance Time",
+            path: "create_time",
+            content: (v: any) => {
+              if (v) {
+                return (
+                  <span>
+                    <span data-path="create_time.0">
+                      {new Date(v[0]).toLocaleDateString()}
+                    </span>
+                    <span> ~ </span>
+                    <span data-path="create_time.1">
+                      {new Date(v[1]).toLocaleDateString()}
+                    </span>
+                  </span>
+                );
+              }
+            },
+          },
+          {
+            label: "Package Size",
+            path: "package_size",
+            content: (v: any) => v + " kb",
+          },
+          {
+            label: "Npm Dependencies",
+            path: "npm_dependencies",
+            arrayAlignType: "none",
+            content: (v: any) => v.join(", "),
+          },
+          {
+            label: "Support Array Diff",
+            path: "is_support_array",
+            content: (v: any) => (v ? "Yes" : "No"),
+          },
+          { label: "Build Tool", path: "build_tool" },
+          {
+            label: "Tech Stack",
+            path: "tech_stack",
+            content: (v: any) => v?.join(", "),
+          },
+          {
+            label: "Stars",
+            path: "stars",
+            content: (v: any) => <Rate value={v} readonly allowHalf />,
+          },
+          {
+            label: "Other Tools",
+            path: "other_tools",
+            arrayKey: "name",
+            content: (v: any) =>
+              v.map((item: any, idx: string) => (
+                <Card
+                  style={{ width: 360, marginBottom: 10 }}
+                  title={
+                    <div data-path={`other_tools.${idx}.name`}>
+                      {item?.name}
+                    </div>
+                  }
+                  key={item?.name}
+                  extra={<Link>More</Link>}
+                >
+                  <div data-path={`other_tools.${idx}.description`}>
+                    {item?.description}
+                  </div>
+                  <br />
+                </Card>
+              )),
+          },
+          { label: "Diff Component API" },
+
+          {
+            label: "data1",
+            path: "data1",
+          },
+          {
+            label: "data2",
+            path: "data2",
+          },
+          {
+            label: "vizItems",
+            path: "vizItems",
+          },
+          {
+            label: "colStyle",
+            path: "colStyle",
+          },
+          {
+            label: "labelStyle",
+            path: "labelStyle",
+          },
+          {
+            label: "contentStyle",
+            path: "contentStyle",
+          },
+          {
+            label: "strictMode",
+            path: "strictMode",
+          },
+          {
+            label: "singleMode",
+            path: "singleMode",
+          },
+          {
+            label: "refreshKey",
+            path: "refreshKey",
+          },
+          { label: "VizItems API" },
+          {
+            label: "label",
+            path: "label",
+          },
+          {
+            label: "path",
+            path: "path",
+          },
+          {
+            label: "visible",
+            path: "visible",
+          },
+          {
+            label: "foldable",
+            path: "foldable",
+          },
+          {
+            label: "isEqual",
+            path: "isEqual",
+          },
+          {
+            label: "content",
+            path: "content",
+          },
+          {
+            label: "arrayKey",
+            path: "arrayKey",
+          },
+          {
+            label: "arrayAlignType",
+            path: "arrayAlignType",
+          },
+        ]}
+        style={{
+          border: "6px solid #e5e5e5",
+        }}
+      />
     </div>
   );
 }
-
-export default App;

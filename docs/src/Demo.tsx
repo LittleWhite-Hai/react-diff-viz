@@ -5,11 +5,12 @@ import React from "react";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { docco } from "react-syntax-highlighter/dist/cjs/styles/hljs";
 import { Typography } from "antd";
+import FQA from "./FQA.tsx";
 const { Title } = Typography;
 
 export default function Demo() {
   return (
-    <div>
+    <div style={{ width: "100%", margin: "0 auto" }}>
       <div
         style={{
           width: "100%",
@@ -98,10 +99,15 @@ export default function Demo() {
           </div>
         </div>
       </div>
-      <div style={{ width: "1500px", margin: "auto" }}>
-        <Title level={2}>{"<Diff />"}</Title>
-        {"<Diff />"}
-        的接入方式较简单，会接管总体的布局样式，并允许你进行一些样式调整
+      <div style={{ width: "1350px", margin: "auto" }}>
+        <Title level={2} style={{ marginBottom: "0" }}>
+          {"<Diff />"}
+          <span style={{ fontSize: "13px", color: "gray", marginLeft: "12px" }}>
+            接入方式较简单，会接管总体的布局样式，并允许你进行一些样式调整
+          </span>
+        </Title>
+
+        <DiffDemo />
         <div>
           <div>
             <div style={{ display: "flex" }}>
@@ -139,14 +145,55 @@ export default function Demo() {
             </div>
             <CodeExample2 />
           </div>
+
+          <Title level={4}>FQA</Title>
+          <FQA />
         </div>
-        <DiffDemo />
       </div>
+      <br />
+      <br />
+      <br />
       <div style={{ width: "1800px", margin: "auto" }}>
-        <div style={{ width: "1500px", margin: "auto" }}>
-          <Title level={2}>{"<DiffWrapper />"}</Title>
-          如果你对布局有要求，可以考虑用{"<DiffWrapper />"}
-          ，它需要你的代码配合加上标记，好处是你可以完全接管布局
+        <Title level={2} style={{ marginBottom: "0" }}>
+          {"<DiffWrapper />"}
+          <span style={{ fontSize: "13px", color: "gray", marginLeft: "12px" }}>
+            适用于对布局有要求的场景
+            ，相较于Diff的理解成本高些，需要你在dom上标记数据路径，好处是你可以完全接管布局
+          </span>
+        </Title>
+        <div
+          style={{ width: "100%", display: "flex", justifyContent: "center" }}
+        >
+          <DiffWrapperDemo />
+        </div>
+        <div style={{ display: "flex" }}>
+          <div
+            style={{
+              paddingLeft: "20px",
+              paddingRight: "20px",
+              width: "400px",
+            }}
+          >
+            <Title level={4}>
+              第一步
+              <br />
+            </Title>
+            <div style={{ fontSize: "20px" }}>
+              用diff函数计算data1和data2的数据差异
+            </div>
+            <Title level={4}>
+              第二步
+              <br />
+            </Title>
+            <div style={{ fontSize: "20px" }}>
+              在你的组件外部包裹
+              {"<DiffWrapper />"}
+              ，利用两个ref区分需要对比的区域
+            </div>
+          </div>
+          <CodeExample3 />
+        </div>
+        <div>
           <div style={{ display: "flex" }}>
             <div
               style={{
@@ -156,56 +203,22 @@ export default function Demo() {
               }}
             >
               <Title level={4}>
-                第一步
+                第三步
                 <br />
               </Title>
               <div style={{ fontSize: "20px" }}>
-                用diff函数计算data1和data2的数据差异
-              </div>
-              <Title level={4}>
-                第二步
+                调整你的渲染数据组件，在数据dom上标注对应的data-path
                 <br />
-              </Title>
-              <div style={{ fontSize: "20px" }}>
-                在你的组件外部包裹
-                {"<DiffWrapper />"}
-                ，利用两个ref区分需要对比的区域
+                <br />
+                <br />
+                <br />
+                完成！
               </div>
             </div>
-            <CodeExample3 />
-          </div>
-          <div>
-            <div style={{ display: "flex" }}>
-              <div
-                style={{
-                  paddingLeft: "20px",
-                  paddingRight: "20px",
-                  width: "400px",
-                }}
-              >
-                <Title level={4}>
-                  第三步
-                  <br />
-                </Title>
-                <div style={{ fontSize: "20px" }}>
-                  调整你的渲染数据组件，在数据dom上标注对应的data-path
-                  <br />
-                  <br />
-                  <br />
-                  <br />
-                  完成！
-                </div>
-              </div>
-              <CodeExample4 />
-            </div>
+            <CodeExample4 />
           </div>
         </div>
-
-        <div
-          style={{ width: "100%", display: "flex", justifyContent: "center" }}
-        >
-          <DiffWrapperDemo />
-        </div>
+        <div style={{ width: "1500px", margin: "auto" }}></div>
       </div>
     </div>
   );
