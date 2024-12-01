@@ -2,6 +2,10 @@ import DiffDemo from "./DiffDemo.tsx";
 import DiffWrapperDemo from "./DiffWrapperDemo.tsx";
 import "./index.css";
 import React from "react";
+import SyntaxHighlighter from "react-syntax-highlighter";
+import { docco } from "react-syntax-highlighter/dist/cjs/styles/hljs";
+import { Typography } from "antd";
+const { Title } = Typography;
 
 export default function Demo() {
   return (
@@ -92,24 +96,286 @@ export default function Demo() {
               </div>
             </div>
           </div>
-          <div>
-            <h2>
-              {"<Diff />"}
-              会接管总体的布局样式，如果你对布局没什么想法，可以考虑用它
-            </h2>
-            <DiffDemo />
-          </div>
         </div>
       </div>
-      <h2 style={{ marginTop: "130px" }}>
-        {"<DiffWrapper />"}
-        需要你的代码有一些配合内容，如果你对布局有要求，可以考虑用它
-      </h2>
-      <div
-        style={{ width: "2100px", display: "flex", justifyContent: "center" }}
-      >
-        <DiffWrapperDemo />
+      <div style={{ width: "1500px", margin: "auto" }}>
+        <Title level={2}>{"<Diff />"}</Title>
+        {"<Diff />"}
+        的接入方式较简单，会接管总体的布局样式，并允许你进行一些样式调整
+        <div>
+          <div>
+            <div style={{ display: "flex" }}>
+              <div
+                style={{
+                  paddingLeft: "20px",
+                  paddingRight: "20px",
+                  width: "400px",
+                }}
+              >
+                <Title level={4}>第一步</Title>
+                <div style={{ fontSize: "20px" }}>
+                  定义vizItems，描述待渲染的数据，以及自定义的渲染方法
+                </div>
+              </div>
+              <CodeExample1 />
+            </div>
+          </div>
+          <div style={{ display: "flex" }}>
+            <div
+              style={{
+                paddingLeft: "20px",
+                paddingRight: "20px",
+                width: "400px",
+              }}
+            >
+              <Title level={4}>第二步</Title>
+              <div style={{ fontSize: "20px" }}>
+                将data1，data2，及vizItems传入Diff组件
+                <br />
+                <br />
+                <br />
+                完成！
+              </div>
+            </div>
+            <CodeExample2 />
+          </div>
+        </div>
+        <DiffDemo />
       </div>
+      <div style={{ width: "1800px", margin: "auto" }}>
+        <div style={{ width: "1500px", margin: "auto" }}>
+          <Title level={2}>{"<DiffWrapper />"}</Title>
+          如果你对布局有要求，可以考虑用{"<DiffWrapper />"}
+          ，它需要你的代码配合加上标记，好处是你可以完全接管布局
+          <div style={{ display: "flex" }}>
+            <div
+              style={{
+                paddingLeft: "20px",
+                paddingRight: "20px",
+                width: "400px",
+              }}
+            >
+              <Title level={4}>
+                第一步
+                <br />
+              </Title>
+              <div style={{ fontSize: "20px" }}>
+                用diff函数计算data1和data2的数据差异
+              </div>
+              <Title level={4}>
+                第二步
+                <br />
+              </Title>
+              <div style={{ fontSize: "20px" }}>
+                在你的组件外部包裹
+                {"<DiffWrapper />"}
+                ，利用两个ref区分需要对比的区域
+              </div>
+            </div>
+            <CodeExample3 />
+          </div>
+          <div>
+            <div style={{ display: "flex" }}>
+              <div
+                style={{
+                  paddingLeft: "20px",
+                  paddingRight: "20px",
+                  width: "400px",
+                }}
+              >
+                <Title level={4}>
+                  第三步
+                  <br />
+                </Title>
+                <div style={{ fontSize: "20px" }}>
+                  调整你的渲染数据组件，在数据dom上标注对应的data-path
+                  <br />
+                  <br />
+                  <br />
+                  <br />
+                  完成！
+                </div>
+              </div>
+              <CodeExample4 />
+            </div>
+          </div>
+        </div>
+
+        <div
+          style={{ width: "100%", display: "flex", justifyContent: "center" }}
+        >
+          <DiffWrapperDemo />
+        </div>
+      </div>
+    </div>
+  );
+}
+function CodeExample1() {
+  return (
+    <div style={{ flex: 1 }}>
+      <SyntaxHighlighter
+        language="javascript"
+        style={docco}
+        customStyle={{
+          textAlign: "left",
+          padding: "20px",
+        }}
+        codeTagProps={{
+          style: {
+            display: "block",
+            textAlign: "left",
+          },
+        }}
+        wrapLines={true}
+        showLineNumbers
+        children={`const vizItems = [
+  { label: "Basic Information" },
+  { label: "Component Name", path: "name" },
+  { label: "Introduction", path: "info.introduction" },
+  {
+    label: "Link",
+    path: "link",
+    content: (v: any) => (
+      <Link href={v}>Click to Jump</Link>
+    ),
+  },
+];`}
+      ></SyntaxHighlighter>
+    </div>
+  );
+}
+function CodeExample2() {
+  return (
+    <div style={{ flex: 1 }}>
+      <SyntaxHighlighter
+        language="javascript"
+        style={docco}
+        customStyle={{
+          textAlign: "left",
+          padding: "20px",
+        }}
+        codeTagProps={{
+          style: {
+            display: "block",
+            textAlign: "left",
+          },
+        }}
+        wrapLines={true}
+        showLineNumbers
+        children={`/* 
+data1和data2的数据举例：
+{
+    "name": "Jack",
+    "info": {
+        "introduction": "is a tool"
+    },
+    "link": "www.xxx.com"
+}
+*/
+import  Diff  from "react-diff-viz";
+
+return (
+  <Diff
+    data1={data1}
+    data2={data2}
+    vizItems={vizItems}
+  />
+);`}
+      ></SyntaxHighlighter>
+    </div>
+  );
+}
+
+function CodeExample3() {
+  return (
+    <div style={{ flex: 1 }}>
+      <SyntaxHighlighter
+        language="javascript"
+        style={docco}
+        customStyle={{
+          textAlign: "left",
+          padding: "20px",
+        }}
+        codeTagProps={{
+          style: {
+            display: "block",
+            textAlign: "left",
+          },
+        }}
+        wrapLines={true}
+        showLineNumbers
+        lineProps={(lineNumber) => ({
+          style: {
+            display: "block",
+            backgroundColor:
+              lineNumber == 3 || lineNumber == 7 ? "#ffeb3b40" : "", // 这里设置你想要高亮的行号范围
+          },
+        })}
+        children={`import { diff, DiffWrapper } from "react-diff-viz";
+
+const diffRes = diff({ data1, data2 });
+const ref1 = useRef < HTMLDivElement > null;
+const ref2 = useRef < HTMLDivElement > null;
+return (
+  <DiffWrapper diffRes={diffRes} wrapperRef1={ref1} wrapperRef2={ref2}>
+    <div ref={ref1}>
+      <RenderData data={data1} /> {/* 你的业务代码,渲染数据1 */}
+    </div>
+    <div ref={ref2}>
+      <RenderData data={data2} /> {/* 你的业务代码,渲染数据2 */}
+    </div>
+  </DiffWrapper>
+);`}
+      ></SyntaxHighlighter>
+    </div>
+  );
+}
+function CodeExample4() {
+  return (
+    <div style={{ flex: 1 }}>
+      <SyntaxHighlighter
+        language="javascript"
+        style={docco}
+        customStyle={{
+          textAlign: "left",
+          padding: "20px",
+        }}
+        codeTagProps={{
+          style: {
+            display: "block",
+            textAlign: "left",
+          },
+        }}
+        wrapLines={true}
+        showLineNumbers
+        lineProps={(lineNumber) => ({
+          style: {
+            display: "block",
+            backgroundColor:
+              lineNumber == 6 || lineNumber == 9 || lineNumber == 12
+                ? "#ffeb3b40"
+                : "", // 这里设置你想要高亮的行号范围
+          },
+        })}
+        children={`// 假设<RenderData />是你的渲染数据的组件
+function RenderData(props) {
+  return (
+    <div>
+      ...
+      <div data-path="cardData">
+        {RenderCard(props.data.cardData)}
+      </div>
+      <div data-path="table.tableData">
+        {RenderTable(props.data.table.tableData)}
+      </div>
+      <div data-path="dateData">
+        {RenderDate(props.data.dateData)}
+      </div>
+      ...
+    </div>
+  );
+}`}
+      ></SyntaxHighlighter>
     </div>
   );
 }

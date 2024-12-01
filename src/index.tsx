@@ -203,6 +203,7 @@ function DiffWrapper(props: {
   wrapperRef2: React.RefObject<HTMLDivElement>;
   refreshKey?: number;
   disableColoring?: boolean;
+  disableColoringFather?: boolean;
   style?: React.CSSProperties;
 }) {
   const {
@@ -211,6 +212,7 @@ function DiffWrapper(props: {
     wrapperRef2,
     refreshKey,
     disableColoring = false,
+    disableColoringFather = false,
   } = props;
 
   const alignAndColorDoms = useCallback(() => {
@@ -323,9 +325,11 @@ function DiffWrapper(props: {
       pathDomList1?.forEach((dom) => {
         if (["CHANGED", "REMOVED", "CREATED"].includes(val)) {
           if (dom.querySelectorAll(`[data-path]`).length) {
-            dom.setAttribute("data-colored-path", key);
-            dom.style.borderRight = "4px solid rgb(253, 226, 226)";
-            dom.style.paddingRight = "4px";
+            if (!disableColoringFather) {
+              dom.setAttribute("data-colored-path", key);
+              dom.style.borderRight = "4px solid rgb(253, 226, 226)";
+              dom.style.paddingRight = "4px";
+            }
           } else if (["CHANGED", "REMOVED"].includes(val)) {
             dom.setAttribute("data-colored-path", key);
             dom.style.backgroundColor = "rgb(253, 226, 226)";
@@ -336,9 +340,11 @@ function DiffWrapper(props: {
       pathDomList2?.forEach((dom) => {
         if (["CHANGED", "CREATED", "REMOVED"].includes(val)) {
           if (dom.querySelectorAll(`[data-path]`).length) {
-            dom.setAttribute("data-colored-path", key);
-            dom.style.borderRight = "4px solid rgb(217, 245, 214)";
-            dom.style.paddingRight = "4px";
+            if (!disableColoringFather) {
+              dom.setAttribute("data-colored-path", key);
+              dom.style.borderRight = "4px solid rgb(217, 245, 214)";
+              dom.style.paddingRight = "4px";
+            }
           } else if (["CHANGED", "CREATED"].includes(val)) {
             dom.setAttribute("data-colored-path", key);
             dom.style.backgroundColor = "rgb(217, 245, 214)";
@@ -346,7 +352,13 @@ function DiffWrapper(props: {
         }
       });
     });
-  }, [diffRes, wrapperRef1, wrapperRef2, disableColoring]);
+  }, [
+    diffRes,
+    wrapperRef1,
+    wrapperRef2,
+    disableColoring,
+    disableColoringFather,
+  ]);
 
   const containerWrapperRef = useRef<HTMLDivElement>(null);
 
@@ -446,7 +458,7 @@ export default function Diff<T extends DataTypeBase>(props: {
     } else if (!isNaN(colWidth) && colWidth) {
       return [colWidth, colWidth * 2 + 100];
     }
-    return [650, 1350];
+    return [640, 1350];
   }, [colStyle, style]);
 
   const { diffRes, alignedData1, alignedData2 } = useMemo(() => {
@@ -516,6 +528,7 @@ export default function Diff<T extends DataTypeBase>(props: {
         width: width + "px",
         ...style,
       }}
+      disableColoringFather
     >
       <div
         style={{

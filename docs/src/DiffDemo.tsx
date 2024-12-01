@@ -61,11 +61,7 @@ function App() {
   }, [formData]);
 
   return (
-    <div
-      style={{
-        width: "1500px",
-      }}
-    >
+    <div>
       <div style={{ marginLeft: "60px" }}>
         <div
           style={{

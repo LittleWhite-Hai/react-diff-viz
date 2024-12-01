@@ -1,77 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import Diff, { alignAndDiff, DiffWrapper } from "./diff/index";
-import SyntaxHighlighter from "react-syntax-highlighter";
-import {
-  Card,
-  Rate,
-  Grid,
-  Typography,
-  Button,
-  Space,
-  Badge,
-  Steps,
-  Table,
-} from "antd";
+import { Card, Typography, Steps, Table } from "antd";
 import _ from "lodash";
 import { JsonEditor } from "json-edit-react";
+import SyntaxHighlighter from "react-syntax-highlighter";
 import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
-// const DiffWrapper = Diff.DiffWrapper;
-
-// const alignAndDiff = Diff.alignAndDiff;
-
-const initialFormData = {
-  name: "react-diff-viz",
-  introduction:
-    "react-diff-viz is a React component that compares and renders complex object differences",
-  link: "https://github.com/LittleWhite-Hai/react-diff-viz",
-  package_size: 43,
-  create_time: [1727765900000, 2897765900000],
-  npm_dependencies: ["react", "react-dom", "lodash"],
-  build_tool: "rollup",
-  tech_stack: ["frontend", "javascript", "react"],
-  stars: 5,
-  is_support_array: true,
-  other_tools: [
-    {
-      name: "git diff",
-      description: "diff git commits, highlight text changes",
-    },
-    {
-      name: "microdiff",
-      description:
-        "Microdiff is a tiny, fast json diff tool, only offer diff algorithm",
-    },
-    {
-      name: "mi2crodiff",
-      description:
-        "Microd3iff is a tiny, fast json diff tool, only offer diff algorithm",
-    },
-  ],
-  data1: "Data used for comparison (usually the original data)",
-  data2: "Data used for comparison (usually the new data)",
-  vizItems:
-    "Describes the data to be rendered, including diff method and rendering method",
-  colStyle: "Overall style for the outer DOM of all data1 and data2",
-  labelStyle: "Style for the label of each data item",
-  contentStyle: "Style for the content of each data item",
-  strictMode:
-    "Strict mode, enabled by default. When disabled, the diff algorithm ignores data type differences, e.g., 0=null=undefined=false",
-  singleMode: "Only view data2, default is false",
-  refreshKey: "Change this key to trigger recoloring and height alignment",
-
-  label:
-    "Title of the data, if only label is provided, it renders a separator title",
-  path: "Path of the data",
-  visible: "If false, the item will not be displayed",
-  foldable: "Whether it can be folded",
-  isEqual: "User can customize the data diff algorithm",
-  content: "Rendering method",
-  arrayKey: "Key for arrays, used to mark this data as array type",
-  arrayAlignType:
-    "Array alignment method, default is longest common subsequence (lcs) alignment",
-};
+// import { alignAndDiff, DiffWrapper } from "./diff/index";
+import { alignAndDiff, DiffWrapper } from "./diff/index";
+import { LiveEditor, LiveError, LivePreview, LiveProvider } from "react-live";
 
 const d1 = {
   currentStep: 2,
@@ -302,19 +239,17 @@ export default function DiffWrapperDemo() {
   return (
     <div
       style={{
-        width: "2100px",
         display: "flex",
         justifyContent: "center",
       }}
     >
       <div>
-        {/* <CodeExample /> */}
         <div style={{ display: "flex", justifyContent: "end" }}>
           <a
             style={{
               cursor: "pointer",
               marginRight: "20px",
-              // color: "green",
+              color: "green",
             }}
             onClick={(e) => {
               e.preventDefault();
@@ -327,7 +262,7 @@ export default function DiffWrapperDemo() {
             style={{
               cursor: "pointer",
               marginRight: "20px",
-              // color: "green",
+              color: "green",
             }}
             onClick={(e) => {
               e.preventDefault();
@@ -402,72 +337,6 @@ export default function DiffWrapperDemo() {
           </DiffWrapper>
         </div>
       </div>
-    </div>
-  );
-}
-
-function CodeExample() {
-  return (
-    <div style={{ marginTop: "20px" }}>
-      <SyntaxHighlighter
-        language="javascript"
-        style={docco}
-        customStyle={{
-          textAlign: "left",
-          padding: "20px",
-          width: "500px",
-        }}
-        codeTagProps={{
-          style: {
-            display: "block",
-            textAlign: "left",
-          },
-        }}
-        wrapLines={true}
-        showLineNumbers
-        lineProps={(lineNumber) => ({
-          style: {
-            display: "block",
-            backgroundColor:
-              lineNumber >= 3 && lineNumber <= 5 ? "#ffeb3b40" : "", // 这里设置你想要高亮的行号范围
-          },
-        })}
-        children={`function RenderData(data) {
-    return (
-      <div>
-        <div data-path="a">{data.a}</div>
-        <div data-path="b.c">{data.b.c}</div>
-        {/*  ...render dom by data */}
-      </div>
-    );
-  }
-  
-  function App(props: { data1: any; data2: any }) {
-    const res = useMemo(
-      () =>
-        alignAndDiff({
-          data1: props.data1,
-          data2: props.data2,
-        }),
-      [props.data1, props.data2]
-    );
-    const ref1 = useRef<HTMLDivElement>(null);
-    const ref2 = useRef<HTMLDivElement>(null);
-  
-    return (
-      <DiffWrapper diffRes={res.diffRes} wrapperRef1={ref1} wrapperRef2={ref2}>
-        <div ref={ref1}>
-          <RenderData data={props.data1} />
-        </div>
-        <div ref={ref2}>
-          <RenderData data={props.data2} />
-        </div>
-      </DiffWrapper>
-    );
-  }`}
-      >
-        {/* ff */}
-      </SyntaxHighlighter>
     </div>
   );
 }

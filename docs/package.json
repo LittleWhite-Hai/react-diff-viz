@@ -18,6 +18,7 @@
     "react": "^18.3.1",
     "react-diff-viz": "^1.2.10",
     "react-dom": "^18.3.1",
+    "react-live": "^4.1.8",
     "react-syntax-highlighter": "^15.6.1"
   },
   "devDependencies": {
