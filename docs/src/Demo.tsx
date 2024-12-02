@@ -101,7 +101,7 @@ export default function Demo() {
           width: "1350px",
           margin: "auto",
           display: "flex",
-          marginBottom: "100px",
+          marginBottom: "40px",
         }}
       >
         <div
@@ -109,7 +109,7 @@ export default function Demo() {
             display: "flex",
             flexDirection: "column",
             fontWeight: "400",
-            marginRight: "25%",
+            marginRight: "22%",
           }}
         >
           <Title level={2} style={{ marginTop: "0px" }}>
@@ -125,10 +125,10 @@ export default function Demo() {
             }}
             onClick={() => setShowDiffWrapper(false)}
           >
-            接入方式较简单，会接管总体的布局样式，并允许你进行一些样式调整
+            接入方式较简单，会接管总体布局样式，并允许你进行一些样式调整
           </Card>
           <Card
-            title="函数式接入: diff + applyDiff"
+            title="函数式接入: diff() + applyDiff()"
             bordered={false}
             style={{
               marginBottom: "20px",
@@ -137,13 +137,13 @@ export default function Demo() {
             }}
             onClick={() => setShowDiffWrapper(true)}
           >
-            理解成本高些，需要在dom上标记数据路径，好处是你可以完全接管布局
+            需要在dom上标记数据路径，好处是你可以完全控制布局
           </Card>
         </div>
-        <Title level={2} style={{ marginTop: "150px", width: "500px" }}>
-          Diff和渲染JSON差异
+        <Title level={2} style={{ marginTop: "150px", width: "400px" }}>
+          自定义样式的同时
           <br />
-          对自定义渲染具有良好支持
+          渲染 JSON 差异
         </Title>
       </div>
       <div
@@ -154,13 +154,10 @@ export default function Demo() {
         }}
       >
         <DiffDemo />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <Title level={2}>接入方式</Title>
+
+        <Title level={2} style={{ marginTop: "80px" }}>
+          接入方式
+        </Title>
         <div>
           <div style={{ display: "flex" }}>
             <div
@@ -213,12 +210,8 @@ export default function Demo() {
         >
           <DiffWrapperDemo count={count} />
         </div>
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <div style={{ display: "flex" }}>
+
+        <div style={{ display: "flex", marginTop: "80px" }}>
           <div
             style={{
               paddingLeft: "20px",
@@ -226,7 +219,9 @@ export default function Demo() {
               width: "400px",
             }}
           >
-            <Title level={2}>接入方式</Title>
+            <Title level={2} style={{}}>
+              接入方式
+            </Title>
 
             <Title level={4}>
               第一步

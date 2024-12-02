@@ -3,6 +3,34 @@ import type { CollapseProps } from "antd";
 import { Collapse } from "antd";
 import CodeExample from "./CodeExample";
 
+const commonAQ = [
+  {
+    key: "01",
+    label: "问：这工具是什么原理",
+    children: (
+      <p style={{ paddingInlineStart: 24 }}>
+        不管组件式接入还是函数式接入，都是基于以下原理：
+        <br />
+        1. 计算出所有数据路径的 diff 结果
+        <br />
+        2. 在 dom 上标记数据路径( data-path )
+        <br />
+        3. 根据 diff 结果染色dom
+        <br />
+        4. 对齐相应数据的dom高度
+      </p>
+    ),
+  },
+  {
+    key: "02",
+    label: "问：vue可以使用吗",
+    children: (
+      <p style={{ paddingInlineStart: 24 }}>
+        可以使用函数式接入，参考上面的教程即可
+      </p>
+    ),
+  },
+];
 export function DiffFQA() {
   const items: CollapseProps["items"] = useMemo(
     () => [
@@ -106,7 +134,11 @@ export function DiffFQA() {
   );
 
   return (
-    <Collapse items={items} bordered={false} style={{ background: "white" }} />
+    <Collapse
+      items={[...commonAQ, ...items]}
+      bordered={false}
+      style={{ background: "white" }}
+    />
   );
 }
 
@@ -115,7 +147,7 @@ export function DiffWrapperFQA() {
     () => [
       {
         key: "0",
-        label: "问：我想对一些数据自定义diff算法",
+        label: "问：我想自定义数据的diff算法",
         children: (
           <p style={{ paddingInlineStart: 24 }}>
             答：diff函数支持传入isEqualMap来自定义diff算法
@@ -151,12 +183,14 @@ return (
 )
 `}
             />
+            另外，你也可以完全使用其他 json-diff 算法工具，如 microdiff
+            等，将他们的 diff 结果转换为本工具需要的格式即可
           </p>
         ),
       },
       {
         key: "1",
-        label: "问：如何支持数组",
+        label: "问：如何支持数组diff",
         children: (
           <p style={{ paddingInlineStart: 24 }}>
             答：使用alignAndDiff代替diff，它提供了额外的数组对齐支持，并支持传入参数指定对齐方式，以及数组key；
@@ -214,7 +248,7 @@ return (
 
   return (
     <Collapse
-      items={items}
+      items={[...commonAQ, ...items]}
       bordered={false}
       defaultActiveKey={[]}
       style={{ background: "white" }}
