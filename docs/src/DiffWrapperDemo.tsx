@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Card, Typography, Steps, Table } from "antd";
+import { Card, Typography, Steps, Table, Input } from "antd";
 import _ from "lodash";
 import { JsonEditor } from "json-edit-react";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 // import { alignAndDiff, DiffWrapper } from "./diff/index";
-import { alignAndDiff, DiffWrapper } from "./diff/index";
+import { alignAndDiff, applyDiff, DiffWrapper } from "./diff/index";
 import { LiveEditor, LiveError, LivePreview, LiveProvider } from "react-live";
 
 const d1 = {
@@ -218,20 +218,43 @@ function RenderDetail(props: { data: any }) {
 
 export default function DiffWrapperDemo(props: { count: number }) {
   const [disable, setDisable] = useState(false);
-  const [originData, setOriginData] = useState(d1);
-  const [modifiedData, setModifiedData] = useState(d2);
+  const [editedDataStr1, setEditedDataStr1] = useState(
+    JSON.stringify(d1, null, 2)
+  );
+  const [editedData2, setEditedData2] = useState(d2);
+  const [editedDataStr2, setEditedDataStr2] = useState(
+    JSON.stringify(d2, null, 2)
+  );
+  useEffect(() => {
+    console.log("formData", editedData2);
+    try {
+      const res = JSON.parse(editedDataStr2);
+      setEditedData2(res);
+    } catch (e) {
+      console.error(e);
+    }
+  }, [editedDataStr2]);
 
   const wrapperRef1 = useRef<HTMLDivElement>(null);
   const wrapperRef2 = useRef<HTMLDivElement>(null);
   const diffRes = useMemo(
     () =>
       alignAndDiff({
-        data1: originData,
-        data2: modifiedData,
-        strictMode: false,
+        data1: d1,
+        data2: editedData2,
       }),
-    [originData, modifiedData]
+    [d1, editedData2]
   );
+  useEffect(() => {
+    applyDiff({
+      diffRes: diffRes.diffRes,
+      domWrapper1: wrapperRef1.current,
+      domWrapper2: wrapperRef2.current,
+      disableColoring: disable,
+      disableAligning: disable,
+    });
+  }, [diffRes, props.count, disable]);
+
   const [showJson, setShowJson] = useState(false);
   return (
     <div
@@ -255,7 +278,7 @@ export default function DiffWrapperDemo(props: { count: number }) {
               setShowJson(!showJson);
             }}
           >
-            查看JSON
+            编辑数据
           </a>
 
           <a
@@ -283,45 +306,41 @@ export default function DiffWrapperDemo(props: { count: number }) {
           </a>
         </div>
         <div>
-          <DiffWrapper
-            style={{ display: "flex" }}
-            diffRes={diffRes.diffRes}
-            refreshKey={props.count}
-            disableColoring={disable}
-            wrapperRef1={wrapperRef1}
-            wrapperRef2={wrapperRef2}
+          <div
+            style={{
+              display: showJson ? "flex" : "none",
+              backgroundColor: "white",
+              height: "800px",
+              marginBottom: "4px",
+              overflowY: "scroll",
+              borderRadius: "8px",
+              width: "100%",
+            }}
           >
+            <Input.TextArea
+              style={{
+                height: "1250px",
+                width: "695px",
+                marginRight: "4px",
+              }}
+              value={editedDataStr1}
+            ></Input.TextArea>
+            <Input.TextArea
+              style={{
+                height: "1250px",
+                width: "695px",
+              }}
+              onChange={(e) => {
+                setEditedDataStr2(e.target.value);
+              }}
+              value={editedDataStr2}
+            ></Input.TextArea>
+          </div>
+          <div style={{ display: "flex" }}>
             <div ref={wrapperRef1} style={{ marginRight: 5 }}>
               <RenderDetail data={diffRes.alignedData1} />
             </div>
-            <div
-              style={{
-                marginLeft: "10px",
-                marginRight: "10px",
-                justifyContent: "center",
-                minWidth: "800px",
-                height: "1050px",
-                overflow: "scroll",
-                display: showJson ? "block" : "none",
-                background: "white",
-              }}
-            >
-              <div style={{ display: "flex" }}>
-                <JsonEditor
-                  collapse={false}
-                  collapseAnimationTime={0}
-                  data={originData}
-                  setData={(data) => setOriginData(data as any)}
-                />
-                <div style={{ width: "20px" }}></div>
-                <JsonEditor
-                  collapse={false}
-                  collapseAnimationTime={0}
-                  data={modifiedData}
-                  setData={(data) => setModifiedData(data as any)} // optional
-                />
-              </div>
-            </div>
+
             <div ref={wrapperRef2} style={{ marginLeft: 5 }}>
               <RenderDetail
                 data={{
@@ -330,7 +349,7 @@ export default function DiffWrapperDemo(props: { count: number }) {
                 }}
               />
             </div>
-          </DiffWrapper>
+          </div>
         </div>
       </div>
     </div>

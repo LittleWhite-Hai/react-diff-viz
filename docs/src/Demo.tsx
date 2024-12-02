@@ -154,17 +154,26 @@ export default function Demo() {
         }}
       >
         <DiffDemo />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
         <Title level={2}>接入方式</Title>
         <div>
           <div style={{ display: "flex" }}>
             <div
               style={{
                 width: "400px",
+                marginRight: "20px",
               }}
             >
               <Title level={4}>第一步</Title>
               <div style={{ fontSize: "20px" }}>
-                定义vizItems，描述待渲染的数据，以及自定义的渲染方法
+                定义vizItems
+                <br />
+                描述待渲染的数据，以及自定义的渲染方法
               </div>
             </div>
             <CodeExample1 />
@@ -174,6 +183,7 @@ export default function Demo() {
           <div
             style={{
               width: "400px",
+              marginRight: "20px",
             }}
           >
             <Title level={4}>第二步</Title>
@@ -188,7 +198,7 @@ export default function Demo() {
           <CodeExample2 />
         </div>
 
-        <Title level={4}>FAQ</Title>
+        <Title level={2}>FAQ</Title>
         <DiffFQA />
       </div>
       <div
@@ -203,6 +213,11 @@ export default function Demo() {
         >
           <DiffWrapperDemo count={count} />
         </div>
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
         <div style={{ display: "flex" }}>
           <div
             style={{
@@ -256,7 +271,7 @@ export default function Demo() {
             </div>
             <CodeExample4 />
           </div>
-          <Title level={4}>FAQ</Title>
+          <Title level={2}>FAQ</Title>
           <DiffWrapperFQA />
         </div>
       </div>

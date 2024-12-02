@@ -391,7 +391,7 @@ export default function Diff<T extends DataTypeBase>(props: {
       <div
         style={{
           marginLeft: "16px",
-          marginRight: "16px",
+          marginRight: "6px",
           display: singleMode ? "none" : "block",
           minWidth: leftWidth + "px",
           maxWidth: leftWidth + "px",
@@ -445,7 +445,7 @@ export default function Diff<T extends DataTypeBase>(props: {
       <div
         style={{
           marginLeft: "16px",
-          marginRight: "16px",
+          marginRight: "6px",
           overflowX: "scroll",
         }}
       >

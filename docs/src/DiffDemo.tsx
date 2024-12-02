@@ -4,8 +4,10 @@ import "./App.css";
 import Diff from "./diff/index";
 import Form from "./form";
 import { Card, Link, Rate } from "@arco-design/web-react";
+import { Input } from "antd";
+import _ from "lodash";
 
-const initialFormData = {
+const data1 = {
   name: "react-diff-viz",
   introduction:
     "react-diff-viz is a React component that compares and renders complex object differences",
@@ -50,14 +52,34 @@ const initialFormData = {
   arrayAlignType:
     "Array alignment method, default is longest common subsequence (lcs) alignment",
 };
+const data2 = _.cloneDeep(data1);
+data2.create_time[1] = 2897465900000;
+data2.stars = 4.5;
+data2.other_tools.unshift({
+  name: "diff-viz",
+  description: "good at custom render",
+});
+
 export default function DiffDemo() {
   const [count, setCount] = useState(0);
   const [formVisible, setFormVisible] = useState(false);
+  const [editedDataStr1, setEditedDataStr1] = useState(
+    JSON.stringify(data1, null, 2)
+  );
+  const [editedData2, setEditedData2] = useState(data2);
+  const [editedDataStr2, setEditedDataStr2] = useState(
+    JSON.stringify(data2, null, 2)
+  );
 
-  const [formData, setFormData] = useState(initialFormData);
   useEffect(() => {
-    console.log("formData", formData);
-  }, [formData]);
+    console.log("formData", editedData2);
+    try {
+      const res = JSON.parse(editedDataStr2);
+      setEditedData2(res);
+    } catch (e) {
+      console.error(e);
+    }
+  }, [editedDataStr2]);
 
   return (
     <div>
@@ -100,16 +122,39 @@ export default function DiffDemo() {
       </div>
       <div
         style={{
-          display: formVisible ? "block" : "none",
+          display: formVisible ? "flex" : "none",
           backgroundColor: "white",
+          height: "800px",
+          marginBottom: "4px",
+          overflowY: "scroll",
+          borderRadius: "8px",
+          width: "1360px",
         }}
       >
-        <Form setFormData={setFormData} initialValues={initialFormData} />
+        <Input.TextArea
+          style={{
+            height: "1250px",
+            width: "695px",
+            marginRight: "4px",
+          }}
+          value={editedDataStr1}
+        ></Input.TextArea>
+        <Input.TextArea
+          style={{
+            height: "1250px",
+            width: "695px",
+          }}
+          onChange={(e) => {
+            setEditedDataStr2(e.target.value);
+          }}
+          value={editedDataStr2}
+        ></Input.TextArea>
+        <Form setFormData={setEditedData2} initialValues={data1} />
       </div>
       <Diff
         strictMode={false}
-        data1={initialFormData}
-        data2={formData}
+        data1={data1}
+        data2={editedData2}
         refreshKey={count}
         singleMode={false}
         vizItems={[
@@ -157,6 +202,11 @@ export default function DiffDemo() {
             content: (v: any) => v + " kb",
           },
           {
+            label: "Stars",
+            path: "stars",
+            content: (v: any) => <Rate value={v} readonly allowHalf />,
+          },
+          {
             label: "Npm Dependencies",
             path: "npm_dependencies",
             arrayAlignType: "none",
@@ -173,11 +223,7 @@ export default function DiffDemo() {
             path: "tech_stack",
             content: (v: any) => v?.join(", "),
           },
-          {
-            label: "Stars",
-            path: "stars",
-            content: (v: any) => <Rate value={v} readonly allowHalf />,
-          },
+
           {
             label: "Other Tools",
             path: "other_tools",
