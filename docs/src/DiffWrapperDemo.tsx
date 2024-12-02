@@ -248,7 +248,7 @@ export default function DiffWrapperDemo(props: { count: number }) {
             style={{
               cursor: "pointer",
               marginRight: "20px",
-              color: "Salmon",
+              color: "#7dba2f",
             }}
             onClick={(e) => {
               e.preventDefault();
@@ -262,7 +262,7 @@ export default function DiffWrapperDemo(props: { count: number }) {
             style={{
               cursor: "pointer",
               marginRight: "20px",
-              color: "Salmon",
+              color: "#7dba2f",
             }}
             onClick={(e) => {
               e.preventDefault();
@@ -276,7 +276,7 @@ export default function DiffWrapperDemo(props: { count: number }) {
             href="https://github.com/LittleWhite-Hai/react-diff-viz/blob/main/docs/src/DiffWrapperDemo.tsx"
             target="_blank"
             style={{
-              color: "Salmon",
+              color: "#7dba2f",
             }}
           >
             查看源码

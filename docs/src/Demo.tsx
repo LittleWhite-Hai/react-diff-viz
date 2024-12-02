@@ -120,7 +120,7 @@ export default function Demo() {
             bordered={false}
             style={{
               marginBottom: "20px",
-              background: showDiffWrapper ? "" : "lightsalmon",
+              background: showDiffWrapper ? "" : "#b6d78e",
               cursor: "pointer",
             }}
             onClick={() => setShowDiffWrapper(false)}
@@ -133,7 +133,7 @@ export default function Demo() {
             style={{
               marginBottom: "20px",
               cursor: "pointer",
-              background: showDiffWrapper ? "lightsalmon" : "",
+              background: showDiffWrapper ? "#b6d78e" : "",
             }}
             onClick={() => setShowDiffWrapper(true)}
           >
@@ -159,8 +159,6 @@ export default function Demo() {
           <div style={{ display: "flex" }}>
             <div
               style={{
-                paddingLeft: "20px",
-                paddingRight: "20px",
                 width: "400px",
               }}
             >
@@ -175,8 +173,6 @@ export default function Demo() {
         <div style={{ display: "flex" }}>
           <div
             style={{
-              paddingLeft: "20px",
-              paddingRight: "20px",
               width: "400px",
             }}
           >

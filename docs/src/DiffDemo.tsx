@@ -81,7 +81,7 @@ export default function DiffDemo() {
               style={{
                 marginRight: "20px",
                 cursor: "pointer",
-                color: "Salmon",
+                color: "#7dba2f",
               }}
             >
               {formVisible ? "查看Diff" : "编辑数据"}
@@ -90,23 +90,11 @@ export default function DiffDemo() {
               href="https://github.com/LittleWhite-Hai/react-diff-viz/blob/main/docs/src/DiffDemo.tsx"
               target="_blank"
               style={{
-                color: "Salmon",
+                color: "#7dba2f",
               }}
             >
               查看源码
             </a>
-            {/* <a
-                href=""
-                onClick={(e) => {
-                  e.preventDefault();
-                  setCount(count + 1);
-                }}
-                style={{
-                  cursor: "pointer",
-                }}
-              >
-                Align And Color
-              </a> */}
           </div>
         </div>
       </div>
