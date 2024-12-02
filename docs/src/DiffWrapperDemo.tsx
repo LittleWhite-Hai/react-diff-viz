@@ -317,24 +317,24 @@ export default function DiffWrapperDemo(props: { count: number }) {
               width: "100%",
             }}
           >
-            <Input.TextArea
+            <textarea
               style={{
-                height: "1250px",
+                height: "850px",
                 width: "695px",
                 marginRight: "4px",
               }}
               value={editedDataStr1}
-            ></Input.TextArea>
-            <Input.TextArea
+            />
+            <textarea
               style={{
-                height: "1250px",
+                height: "850px",
                 width: "695px",
               }}
               onChange={(e) => {
                 setEditedDataStr2(e.target.value);
               }}
               value={editedDataStr2}
-            ></Input.TextArea>
+            />
           </div>
           <div style={{ display: "flex" }}>
             <div ref={wrapperRef1} style={{ marginRight: 5 }}>

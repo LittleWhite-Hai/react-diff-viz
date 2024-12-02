@@ -70,6 +70,7 @@ export default function DiffDemo() {
   const [editedDataStr2, setEditedDataStr2] = useState(
     JSON.stringify(data2, null, 2)
   );
+  const [disable, setDisable] = useState(false);
 
   useEffect(() => {
     console.log("formData", editedData2);
@@ -106,7 +107,21 @@ export default function DiffDemo() {
                 color: "#7dba2f",
               }}
             >
-              {formVisible ? "查看Diff" : "编辑数据"}
+              编辑数据
+            </a>
+            <a
+              style={{
+                cursor: "pointer",
+                marginRight: "20px",
+                color: "#7dba2f",
+              }}
+              onClick={(e) => {
+                e.preventDefault();
+
+                setDisable(!disable);
+              }}
+            >
+              {disable ? "启用DIFF" : "禁用DIFF"}
             </a>
             <a
               href="https://github.com/LittleWhite-Hai/react-diff-viz/blob/main/docs/src/DiffDemo.tsx"
@@ -131,24 +146,24 @@ export default function DiffDemo() {
           width: "1360px",
         }}
       >
-        <Input.TextArea
+        <textarea
           style={{
-            height: "1250px",
+            height: "850px",
             width: "695px",
             marginRight: "4px",
           }}
           value={editedDataStr1}
-        ></Input.TextArea>
-        <Input.TextArea
+        ></textarea>
+        <textarea
           style={{
-            height: "1250px",
+            height: "850px",
             width: "695px",
           }}
           onChange={(e) => {
             setEditedDataStr2(e.target.value);
           }}
           value={editedDataStr2}
-        ></Input.TextArea>
+        ></textarea>
         <Form setFormData={setEditedData2} initialValues={data1} />
       </div>
       <Diff
@@ -157,6 +172,7 @@ export default function DiffDemo() {
         data2={editedData2}
         refreshKey={count}
         singleMode={false}
+        disableDiff={disable}
         vizItems={[
           { label: "Basic Information" },
           { label: "Component Name", path: "name" },
