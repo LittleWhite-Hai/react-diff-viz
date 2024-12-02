@@ -1,14 +1,18 @@
 import DiffDemo from "./DiffDemo.tsx";
 import DiffWrapperDemo from "./DiffWrapperDemo.tsx";
 import "./index.css";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, Typography } from "antd";
 import { DiffFQA, DiffWrapperFQA } from "./FQA.tsx";
 import CodeExample from "./CodeExample.tsx";
 const { Title } = Typography;
 
 export default function Demo() {
+  const [count, setCount] = useState(0);
   const [showDiffWrapper, setShowDiffWrapper] = useState(false);
+  useEffect(() => {
+    setCount(count + 1);
+  }, [showDiffWrapper]);
   return (
     <div style={{ width: "100%", margin: "0 auto" }}>
       <div
@@ -201,7 +205,7 @@ export default function Demo() {
         <div
           style={{ width: "100%", display: "flex", justifyContent: "center" }}
         >
-          <DiffWrapperDemo />
+          <DiffWrapperDemo count={count} />
         </div>
         <div style={{ display: "flex" }}>
           <div

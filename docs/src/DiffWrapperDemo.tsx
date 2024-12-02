@@ -216,8 +216,7 @@ function RenderDetail(props: { data: any }) {
   );
 }
 
-export default function DiffWrapperDemo() {
-  const [count, setCount] = useState(0);
+export default function DiffWrapperDemo(props: { count: number }) {
   const [disable, setDisable] = useState(false);
   const [originData, setOriginData] = useState(d1);
   const [modifiedData, setModifiedData] = useState(d2);
@@ -287,7 +286,7 @@ export default function DiffWrapperDemo() {
           <DiffWrapper
             style={{ display: "flex" }}
             diffRes={diffRes.diffRes}
-            refreshKey={count}
+            refreshKey={props.count}
             disableColoring={disable}
             wrapperRef1={wrapperRef1}
             wrapperRef2={wrapperRef2}
