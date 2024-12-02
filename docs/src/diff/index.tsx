@@ -1,11 +1,4 @@
-import React, {
-  ReactNode,
-  useRef,
-  useMemo,
-  useEffect,
-  useCallback,
-  useState,
-} from "react";
+import React, { ReactNode, useRef, useMemo, useEffect, useState } from "react";
 import { throttle } from "lodash";
 
 import {
@@ -25,6 +18,7 @@ import {
   VizItem,
 } from "./types";
 import { headerBlueTipStyle, headerStyle, titleStyle } from "./styles";
+import { applyDiff, resetApplyDiff, wait } from "./apply-diff";
 
 function getFieldPathMap<T extends DataTypeBase>(vizItems: VizItems<T>) {
   const isEqualMap: Record<string, IsEqualFuncType> = {};
@@ -202,6 +196,7 @@ function DiffWrapper(props: {
   wrapperRef1: React.RefObject<HTMLDivElement>;
   wrapperRef2: React.RefObject<HTMLDivElement>;
   refreshKey?: number;
+  disableAligning?: boolean;
   disableColoring?: boolean;
   disableColoringFather?: boolean;
   style?: React.CSSProperties;
@@ -211,182 +206,33 @@ function DiffWrapper(props: {
     wrapperRef1,
     wrapperRef2,
     refreshKey,
+    disableAligning = false,
     disableColoring = false,
     disableColoringFather = false,
   } = props;
 
-  const alignAndColorDoms = useCallback(() => {
-    // 所有的path元素
-    const allElements1: Array<HTMLElement> = Array.from(
-      wrapperRef1.current?.querySelectorAll(`[data-path]`) ?? []
-    );
-    const allElements2: Array<HTMLElement> = Array.from(
-      wrapperRef2.current?.querySelectorAll(`[data-path]`) ?? []
-    );
-
-    const allColoredElements: Array<HTMLElement> = Array.from(
-      containerWrapperRef.current?.querySelectorAll(`[data-colored-path]`) ?? []
-    );
-    allColoredElements.forEach((ele) => {
-      if (
-        ["rgb(253, 226, 226)", "rgb(217, 245, 214)"].includes(
-          ele.style.backgroundColor
-        )
-      ) {
-        ele.style.backgroundColor = "unset";
-      }
-      if (
-        [
-          "4px solid rgb(253, 226, 226)",
-          "4px solid rgb(217, 245, 214)",
-        ].includes(ele.style.borderRight)
-      ) {
-        ele.style.borderRight = "unset";
-        ele.style.paddingRight = "unset";
-      }
-    });
-
-    // path对应dom关系
-    const data1DomMap: Record<string, HTMLElement[]> = {};
-    const data2DomMap: Record<string, HTMLElement[]> = {};
-
-    // path对应的最高dom
-    const pathMaxHeightMap: Record<string, number> = {};
-
-    {
-      // 统计container1里的path对应dom关系和max高度
-      allElements1.forEach((ele) => {
-        const path = ele.getAttribute("data-path");
-        if (path) {
-          const rect = ele.getBoundingClientRect();
-          pathMaxHeightMap[path] = Math.max(
-            pathMaxHeightMap[path] ?? 0,
-            rect.height
-          );
-
-          if (data1DomMap[path]) {
-            data1DomMap[path].push(ele);
-          } else {
-            data1DomMap[path] = [ele];
-          }
-        }
-      });
-    }
-
-    {
-      // 统计container2里的path对应dom关系和max高度
-      allElements2.forEach((ele) => {
-        const path = ele.getAttribute("data-path");
-        if (path) {
-          const rect = ele.getBoundingClientRect();
-          pathMaxHeightMap[path] = Math.max(
-            pathMaxHeightMap[path] ?? 0,
-            rect.height
-          );
-
-          if (data2DomMap[path]) {
-            data2DomMap[path].push(ele);
-          } else {
-            data2DomMap[path] = [ele];
-          }
-        }
-      });
-    }
-
-    // 对齐高度1
-    allElements1.forEach((ele) => {
-      const path = ele.getAttribute("data-path");
-      if (path && !ele.querySelectorAll(`[data-path]`).length) {
-        const rect = ele.getBoundingClientRect();
-        if (pathMaxHeightMap[path] > rect.height) {
-          ele.style.height = Math.round(pathMaxHeightMap[path]) + "px";
-        }
-      }
-    });
-    // 对齐高度2
-    allElements2.forEach((ele) => {
-      const path = ele.getAttribute("data-path");
-      if (path && !ele.querySelectorAll(`[data-path]`).length) {
-        const rect = ele.getBoundingClientRect();
-        if (pathMaxHeightMap[path] > rect.height) {
-          ele.style.height = Math.round(pathMaxHeightMap[path]) + "px";
-        }
-      }
-    });
-
-    // 如果禁用，则不继续操作dom染色
-    if (disableColoring) return;
-
-    // 着色
-    Object.entries(diffRes).forEach(([key, val]: [string, string]) => {
-      const pathDomList1 = data1DomMap[key];
-      const pathDomList2 = data2DomMap[key];
-
-      pathDomList1?.forEach((dom) => {
-        if (["CHANGED", "REMOVED", "CREATED"].includes(val)) {
-          if (dom.querySelectorAll(`[data-path]`).length) {
-            if (!disableColoringFather) {
-              dom.setAttribute("data-colored-path", key);
-              dom.style.borderRight = "4px solid rgb(253, 226, 226)";
-              dom.style.paddingRight = "4px";
-            }
-          } else if (["CHANGED", "REMOVED"].includes(val)) {
-            dom.setAttribute("data-colored-path", key);
-            dom.style.backgroundColor = "rgb(253, 226, 226)";
-          }
-        }
-      });
-
-      pathDomList2?.forEach((dom) => {
-        if (["CHANGED", "CREATED", "REMOVED"].includes(val)) {
-          if (dom.querySelectorAll(`[data-path]`).length) {
-            if (!disableColoringFather) {
-              dom.setAttribute("data-colored-path", key);
-              dom.style.borderRight = "4px solid rgb(217, 245, 214)";
-              dom.style.paddingRight = "4px";
-            }
-          } else if (["CHANGED", "CREATED"].includes(val)) {
-            dom.setAttribute("data-colored-path", key);
-            dom.style.backgroundColor = "rgb(217, 245, 214)";
-          }
-        }
-      });
-    });
-  }, [
-    diffRes,
-    wrapperRef1,
-    wrapperRef2,
-    disableColoring,
-    disableColoringFather,
-  ]);
-
-  const containerWrapperRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
-    containerWrapperRef.current
-      ?.querySelectorAll(`[data-path]`)
-      .forEach((i) => {
-        if (i instanceof HTMLElement) {
-          i.style.height = "unset";
-        }
+    wait(20).then(() => {
+      applyDiff({
+        diffRes,
+        domWrapper1: wrapperRef1.current,
+        domWrapper2: wrapperRef2.current,
+        disableColoring,
+        disableColoringFather,
+        disableAligning,
       });
-    setTimeout(() => {
-      alignAndColorDoms();
-    }, 18);
+    });
   }, [
     diffRes,
     wrapperRef1,
     wrapperRef2,
     refreshKey,
-    containerWrapperRef,
     disableColoring,
+    disableAligning,
+    disableColoringFather,
   ]);
 
-  return (
-    <div ref={containerWrapperRef} style={props.style}>
-      {props.children}
-    </div>
-  );
+  return <div style={props.style}>{props.children}</div>;
 }
 
 /**
@@ -412,6 +258,7 @@ export default function Diff<T extends DataTypeBase>(props: {
   vizItems: VizItems<T>;
   data1?: T;
   data2: T;
+  disableDiff?: boolean;
   strictMode?: boolean;
   singleMode?: boolean;
   showTitle?: boolean;
@@ -428,6 +275,7 @@ export default function Diff<T extends DataTypeBase>(props: {
     strictMode = true,
     singleMode = false,
     showTitle = false,
+    disableDiff = false,
     refreshKey = 0,
     data1Title = "Before Data",
     data2Title = "Current Data",
@@ -480,10 +328,25 @@ export default function Diff<T extends DataTypeBase>(props: {
     });
     console.log("diff-res", res);
     return res;
-  }, [data1, data2, vizItems]);
+  }, [data1, data2, vizItems, strictMode]);
 
   const wrapperRef1 = useRef<HTMLDivElement>(null);
   const wrapperRef2 = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    wait(50).then(() => {
+      if (disableDiff) {
+        resetApplyDiff(wrapperRef1.current, wrapperRef2.current);
+      } else {
+        applyDiff({
+          diffRes,
+          domWrapper1: wrapperRef1.current,
+          domWrapper2: wrapperRef2.current,
+          disableColoringFather: true,
+        });
+      }
+    });
+  }, [diffRes, refreshKey, disableDiff]);
 
   const [leftWidth, setLeftWidth] = useState<number>(colWidth);
 
@@ -518,17 +381,12 @@ export default function Diff<T extends DataTypeBase>(props: {
   const body = useMemo(() => document.querySelector("body"), []);
 
   return (
-    <DiffWrapper
-      diffRes={diffRes}
-      wrapperRef1={wrapperRef1}
-      wrapperRef2={wrapperRef2}
-      refreshKey={refreshKey}
+    <div
       style={{
         display: "flex",
         width: width + "px",
         ...style,
       }}
-      disableColoringFather
     >
       <div
         style={{
@@ -618,11 +476,7 @@ export default function Diff<T extends DataTypeBase>(props: {
             })}
         </div>
       </div>
-    </DiffWrapper>
+    </div>
   );
 }
-export { align, diff, alignAndDiff, DiffWrapper };
-// Diff.align = align;
-// Diff.diff = diff;
-// Diff.alignAndDiff = alignAndDiff;
-// Diff.DiffWrapper = DiffWrapper;
+export { align, diff, alignAndDiff, DiffWrapper, applyDiff, resetApplyDiff };

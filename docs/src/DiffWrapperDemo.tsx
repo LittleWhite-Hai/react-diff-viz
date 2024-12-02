@@ -104,8 +104,6 @@ function RenderDetail(props: { data: any }) {
     <div
       style={{
         width: "700px",
-        background: "rgb(242,243,245)",
-        padding: "10px 20px",
       }}
     >
       <Card style={{ marginBottom: "20px" }}>
@@ -244,12 +242,14 @@ export default function DiffWrapperDemo() {
       }}
     >
       <div>
-        <div style={{ display: "flex", justifyContent: "end" }}>
+        <div
+          style={{ display: "flex", justifyContent: "end", padding: "0 5px" }}
+        >
           <a
             style={{
               cursor: "pointer",
               marginRight: "20px",
-              color: "green",
+              color: "Salmon",
             }}
             onClick={(e) => {
               e.preventDefault();
@@ -263,7 +263,7 @@ export default function DiffWrapperDemo() {
             style={{
               cursor: "pointer",
               marginRight: "20px",
-              color: "green",
+              color: "Salmon",
             }}
             onClick={(e) => {
               e.preventDefault();
@@ -277,24 +277,11 @@ export default function DiffWrapperDemo() {
             href="https://github.com/LittleWhite-Hai/react-diff-viz/blob/main/docs/src/DiffWrapperDemo.tsx"
             target="_blank"
             style={{
-              color: "green",
+              color: "Salmon",
             }}
           >
             查看源码
           </a>
-          {/* <a
-          style={{
-            cursor: "pointer",
-            color: "green",
-          }}
-          onClick={(e) => {
-            e.preventDefault();
-
-            setCount(count + 1);
-          }}
-        >
-          刷新diff结果
-        </a> */}
         </div>
         <div>
           <DiffWrapper
@@ -305,7 +292,7 @@ export default function DiffWrapperDemo() {
             wrapperRef1={wrapperRef1}
             wrapperRef2={wrapperRef2}
           >
-            <div ref={wrapperRef1}>
+            <div ref={wrapperRef1} style={{ marginRight: 5 }}>
               <RenderDetail data={diffRes.alignedData1} />
             </div>
             <div
@@ -336,7 +323,7 @@ export default function DiffWrapperDemo() {
                 />
               </div>
             </div>
-            <div ref={wrapperRef2}>
+            <div ref={wrapperRef2} style={{ marginLeft: 5 }}>
               <RenderDetail
                 data={{
                   ...diffRes.alignedData2,

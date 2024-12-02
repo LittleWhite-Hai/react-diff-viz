@@ -81,7 +81,7 @@ export default function DiffDemo() {
               style={{
                 marginRight: "20px",
                 cursor: "pointer",
-                color: "green",
+                color: "Salmon",
               }}
             >
               {formVisible ? "查看Diff" : "编辑数据"}
@@ -90,7 +90,7 @@ export default function DiffDemo() {
               href="https://github.com/LittleWhite-Hai/react-diff-viz/blob/main/docs/src/DiffDemo.tsx"
               target="_blank"
               style={{
-                color: "green",
+                color: "Salmon",
               }}
             >
               查看源码
@@ -284,6 +284,7 @@ export default function DiffDemo() {
         style={{
           border: "6px solid white",
           backgroundColor: "white",
+          borderRadius: "8px",
         }}
       />
     </div>

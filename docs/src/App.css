@@ -1,8 +1,9 @@
 #root {
   width: 100%;
   display:flex;
+  background-color: #E6F1D8;
+  padding: 40px;
   padding-top: 5px;
-  background-color: rgb(245, 247, 250);
 }
 
 .logo {

@@ -1,36 +1,8 @@
 import React, { useMemo } from "react";
 import type { CollapseProps } from "antd";
 import { Collapse } from "antd";
-import SyntaxHighlighter from "react-syntax-highlighter";
-import { docco } from "react-syntax-highlighter/dist/cjs/styles/hljs";
+import CodeExample from "./CodeExample";
 
-function CodeExample(props: {
-  code: string;
-  lineProps?: (lineNumber: number) => React.HTMLProps<HTMLElement>;
-}) {
-  return (
-    <div style={{ flex: 1 }}>
-      <SyntaxHighlighter
-        language="javascript"
-        style={docco}
-        customStyle={{
-          textAlign: "left",
-          padding: "20px",
-        }}
-        codeTagProps={{
-          style: {
-            display: "block",
-            textAlign: "left",
-          },
-        }}
-        wrapLines={true}
-        showLineNumbers
-        lineProps={props.lineProps}
-        children={props.code}
-      ></SyntaxHighlighter>
-    </div>
-  );
-}
 export function DiffFQA() {
   const items: CollapseProps["items"] = useMemo(
     () => [
@@ -133,7 +105,9 @@ export function DiffFQA() {
     []
   );
 
-  return <Collapse items={items} bordered={false} defaultActiveKey={[]} />;
+  return (
+    <Collapse items={items} bordered={false} style={{ background: "white" }} />
+  );
 }
 
 export function DiffWrapperFQA() {
@@ -149,28 +123,32 @@ export function DiffWrapperFQA() {
               lineProps={(lineNumber) => ({
                 style: {
                   display: "block",
-                  backgroundColor: lineNumber == 6 ? "#ffeb3b40" : "", // 这里设置你想要高亮的行号范围
+                  backgroundColor: lineNumber == 9 ? "#ffeb3b40" : "", // 这里设置你想要高亮的行号范围
                 },
               })}
-              code={`import { diff, DiffWrapper } from "react-diff-viz";
+              code={`import { diff, applyDiff } from 'react-diff-viz'
+const ref1 = useRef < HTMLDivElement > null
+const ref2 = useRef < HTMLDivElement > null
 
-const diffRes = diff({
-  data1,
-  data2,
-  isEqualMap: { name: () => true, age: (a, b) => math.abs(a - b) > 2 },
-});
-const ref1 = useRef<HTMLDivElement>();
-const ref2 = useRef<HTMLDivElement>();
+useEffect(() => {
+  const diffRes = diff({
+    data1,
+    data2,
+    isEqualMap: { name: () => true, age: (a, b) => math.abs(a - b) > 2 }
+  })
+  applyDiff({ diffRes, ref1, ref2 })
+}, [data1, data2])
+
 return (
-  <DiffWrapper diffRes={diffRes} wrapperRef1={ref1} wrapperRef2={ref2}>
+  <>
     <div ref={ref1}>
       <RenderData data={data1} /> {/* 你的业务代码,渲染数据1 */}
     </div>
     <div ref={ref2}>
       <RenderData data={data2} /> {/* 你的业务代码,渲染数据2 */}
     </div>
-  </DiffWrapper>
-);
+  </>
+)
 `}
             />
           </p>
@@ -178,7 +156,7 @@ return (
       },
       {
         key: "1",
-        label: "问：DiffWrapper如何支持数组",
+        label: "问：如何支持数组",
         children: (
           <p style={{ paddingInlineStart: 24 }}>
             答：使用alignAndDiff代替diff，它提供了额外的数组对齐支持，并支持传入参数指定对齐方式，以及数组key；
@@ -189,29 +167,43 @@ return (
                 style: {
                   display: "block",
                   backgroundColor:
-                    lineNumber == 3 ||
-                    lineNumber == 7 ||
-                    lineNumber == 9 ||
-                    lineNumber == 12
+                    lineNumber == 16 ||
+                    lineNumber == 8 ||
+                    lineNumber == 22 ||
+                    lineNumber == 25
                       ? "#ffeb3b40"
                       : "", // 这里设置你想要高亮的行号范围
                 },
               })}
-              code={`import { alignAndDiff, DiffWrapper } from "react-diff-viz";
-      
-      const diffRes = alignAndDiff({ data1, data2 });
-      const ref1 = useRef<HTMLDivElement>();
-      const ref2 = useRef<HTMLDivElement>();
-      return (
-        <DiffWrapper diffRes={diffRes.diffRes} wrapperRef1={ref1} wrapperRef2={ref2}>
-          <div ref={ref1}>
-            <RenderData data={diffRes.alignedData1} /> {/* 你的业务代码,渲染数据1 */}
-          </div>
-          <div ref={ref2}>
-            <RenderData data={diffRes.alignedData2} /> {/* 你的业务代码,渲染数据2 */}
-          </div>
-        </DiffWrapper>
-      );`}
+              code={`import { alignAndDiff, applyDiff } from 'react-diff-viz'
+
+const ref1 = useRef < HTMLDivElement > null
+const ref2 = useRef < HTMLDivElement > null
+
+const res = useMemo(
+  () =>
+    alignAndDiff({ //对齐数组 + diff数据
+      data1,
+      data2
+    }),
+  [data1, data2]
+)
+
+useEffect(() => {
+  applyDiff({ diffRes: res.diffRes, ref1, ref2 }) // 在dom上应用diff结果(染色+对齐dom)
+}, [res])
+
+return (
+  <>
+    <div ref={ref1}>
+      <RenderData data={res.alignedData1} /> {/* 你的业务代码,渲染数据1 */}
+    </div>
+    <div ref={ref2}>
+      <RenderData data={res.alignedData2} /> {/* 你的业务代码,渲染数据2 */}
+    </div>
+  </>
+)
+`}
             />
           </p>
         ),
@@ -220,5 +212,12 @@ return (
     []
   );
 
-  return <Collapse items={items} bordered={false} defaultActiveKey={[]} />;
+  return (
+    <Collapse
+      items={items}
+      bordered={false}
+      defaultActiveKey={[]}
+      style={{ background: "white" }}
+    />
+  );
 }
