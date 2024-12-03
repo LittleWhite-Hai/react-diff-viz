@@ -2,10 +2,9 @@ import React, { ReactNode, useRef, useMemo, useEffect, useState } from "react";
 import { throttle } from "lodash";
 
 import {
-  align,
-  alignAndDiff,
-  diff,
-  DiffResType,
+  alignDataArray,
+  calcDiffWithArrayAlign,
+  calcDiff,
   getValueByPath,
 } from "./diff-algorithm";
 import {
@@ -23,7 +22,7 @@ import { applyDiff, resetApplyDiff, wait } from "./apply-diff";
 function getFieldPathMap<T extends DataTypeBase>(vizItems: VizItems<T>) {
   const isEqualMap: Record<string, IsEqualFuncType> = {};
   const arrayAlignLCSMap: Record<string, string> = {};
-  const arrayAlignCurrentDataMap: Record<string, string> = {};
+  const arrayAlignData2Map: Record<string, string> = {};
   const arrayNoAlignMap: Record<string, true> = {};
 
   vizItems.forEach((field) => {
@@ -35,7 +34,7 @@ function getFieldPathMap<T extends DataTypeBase>(vizItems: VizItems<T>) {
       if (field.arrayAlignType === "lcs") {
         arrayAlignLCSMap[path] = field.arrayKey;
       } else if (field.arrayAlignType === "data2") {
-        arrayAlignCurrentDataMap[path] = field.arrayKey;
+        arrayAlignData2Map[path] = field.arrayKey;
       }
     }
     if (field.arrayAlignType === "none") {
@@ -45,7 +44,7 @@ function getFieldPathMap<T extends DataTypeBase>(vizItems: VizItems<T>) {
   return {
     isEqualMap,
     arrayAlignLCSMap,
-    arrayAlignCurrentDataMap,
+    arrayAlignData2Map,
     arrayNoAlignMap,
   };
 }
@@ -176,66 +175,6 @@ function RenderFieldItem<T extends DataTypeBase>(props: {
 }
 
 /**
- * 使用范例：
- *
- * const diffRes = diff({
- *   data1,
- *   data2,
- * });
- *
- * <DiffWrapper ref1={beforeRef} ref2={afterRef} diffRes={diffRes}>
- *  <div ref={beforeRef}>{your code, render by data1}</div>
- *  <div ref={afterRef}>{your code, render by data2}</div>
- * </DiffWrapper>
- *
- */
-
-function DiffWrapper(props: {
-  children: React.ReactNode;
-  diffRes: DiffResType;
-  wrapperRef1: React.RefObject<HTMLDivElement>;
-  wrapperRef2: React.RefObject<HTMLDivElement>;
-  refreshKey?: number;
-  disableAligning?: boolean;
-  disableColoring?: boolean;
-  disableColoringFather?: boolean;
-  style?: React.CSSProperties;
-}) {
-  const {
-    diffRes,
-    wrapperRef1,
-    wrapperRef2,
-    refreshKey,
-    disableAligning = false,
-    disableColoring = false,
-    disableColoringFather = false,
-  } = props;
-
-  useEffect(() => {
-    wait(20).then(() => {
-      applyDiff({
-        diffRes,
-        domWrapper1: wrapperRef1.current,
-        domWrapper2: wrapperRef2.current,
-        disableColoring,
-        disableColoringFather,
-        disableAligning,
-      });
-    });
-  }, [
-    diffRes,
-    wrapperRef1,
-    wrapperRef2,
-    refreshKey,
-    disableColoring,
-    disableAligning,
-    disableColoringFather,
-  ]);
-
-  return <div style={props.style}>{props.children}</div>;
-}
-
-/**
  * The Diff component is used to compare and display the differences between two sets of data
  *
  * @param
@@ -254,7 +193,7 @@ function DiffWrapper(props: {
  * @param style - Style for the diff component(width only support px)
  * @returns react node component
  */
-export default function Diff<T extends DataTypeBase>(props: {
+export default function DiffViz<T extends DataTypeBase>(props: {
   vizItems: VizItems<T>;
   data1?: T;
   data2: T;
@@ -313,16 +252,16 @@ export default function Diff<T extends DataTypeBase>(props: {
     const {
       isEqualMap,
       arrayAlignLCSMap,
-      arrayAlignCurrentDataMap,
+      arrayAlignData2Map,
       arrayNoAlignMap,
     } = getFieldPathMap(vizItems);
 
-    const res = alignAndDiff({
+    const res = calcDiffWithArrayAlign({
       data1: data1,
       data2: data2,
       isEqualMap,
       arrayAlignLCSMap,
-      arrayAlignCurrentDataMap,
+      arrayAlignData2Map,
       arrayNoAlignMap,
       strictMode,
     });
@@ -479,4 +418,10 @@ export default function Diff<T extends DataTypeBase>(props: {
     </div>
   );
 }
-export { align, diff, alignAndDiff, DiffWrapper, applyDiff, resetApplyDiff };
+export {
+  alignDataArray,
+  calcDiff,
+  calcDiffWithArrayAlign,
+  applyDiff,
+  resetApplyDiff,
+};

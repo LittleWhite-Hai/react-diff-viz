@@ -1,22 +1,22 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState } from "react";
 import "./App.css";
-import Diff from "./diff/index";
+import DiffViz from "./diff/index";
 import Form from "./form";
 import { Card, Link, Rate } from "@arco-design/web-react";
 import { Input } from "antd";
 import _ from "lodash";
 
 const data1 = {
-  name: "react-diff-viz",
+  name: "diff-viz",
   introduction:
-    "react-diff-viz is a React component that compares and renders complex object differences",
-  link: "https://github.com/LittleWhite-Hai/react-diff-viz",
+    "diff-viz is a tool that compares and renders complex object differences",
+  link: "https://github.com/LittleWhite-Hai/diff-viz",
   package_size: 43,
   create_time: [1727765900000, 2897765900000],
   npm_dependencies: ["react", "react-dom", "lodash"],
   build_tool: "rollup",
-  tech_stack: ["frontend", "javascript", "react"],
+  tech_stack: ["frontend", "javascript", "react", "vue"],
   stars: 5,
   is_support_array: true,
   other_tools: [
@@ -124,7 +124,7 @@ export default function DiffDemo() {
               {disable ? "启用DIFF" : "禁用DIFF"}
             </a>
             <a
-              href="https://github.com/LittleWhite-Hai/react-diff-viz/blob/main/docs/src/DiffDemo.tsx"
+              href="https://github.com/LittleWhite-Hai/diff-viz/blob/diff-viz/docs/src/DiffDemo.tsx"
               target="_blank"
               style={{
                 color: "#7dba2f",
@@ -166,7 +166,7 @@ export default function DiffDemo() {
         ></textarea>
         <Form setFormData={setEditedData2} initialValues={data1} />
       </div>
-      <Diff
+      <DiffViz
         strictMode={false}
         data1={data1}
         data2={editedData2}

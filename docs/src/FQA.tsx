@@ -9,7 +9,7 @@ const commonAQ = [
     label: "问：这工具是什么原理",
     children: (
       <p style={{ paddingInlineStart: 24 }}>
-        不管组件式接入还是函数式接入，都是基于以下原理：
+        基于以下原理：
         <br />
         1. 计算出所有数据路径的 diff 结果
         <br />
@@ -17,13 +17,13 @@ const commonAQ = [
         <br />
         3. 根据 diff 结果染色dom
         <br />
-        4. 对齐相应数据的dom高度
+        4. 对齐相应数据的 dom 高度
       </p>
     ),
   },
   {
     key: "02",
-    label: "问：vue可以使用吗",
+    label: "问：vue 可以使用吗",
     children: (
       <p style={{ paddingInlineStart: 24 }}>
         可以使用函数式接入，参考上面的教程即可
@@ -31,7 +31,7 @@ const commonAQ = [
     ),
   },
 ];
-export function DiffFQA() {
+export function DiffVizFQA() {
   const items: CollapseProps["items"] = useMemo(
     () => [
       {
@@ -44,18 +44,17 @@ export function DiffFQA() {
               lineProps={(lineNumber) => ({
                 style: {
                   display: "block",
-                  backgroundColor: lineNumber == 2 ? "#ffeb3b40" : "", // 这里设置你想要高亮的行号范围
+                  backgroundColor: lineNumber == 4 ? "#ffeb3b40" : "", // 这里设置你想要高亮的行号范围
                 },
               })}
               code={`const vizItems = [
-    { label: "年龄", path: "age",isEqual: (a, b) => math.abs(a - b) > 2},
-    { label: "介绍", path: "info.introduction" }},
-  ];
-  return (<Diff
-    data1={data1}
-    data2={data2}
-    vizItems={vizItems} 
-  />)`}
+  { 
+    label: '年龄', path: 'age',
+    isEqual: (a, b) => math.abs(a - b) > 2
+  },
+  { label: '介绍', path: 'info.introduction' },
+];
+return <DiffViz data1={data1} data2={data2} vizItems={vizItems} />;`}
             />
           </p>
         ),
@@ -79,7 +78,7 @@ export function DiffFQA() {
                 style: {
                   display: "block",
                   backgroundColor:
-                    lineNumber == 21 || lineNumber == 22 ? "#ffeb3b40" : "", // 这里设置你想要高亮的行号范围
+                    lineNumber == 23 || lineNumber == 24 ? "#ffeb3b40" : "", // 这里设置你想要高亮的行号范围
                 },
               })}
               code={`const data1 = {
@@ -91,11 +90,11 @@ export function DiffFQA() {
       ],
     },
   };
+
+  // diff组件会使用修改后的data2渲染以对齐data1，修改对齐后的data2.info.education：[undefined,{ school: "人民大学", type: "大学" },]
   const data2 = {
     age: 20,
     info: {
-    // diff组件会使用修改后的data2渲染，以对齐data1。
-    // 修改对齐后的data2.info.education：[undefined,{ school: "人民大学", type: "大学" },],
       education: [{ school: "人民大学", type: "大学" }],
     },
   };
@@ -142,7 +141,7 @@ export function DiffFQA() {
   );
 }
 
-export function DiffWrapperFQA() {
+export function DiffFuncFQA() {
   const items: CollapseProps["items"] = useMemo(
     () => [
       {
@@ -150,7 +149,7 @@ export function DiffWrapperFQA() {
         label: "问：我想自定义数据的diff算法",
         children: (
           <p style={{ paddingInlineStart: 24 }}>
-            答：diff函数支持传入isEqualMap来自定义diff算法
+            答：calcDiff 函数支持传入 isEqualMap 来自定义 diff 算法
             <CodeExample
               lineProps={(lineNumber) => ({
                 style: {
@@ -158,12 +157,12 @@ export function DiffWrapperFQA() {
                   backgroundColor: lineNumber == 9 ? "#ffeb3b40" : "", // 这里设置你想要高亮的行号范围
                 },
               })}
-              code={`import { diff, applyDiff } from 'react-diff-viz'
+              code={`import { calcDiff, applyDiff } from 'diff-viz'
 const ref1 = useRef < HTMLDivElement > null
 const ref2 = useRef < HTMLDivElement > null
 
 useEffect(() => {
-  const diffRes = diff({
+  const diffRes = calcDiff({
     data1,
     data2,
     isEqualMap: { name: () => true, age: (a, b) => math.abs(a - b) > 2 }
@@ -193,9 +192,11 @@ return (
         label: "问：如何支持数组diff",
         children: (
           <p style={{ paddingInlineStart: 24 }}>
-            答：使用alignAndDiff代替diff，它提供了额外的数组对齐支持，并支持传入参数指定对齐方式，以及数组key；
+            答：使用 calcDiffWithArrayAlign 代替
+            calcDiff，它提供了额外的数组对齐支持；它支持指定对齐方式，以及数组
+            key；
             <br />
-            记得用alignAndDiff修改后的数据进行渲染
+            记得用 calcDiffWithArrayAlign 修改后的数据进行渲染
             <CodeExample
               lineProps={(lineNumber) => ({
                 style: {
@@ -209,14 +210,14 @@ return (
                       : "", // 这里设置你想要高亮的行号范围
                 },
               })}
-              code={`import { alignAndDiff, applyDiff } from 'react-diff-viz'
+              code={`import { calcDiffWithArrayAlign, applyDiff } from 'diff-viz'
 
 const ref1 = useRef < HTMLDivElement > null
 const ref2 = useRef < HTMLDivElement > null
 
 const res = useMemo(
   () =>
-    alignAndDiff({ //对齐数组 + diff数据
+    calcDiffWithArrayAlign({ //对齐数组 + diff数据
       data1,
       data2
     }),

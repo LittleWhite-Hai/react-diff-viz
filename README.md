@@ -1,17 +1,17 @@
-# <img src="./public/diff.ico" height="20" /> react-diff-viz
+# <img src="./public/diff.ico" height="20" /> diff-viz
 
-react-diff-viz is a React component that compares and renders complex object differences
+diff-viz is a tool that compares and renders complex object differences
 
 ## Install
 
 ```bash
-npm install react-diff-viz
+npm install diff-viz
 ```
 
 ## Usage
 
 ```tsx
-import Diff from "react-diff-viz";
+import DiffViz from "diff-viz";
 
 // describe the content to be rendered
 const vizItems = [
@@ -33,7 +33,7 @@ const vizItems = [
   ]
 
 // diff data1 and data2 ,then render
-<Diff
+<DiffViz
   data1={{
     name: "John",
     age: 30,
@@ -71,7 +71,7 @@ const vizItems = [
 
 ## Demo
 
-https://littlewhite-hai.github.io/react-diff-viz/
+https://littlewhite-hai.github.io/diff-viz/
 
 ![demo](./docs/public/demo.png)
 
