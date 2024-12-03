@@ -4,7 +4,7 @@ import { IsEqualFuncType } from "./types";
 export function getValueByPath(
   obj: Record<string, any>,
   path: string | undefined
-) {
+): any {
   if (!path) {
     return obj;
   }

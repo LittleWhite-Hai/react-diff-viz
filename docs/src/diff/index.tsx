@@ -1,11 +1,17 @@
-import React, { ReactNode, useRef, useMemo, useEffect, useState } from "react";
-import { throttle } from "lodash";
-
+import React, {
+  ReactNode,
+  useRef,
+  useMemo,
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
 import {
   alignDataArray,
   calcDiffWithArrayAlign,
   calcDiff,
   getValueByPath,
+  DiffResType,
 } from "./diff-algorithm";
 import {
   ExtType,
@@ -17,7 +23,8 @@ import {
   VizItem,
 } from "./types";
 import { headerBlueTipStyle, headerStyle, titleStyle } from "./styles";
-import { applyDiff, resetApplyDiff, wait } from "./apply-diff";
+import { applyDiff, resetApplyDiff } from "./apply-diff";
+import _, { throttle } from "lodash";
 
 function getFieldPathMap<T extends DataTypeBase>(vizItems: VizItems<T>) {
   const isEqualMap: Record<string, IsEqualFuncType> = {};
@@ -60,7 +67,7 @@ function getFieldContent<T extends DataTypeBase>(
   }
   if (content) {
     if (typeof arrayKey === "string" && typeof content === "function") {
-      const res = content(getPathValue(data, ext.path), data, ext) as any;
+      const res = content(getValueByPath(data, ext.path), data, ext) as any;
       if (res.map) {
         return res.map((i: any, idx: any) => (
           <div data-path={ext.path + "." + idx} key={ext.path + "." + idx}>
@@ -72,26 +79,13 @@ function getFieldContent<T extends DataTypeBase>(
       }
     }
     if (typeof content === "function") {
-      return content(getPathValue(data, ext.path), data, ext);
+      return content(getValueByPath(data, ext.path), data, ext);
     } else {
       return content;
     }
   } else {
-    return getPathValue(data, ext.path);
+    return getValueByPath(data, ext.path);
   }
-}
-
-// 根据path得到data中对应的原始数据
-function getPathValue<T extends DataTypeBase>(
-  data: T,
-  path: string | undefined
-): any {
-  const res = getValueByPath(data, path);
-
-  // if (["object", "function"].includes(typeof res)) {
-  //   return JSON.stringify(res);
-  // }
-  return res;
 }
 
 // 根据path得到data对应的label
@@ -104,7 +98,7 @@ function getPathLabel<T extends DataTypeBase>(
   if (!data) {
     return typeof label === "string" ? label : "";
   }
-  const curData = ext.path ? getPathValue(data, ext.path) : undefined;
+  const curData = ext.path ? getValueByPath(data, ext.path) : undefined;
   if (typeof label === "function") {
     return label(curData, data, ext);
   } else {
@@ -272,8 +266,8 @@ export default function DiffViz<T extends DataTypeBase>(props: {
   const wrapperRef1 = useRef<HTMLDivElement>(null);
   const wrapperRef2 = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    wait(50).then(() => {
+  const refreshApplyDiff = useCallback(
+    _.debounce((diffRes: DiffResType, disableDiff: boolean) => {
       if (disableDiff) {
         resetApplyDiff(wrapperRef1.current, wrapperRef2.current);
       } else {
@@ -284,8 +278,13 @@ export default function DiffViz<T extends DataTypeBase>(props: {
           disableColoringFather: true,
         });
       }
-    });
-  }, [diffRes, refreshKey, disableDiff]);
+    }, 200),
+    []
+  );
+
+  useEffect(() => {
+    refreshApplyDiff(diffRes, disableDiff);
+  }, [diffRes, disableDiff, refreshKey]);
 
   const [leftWidth, setLeftWidth] = useState<number>(colWidth);
 

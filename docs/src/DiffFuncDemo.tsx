@@ -132,7 +132,7 @@ function RenderDetail(props: { data: any }) {
 
         <DescList
           data={
-            Object.entries(props.data.tech).map((i) => ({
+            Object.entries(props.data?.tech ?? {})?.map((i) => ({
               label: i[0],
               value: i[1],
             })) as any
@@ -151,7 +151,7 @@ function RenderDetail(props: { data: any }) {
 
         <DescList
           data={
-            Object.entries(props.data.device).map((i) => ({
+            Object.entries(props.data?.device ?? {})?.map((i) => ({
               label: i[0],
               value: i[1],
             })) as any
@@ -289,7 +289,7 @@ export default function DiffFuncDemo(props: { count: number }) {
             {disable ? "启用DIFF" : "禁用DIFF"}
           </a>
           <a
-            href="https://github.com/LittleWhite-Hai/react-diff/blob/diff-viz/docs/src/DiffFuncDemo.tsx"
+            href="https://github.com/LittleWhite-Hai/diff-viz/blob/diff-viz/docs/src/DiffFuncDemo.tsx"
             target="_blank"
             style={{
               color: "#7dba2f",

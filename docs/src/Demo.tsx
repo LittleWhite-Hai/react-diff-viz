@@ -36,7 +36,7 @@ export default function Demo() {
                   style={{ cursor: "pointer" }}
                   onClick={(e) => {
                     e.preventDefault();
-                    open("https://github.com/LittleWhite-Hai/react-diff");
+                    open("https://github.com/LittleWhite-Hai/diff-viz");
                   }}
                 >
                   <svg
