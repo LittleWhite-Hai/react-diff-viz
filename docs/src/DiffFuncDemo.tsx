@@ -2,15 +2,9 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Card, Typography, Steps, Table, Input } from "antd";
 import _ from "lodash";
-import { JsonEditor } from "json-edit-react";
-import SyntaxHighlighter from "react-syntax-highlighter";
-import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import { calcDiffWithArrayAlign, applyDiff } from "./diff/index";
 
-// import { alignAndDiff, DiffWrapper } from "./diff/index";
-import { alignAndDiff, applyDiff, DiffWrapper } from "./diff/index";
-import { LiveEditor, LiveError, LivePreview, LiveProvider } from "react-live";
-
-const d1 = {
+const data1 = {
   currentStep: 2,
   tech: {
     配置模式: "自定义",
@@ -66,10 +60,10 @@ const d1 = {
     },
   ],
 };
-const d2 = _.cloneDeep(d1);
-d2.tech.编码分辨率 = "2080*1920";
-d2.users.splice(0, 1);
-d2.users[2].name = "Kevin Sandr";
+const data2 = _.cloneDeep(data1);
+data2.tech.编码分辨率 = "2080*1920";
+data2.users.splice(0, 1);
+data2.users[2].name = "Kevin Sandr";
 // modifyedData.currentStep = 1;
 
 function DescList(props: { data: { label: string; value: string }[] }) {
@@ -138,7 +132,7 @@ function RenderDetail(props: { data: any }) {
 
         <DescList
           data={
-            Object.entries(props.data.tech).map((i) => ({
+            Object.entries(props.data?.tech ?? {})?.map((i) => ({
               label: i[0],
               value: i[1],
             })) as any
@@ -157,7 +151,7 @@ function RenderDetail(props: { data: any }) {
 
         <DescList
           data={
-            Object.entries(props.data.device).map((i) => ({
+            Object.entries(props.data?.device ?? {})?.map((i) => ({
               label: i[0],
               value: i[1],
             })) as any
@@ -216,17 +210,16 @@ function RenderDetail(props: { data: any }) {
   );
 }
 
-export default function DiffWrapperDemo(props: { count: number }) {
+export default function DiffFuncDemo(props: { count: number }) {
   const [disable, setDisable] = useState(false);
   const [editedDataStr1, setEditedDataStr1] = useState(
-    JSON.stringify(d1, null, 2)
+    JSON.stringify(data1, null, 2)
   );
-  const [editedData2, setEditedData2] = useState(d2);
+  const [editedData2, setEditedData2] = useState(data2);
   const [editedDataStr2, setEditedDataStr2] = useState(
-    JSON.stringify(d2, null, 2)
+    JSON.stringify(data2, null, 2)
   );
   useEffect(() => {
-    console.log("formData", editedData2);
     try {
       const res = JSON.parse(editedDataStr2);
       setEditedData2(res);
@@ -239,11 +232,11 @@ export default function DiffWrapperDemo(props: { count: number }) {
   const wrapperRef2 = useRef<HTMLDivElement>(null);
   const diffRes = useMemo(
     () =>
-      alignAndDiff({
-        data1: d1,
+      calcDiffWithArrayAlign({
+        data1: data1,
         data2: editedData2,
       }),
-    [d1, editedData2]
+    [editedData2]
   );
   useEffect(() => {
     applyDiff({
@@ -296,7 +289,7 @@ export default function DiffWrapperDemo(props: { count: number }) {
             {disable ? "启用DIFF" : "禁用DIFF"}
           </a>
           <a
-            href="https://github.com/LittleWhite-Hai/react-diff-viz/blob/main/docs/src/DiffWrapperDemo.tsx"
+            href="https://github.com/LittleWhite-Hai/diff-viz/blob/diff-viz/docs/src/DiffFuncDemo.tsx"
             target="_blank"
             style={{
               color: "#7dba2f",
@@ -324,6 +317,7 @@ export default function DiffWrapperDemo(props: { count: number }) {
                 marginRight: "4px",
               }}
               value={editedDataStr1}
+              onChange={() => {}}
             />
             <textarea
               style={{

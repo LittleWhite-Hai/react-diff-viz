@@ -187,6 +187,18 @@ export async function applyDiff(props: {
     disableColoringFather = false,
   } = props;
 
+  const time = String(new Date().getTime());
+  domWrapper1?.setAttribute("data-diff-time", time);
+  domWrapper2?.setAttribute("data-diff-time", time);
+
+  await wait(200);
+  if (
+    domWrapper1?.getAttribute("data-diff-time") !== time ||
+    domWrapper2?.getAttribute("data-diff-time") !== time
+  ) {
+    return;
+  }
+
   resetApplyDiff(domWrapper1, domWrapper2);
 
   // resetDom操作后，需要等待100ms渲染，再继续计算对齐高度

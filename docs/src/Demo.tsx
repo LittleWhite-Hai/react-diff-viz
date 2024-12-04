@@ -1,18 +1,18 @@
-import DiffDemo from "./DiffDemo.tsx";
-import DiffWrapperDemo from "./DiffWrapperDemo.tsx";
+import DiffDemo from "./DiffVizDemo.tsx";
+import DiffFuncDemo from "./DiffFuncDemo.tsx";
 import "./index.css";
 import React, { useEffect, useState } from "react";
 import { Card, Typography } from "antd";
-import { DiffFQA, DiffWrapperFQA } from "./FQA.tsx";
+import { DiffVizFQA, DiffFuncFQA } from "./FQA.tsx";
 import CodeExample from "./CodeExample.tsx";
 const { Title } = Typography;
 
 export default function Demo() {
   const [count, setCount] = useState(0);
-  const [showDiffWrapper, setShowDiffWrapper] = useState(false);
+  const [showDiffFunc, setShowDiffFunc] = useState(false);
   useEffect(() => {
     setCount(count + 1);
-  }, [showDiffWrapper]);
+  }, [showDiffFunc]);
   return (
     <div style={{ width: "100%", margin: "0 auto" }}>
       <div
@@ -36,7 +36,7 @@ export default function Demo() {
                   style={{ cursor: "pointer" }}
                   onClick={(e) => {
                     e.preventDefault();
-                    open("https://github.com/LittleWhite-Hai/react-diff-viz");
+                    open("https://github.com/LittleWhite-Hai/diff-viz");
                   }}
                 >
                   <svg
@@ -66,7 +66,7 @@ export default function Demo() {
                   style={{ cursor: "pointer" }}
                   onClick={(e) => {
                     e.preventDefault();
-                    open("https://www.npmjs.com/package/react-diff-viz");
+                    open("https://www.npmjs.com/package/diff-viz");
                   }}
                 >
                   <svg
@@ -113,31 +113,32 @@ export default function Demo() {
           }}
         >
           <Title level={2} style={{ marginTop: "0px" }}>
-            React-Diff-Viz
+            Diff-Viz
           </Title>
           <Card
-            title="组件式接入: <Diff />"
+            title="组件式接入: <DiffViz />"
             bordered={false}
             style={{
               marginBottom: "20px",
-              background: showDiffWrapper ? "" : "#b6d78e",
+              background: showDiffFunc ? "" : "#b6d78e",
               cursor: "pointer",
             }}
-            onClick={() => setShowDiffWrapper(false)}
+            onClick={() => setShowDiffFunc(false)}
           >
-            接入方式较简单，会接管总体布局样式，并允许你进行一些样式调整
+            React 组件，使用方式较简单，会接管总体布局样式，并允许调整样式
           </Card>
           <Card
-            title="函数式接入: diff() + applyDiff()"
+            title="函数式接入: calcDiff() + applyDiff()"
             bordered={false}
             style={{
               marginBottom: "20px",
               cursor: "pointer",
-              background: showDiffWrapper ? "#b6d78e" : "",
+              background: showDiffFunc ? "#b6d78e" : "",
             }}
-            onClick={() => setShowDiffWrapper(true)}
+            onClick={() => setShowDiffFunc(true)}
           >
-            需要在dom上标记数据路径，好处是你可以完全控制布局
+            需要在 dom 上标记数据路径，好处是你可以完全控制布局， React 和 Vue
+            都适用
           </Card>
         </div>
         <Title level={2} style={{ marginTop: "150px", width: "400px" }}>
@@ -148,7 +149,7 @@ export default function Demo() {
       </div>
       <div
         style={{
-          display: showDiffWrapper ? "none" : "block",
+          display: showDiffFunc ? "none" : "block",
           width: "1350px",
           margin: "auto",
         }}
@@ -196,11 +197,11 @@ export default function Demo() {
         </div>
 
         <Title level={2}>FAQ</Title>
-        <DiffFQA />
+        <DiffVizFQA />
       </div>
       <div
         style={{
-          display: showDiffWrapper ? "block" : "none",
+          display: showDiffFunc ? "block" : "none",
           width: "1410px",
           margin: "auto",
         }}
@@ -208,7 +209,7 @@ export default function Demo() {
         <div
           style={{ width: "100%", display: "flex", justifyContent: "center" }}
         >
-          <DiffWrapperDemo count={count} />
+          <DiffFuncDemo count={count} />
         </div>
 
         <div style={{ display: "flex", marginTop: "80px" }}>
@@ -227,15 +228,13 @@ export default function Demo() {
               第一步
               <br />
             </Title>
-            <div style={{ fontSize: "20px" }}>
-              为了计算数据差异，使用diff函数
-            </div>
+            <div style={{ fontSize: "20px" }}>使用calcDiff函数计算数据差异</div>
             <Title level={4}>
               第二步
               <br />
             </Title>
             <div style={{ fontSize: "20px" }}>
-              为了给dom标注染色及对齐高度
+              给dom标注染色及对齐高度
               <br />
               需要在你的组件整体绑定ref，将ref传给applyDiff函数
             </div>
@@ -256,7 +255,7 @@ export default function Demo() {
                 <br />
               </Title>
               <div style={{ fontSize: "20px" }}>
-                调整你的渲染数据组件，在数据dom上标注对应的data-path
+                调整渲染数据的组件，在数据dom上标注对应的data-path
                 <br />
                 <br />
                 <br />
@@ -267,7 +266,7 @@ export default function Demo() {
             <CodeExample4 />
           </div>
           <Title level={2}>FAQ</Title>
-          <DiffWrapperFQA />
+          <DiffFuncFQA />
         </div>
       </div>
     </div>
@@ -292,20 +291,18 @@ function CodeExample1() {
 function CodeExample2() {
   return (
     <CodeExample
-      code={`/* 
-data1和data2的数据类型举例：
-{
+      code={`const data1 = {
   "name": "Jack",
   "info": {
       "introduction": "is a tool"
   },
   "link": "www.xxx.com"
 }
-*/
+const data2 = {...data1, name:"Tom"}
 
-import Diff from 'react-diff-viz';
+import DiffViz from 'diff-viz';
 
-return <Diff data1={data1} data2={data2} vizItems={vizItems} />;
+return <DiffViz data1={data1} data2={data2} vizItems={vizItems} />;
 `}
     />
   );
@@ -321,12 +318,12 @@ function CodeExample3() {
             lineNumber == 6 || lineNumber == 7 ? "#ffeb3b40" : "", // 这里设置你想要高亮的行号范围
         },
       })}
-      code={`import { diff, applyDiff } from "react-diff-viz";
-const ref1 = useRef < HTMLDivElement > null;
-const ref2 = useRef < HTMLDivElement > null;
+      code={`import { diff, applyDiff } from "diff-viz";
+const ref1 = useRef<HTMLDivElement>(null)
+const ref2 = useRef<HTMLDivElement>(null)
 
 useEffect(() => {
-  const diffRes = diff({ data1, data2 });
+  const diffRes = calcDiff({ data1, data2 });
   applyDiff({ diffRes, ref1, ref2 });
 }, [data1, data2]);
 

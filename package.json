@@ -1,12 +1,12 @@
 {
-  "name": "react-diff-viz",
+  "name": "diff-viz",
   "description": "Powerful React component that integrates data diff algorithms and rendering.",
   "keywords": [
     "react",
     "diff",
     "visualization"
   ],
-  "version": "1.2.19",
+  "version": "1.2.22",
   "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -41,7 +41,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/LittleWhite-Hai/react-diff-viz.git"
+    "url": "https://github.com/LittleWhite-Hai/diff-viz.git"
   },
   "files": [
     "dist",
