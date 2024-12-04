@@ -23,7 +23,7 @@ import {
   VizItem,
 } from "./types";
 import { headerBlueTipStyle, headerStyle, titleStyle } from "./styles";
-import { applyDiff, resetApplyDiff } from "./apply-diff";
+import { applyDiff, resetApplyDiff, wait } from "./apply-diff";
 import _, { throttle } from "lodash";
 
 function getFieldPathMap<T extends DataTypeBase>(vizItems: VizItems<T>) {
@@ -266,24 +266,15 @@ export default function DiffViz<T extends DataTypeBase>(props: {
   const wrapperRef1 = useRef<HTMLDivElement>(null);
   const wrapperRef2 = useRef<HTMLDivElement>(null);
 
-  const refreshApplyDiff = useCallback(
-    _.debounce((diffRes: DiffResType, disableDiff: boolean) => {
-      if (disableDiff) {
-        resetApplyDiff(wrapperRef1.current, wrapperRef2.current);
-      } else {
-        applyDiff({
-          diffRes,
-          domWrapper1: wrapperRef1.current,
-          domWrapper2: wrapperRef2.current,
-          disableColoringFather: true,
-        });
-      }
-    }, 200),
-    []
-  );
-
   useEffect(() => {
-    refreshApplyDiff(diffRes, disableDiff);
+    applyDiff({
+      diffRes,
+      domWrapper1: wrapperRef1.current,
+      domWrapper2: wrapperRef2.current,
+      disableColoringFather: true,
+      disableAligning: disableDiff,
+      disableColoring: disableDiff,
+    });
   }, [diffRes, disableDiff, refreshKey]);
 
   const [leftWidth, setLeftWidth] = useState<number>(colWidth);
