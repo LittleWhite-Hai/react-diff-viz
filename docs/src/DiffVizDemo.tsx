@@ -153,6 +153,7 @@ export default function DiffDemo() {
             marginRight: "4px",
           }}
           value={editedDataStr1}
+          onChange={() => {}}
         ></textarea>
         <textarea
           style={{

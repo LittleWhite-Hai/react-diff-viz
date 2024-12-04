@@ -6,10 +6,10 @@ import CodeExample from "./CodeExample";
 const commonAQ = [
   {
     key: "01",
-    label: "问：这工具是什么原理",
+    label: "问：实现原理是什么",
     children: (
       <p style={{ paddingInlineStart: 24 }}>
-        基于以下原理：
+        基于以下技术思路：
         <br />
         1. 计算出所有数据路径的 diff 结果
         <br />
@@ -36,10 +36,10 @@ export function DiffVizFQA() {
     () => [
       {
         key: "1",
-        label: "问：我想对一些数据自定义diff算法",
+        label: "问：我想对一些数据自定义 diff 算法",
         children: (
           <p style={{ paddingInlineStart: 24 }}>
-            答：使用isEqual自定义数据diff算法
+            答：使用 isEqual 自定义数据 diff 算法
             <CodeExample
               lineProps={(lineNumber) => ({
                 style: {
@@ -62,15 +62,16 @@ return <DiffViz data1={data1} data2={data2} vizItems={vizItems} />;`}
       {
         key: "2",
         label:
-          "问：我想对数组数据进行diff，这个算法是怎么diff数组的，删除或新增元素会导致错位吗",
+          "问：我想对数组数据进行 diff ，这个算法是怎么 diff 数组的，删除或新增元素会导致错位吗",
         children: (
           <p style={{ paddingInlineStart: 24 }}>
             答：
             <br />
-            对于数组新增或删除元素的情况，有三种数组diff模式，
-            分别是依据最长子序列lcs对齐（默认）、依据data2的顺序对齐、不对齐;
+            对于数组新增或删除元素的情况，有三种数组 diff 模式， 分别是依据 lcs
+            对齐（默认）、依据 data2 的顺序对齐、不对齐;
             <br />
-            可以使用arrayAlignType来选择对齐模式，使用vizItems的arrayKey来指定数组key;
+            可以使用 arrayAlignType 来选择对齐模式，使用 vizItems 的 arrayKey
+            来指定数组 key ;
             <br />
             组件将数组对齐后会修改数据，并用修改后的数据进行渲染
             <CodeExample
@@ -78,7 +79,12 @@ return <DiffViz data1={data1} data2={data2} vizItems={vizItems} />;`}
                 style: {
                   display: "block",
                   backgroundColor:
-                    lineNumber == 23 || lineNumber == 24 ? "#ffeb3b40" : "", // 这里设置你想要高亮的行号范围
+                    lineNumber == 11 ||
+                    lineNumber == 12 ||
+                    lineNumber == 21 ||
+                    lineNumber == 22
+                      ? "#ffeb3b40"
+                      : "", // 这里设置你想要高亮的行号范围
                 },
               })}
               code={`const data1 = {
@@ -91,13 +97,11 @@ return <DiffViz data1={data1} data2={data2} vizItems={vizItems} />;`}
     },
   };
 
-  // diff组件会使用修改后的data2渲染以对齐data1，修改对齐后的data2.info.education：[undefined,{ school: "人民大学", type: "大学" },]
-  const data2 = {
-    age: 20,
-    info: {
-      education: [{ school: "人民大学", type: "大学" }],
-    },
-  };
+  // diff组件会将data2和data1的数组对齐，再进行渲染
+  // 修改后的data2.info.education：[undefined,{ school: "人民大学", type: "大学" },]
+  const data2 = _.cloneDeep(data1);
+  data2.info.education = [{ school: "人民大学", type: "大学" }];
+  
   const vizItems = [
     { label: "年龄", path: "age" },
     {
@@ -117,14 +121,15 @@ return <DiffViz data1={data1} data2={data2} vizItems={vizItems} />;`}
       {
         key: "3",
         label:
-          "问：在diff对齐和染色dom后，页面发生了变化，怎么触发重新diff和染色对齐",
+          "问：在 diff 对齐和染色 dom 后，页面发生了变化，怎么触发重新 diff 和染色对齐",
         children: (
           <p style={{ paddingInlineStart: 24 }}>
             答：
             <br />
-            数据变化后，diff组件会自动重新diff和染色对齐；
+            数据变化后，diff 组件会自动重新 diff 和染色对齐；
             <br />
-            如果数据没有变化但是想要重新diff和染色对齐，可以传入refreshKey来触发
+            如果数据没有变化但是想要重新 diff 和染色对齐，可以传入 refreshKey
+            来触发
           </p>
         ),
       },

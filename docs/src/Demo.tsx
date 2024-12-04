@@ -137,7 +137,7 @@ export default function Demo() {
             }}
             onClick={() => setShowDiffFunc(true)}
           >
-            需要在dom上标记数据路径，好处是你可以完全控制布局， React 和 Vue
+            需要在 dom 上标记数据路径，好处是你可以完全控制布局， React 和 Vue
             都适用
           </Card>
         </div>
@@ -291,16 +291,14 @@ function CodeExample1() {
 function CodeExample2() {
   return (
     <CodeExample
-      code={`/* 
-data1和data2的数据类型举例：
-{
+      code={`const data1 = {
   "name": "Jack",
   "info": {
       "introduction": "is a tool"
   },
   "link": "www.xxx.com"
 }
-*/
+const data2 = {...data1, name:"Tom"}
 
 import DiffViz from 'diff-viz';
 
@@ -321,8 +319,8 @@ function CodeExample3() {
         },
       })}
       code={`import { diff, applyDiff } from "diff-viz";
-const ref1 = useRef < HTMLDivElement > null;
-const ref2 = useRef < HTMLDivElement > null;
+const ref1 = useRef<HTMLDivElement>(null)
+const ref2 = useRef<HTMLDivElement>(null)
 
 useEffect(() => {
   const diffRes = calcDiff({ data1, data2 });

@@ -317,6 +317,7 @@ export default function DiffFuncDemo(props: { count: number }) {
                 marginRight: "4px",
               }}
               value={editedDataStr1}
+              onChange={() => {}}
             />
             <textarea
               style={{
