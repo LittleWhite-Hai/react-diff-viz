@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState } from "react";
 import "./App.css";
-import { DiffViz } from "./diff/index";
+import DiffViz from "react-diff-viz";
 import Form from "./form";
 import { Card, Link, Rate } from "@arco-design/web-react";
 import { Input } from "antd";

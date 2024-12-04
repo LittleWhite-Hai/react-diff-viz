@@ -4,6 +4,7 @@ import { atelierForestLight } from "react-syntax-highlighter/dist/cjs/styles/hlj
 export default function CodeExample(props: {
   code: string;
   lineProps?: (lineNumber: number) => React.HTMLProps<HTMLElement>;
+  showLineNumbers?: boolean;
 }) {
   return (
     <div style={{ flex: 1 }}>
@@ -21,7 +22,7 @@ export default function CodeExample(props: {
           },
         }}
         wrapLines={true}
-        showLineNumbers
+        showLineNumbers={props.showLineNumbers ?? true}
         lineProps={props.lineProps}
         children={props.code}
       ></SyntaxHighlighter>

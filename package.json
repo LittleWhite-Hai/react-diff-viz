@@ -5,7 +5,7 @@
     "diff",
     "visualization"
   ],
-  "version": "1.2.23",
+  "version": "1.2.24",
   "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -19,9 +19,7 @@
     "preview": "vite preview"
   },
   "peerDependencies": {
-    "lodash": "^4.17.21 || ^4.17.11 || ^3.10.1",
-    "react": "^16.8.0 || ^17.0.0 || ^18.2.0",
-    "react-dom": "^16.8.0 || ^17.0.0 || ^18.2.0"
+    "lodash": "^4.17.21 || ^4.17.11 || ^3.10.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.11.1",

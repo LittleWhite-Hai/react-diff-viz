@@ -116,7 +116,7 @@ export default function Demo() {
             Diff-Viz
           </Title>
           <Card
-            title="组件式接入: <DiffViz />"
+            title="组件式接入: <Diff />"
             bordered={false}
             style={{
               marginBottom: "20px",
@@ -167,6 +167,7 @@ export default function Demo() {
                 marginRight: "20px",
               }}
             >
+              <div style={{ fontSize: "20px" }}>npm install react-diff-viz</div>
               <Title level={4}>第一步</Title>
               <div style={{ fontSize: "20px" }}>
                 定义vizItems
@@ -207,12 +208,29 @@ export default function Demo() {
         }}
       >
         <div
-          style={{ width: "100%", display: "flex", justifyContent: "center" }}
+          style={{
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+            marginBottom: "40px",
+          }}
         >
           <DiffFuncDemo count={count} />
         </div>
+        <div
+          style={{
+            paddingLeft: "20px",
+            paddingRight: "20px",
+            width: "400px",
+          }}
+        >
+          <Title level={2} style={{}}>
+            接入方式
+          </Title>
 
-        <div style={{ display: "flex", marginTop: "80px" }}>
+          <div style={{ fontSize: "20px" }}>npm install diff-viz</div>
+        </div>
+        <div style={{ display: "flex" }}>
           <div
             style={{
               paddingLeft: "20px",
@@ -220,10 +238,6 @@ export default function Demo() {
               width: "400px",
             }}
           >
-            <Title level={2} style={{}}>
-              接入方式
-            </Title>
-
             <Title level={4}>
               第一步
               <br />
@@ -300,9 +314,9 @@ function CodeExample2() {
 }
 const data2 = {...data1, name:"Tom"}
 
-import DiffViz from 'diff-viz';
+import Diff from 'react-diff-viz';
 
-return <DiffViz data1={data1} data2={data2} vizItems={vizItems} />;
+return <Diff data1={data1} data2={data2} vizItems={vizItems} />;
 `}
     />
   );
