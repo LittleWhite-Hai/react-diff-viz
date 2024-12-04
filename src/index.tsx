@@ -1,5 +1,5 @@
 import React, { ReactNode, useRef, useMemo, useEffect, useState } from "react";
-import { calcDiffWithArrayAlign, getValueByPath } from "./diff-algorithm";
+import { calcDiffWithArrayAlign, applyDiff } from "diff-viz";
 import {
   ExtType,
   DataTypeBase,
@@ -10,8 +10,17 @@ import {
   VizItem,
 } from "./types";
 import { headerBlueTipStyle, headerStyle, titleStyle } from "./styles";
-import { applyDiff } from "./apply-diff";
 import _, { throttle } from "lodash";
+
+function getValueByPath(
+  obj: Record<string, any>,
+  path: string | undefined
+): any {
+  if (!path) {
+    return obj;
+  }
+  return path.split(".").reduce((acc, key) => acc && acc[key], obj);
+}
 
 function getFieldPathMap<T extends DataTypeBase>(vizItems: VizItems<T>) {
   const isEqualMap: Record<string, IsEqualFuncType> = {};

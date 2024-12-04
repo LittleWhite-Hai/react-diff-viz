@@ -1,7 +1,7 @@
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import Demo from "./Demo.tsx";
-import { calcDiff, calcDiffWithArrayAlign } from "./diff";
+import { calcDiff, calcDiffWithArrayAlign } from "diff-viz";
 
 createRoot(document.getElementById("root")!).render(<Demo></Demo>);
 

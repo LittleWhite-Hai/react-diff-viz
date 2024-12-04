@@ -1,5 +1,5 @@
 import DiffDemo from "./DiffVizDemo.tsx";
-import DiffFuncDemo from "./DiffFuncDemo.tsx";
+// import DiffFuncDemo from "./DiffFuncDemo.tsx";
 import "./index.css";
 import React, { useEffect, useState } from "react";
 import { Card, Typography } from "antd";
@@ -209,7 +209,7 @@ export default function Demo() {
         <div
           style={{ width: "100%", display: "flex", justifyContent: "center" }}
         >
-          <DiffFuncDemo count={count} />
+          {/* <DiffFuncDemo count={count} /> */}
         </div>
 
         <div style={{ display: "flex", marginTop: "80px" }}>
