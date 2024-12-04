@@ -8,9 +8,13 @@ render JSON differences + custom your styles
 npm install diff-viz
 ```
 
-## Usage
+## Demo
 
-recommend to read the demo site: https://littlewhite-hai.github.io/diff-viz/
+https://littlewhite-hai.github.io/diff-viz/
+
+![demo](./docs/public/demo.png)
+
+## Usage
 
 ```tsx
 import DiffViz from "diff-viz";
@@ -56,17 +60,13 @@ const vizItems = [
 />;
 ```
 
+recommend to read the demo site: https://littlewhite-hai.github.io/diff-viz/
+
 ## Dependencies
 
 - react (peer dependency)
 - react-dom (peer dependency)
 - lodash (peer dependency)
-
-## Demo
-
-https://littlewhite-hai.github.io/diff-viz/
-
-![demo](./docs/public/demo.png)
 
 ## License
 
