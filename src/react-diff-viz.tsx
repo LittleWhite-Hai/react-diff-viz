@@ -1,18 +1,5 @@
-import React, {
-  ReactNode,
-  useRef,
-  useMemo,
-  useEffect,
-  useState,
-  useCallback,
-} from "react";
-import {
-  alignDataArray,
-  calcDiffWithArrayAlign,
-  calcDiff,
-  getValueByPath,
-  DiffResType,
-} from "./diff-algorithm";
+import React, { ReactNode, useRef, useMemo, useEffect, useState } from "react";
+import { calcDiffWithArrayAlign, getValueByPath } from "./diff-algorithm";
 import {
   ExtType,
   DataTypeBase,
@@ -23,7 +10,7 @@ import {
   VizItem,
 } from "./types";
 import { headerBlueTipStyle, headerStyle, titleStyle } from "./styles";
-import { applyDiff, resetApplyDiff, wait } from "./apply-diff";
+import { applyDiff } from "./apply-diff";
 import _, { throttle } from "lodash";
 
 function getFieldPathMap<T extends DataTypeBase>(vizItems: VizItems<T>) {
@@ -408,10 +395,3 @@ export default function DiffViz<T extends DataTypeBase>(props: {
     </div>
   );
 }
-export {
-  alignDataArray,
-  calcDiff,
-  calcDiffWithArrayAlign,
-  applyDiff,
-  resetApplyDiff,
-};

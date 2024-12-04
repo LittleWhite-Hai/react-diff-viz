@@ -1,12 +1,11 @@
 {
   "name": "diff-viz",
-  "description": "Powerful React component that integrates data diff algorithms and rendering.",
+  "description": "render JSON differences with custom your styles",
   "keywords": [
-    "react",
     "diff",
     "visualization"
   ],
-  "version": "1.2.22",
+  "version": "1.2.23",
   "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
