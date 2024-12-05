@@ -16,57 +16,48 @@ https://littlewhite-hai.github.io/diff-viz/
 
 ## Usage
 
+step 1
+
 ```tsx
-import DiffViz from "diff-viz";
+import { calcDiff, applyDiff } from "diff-viz";
+const ref1 = useRef<HTMLDivElement>(null);
+const ref2 = useRef<HTMLDivElement>(null);
 
-// describe the content to be rendered
-const vizItems = [
-    {
-      path: "name",
-      label: "name",
-    },
-    {
-      path: "age",
-      label: "age",
-    },
-    {
-      path: "address",
-      label: "address",
-      content: (v) => {
-        return v.city + " of " + v.country;
-      },
-    },
-  ]
+useEffect(() => {
+  const diffRes = calcDiff({ data1, data2 });
+  applyDiff({ diffRes, ref1, ref2 });
+}, [data1, data2]);
 
-// diff data1 and data2 ,then render
-<DiffViz
-  data1={{
-    name: "John",
-    age: 30,
-    address: {
-      city: "New York",
-      country: "USA",
-    },
-  }}
-  data2={{
-    name: "John",
-    age: 31,
-    address: {
-      city: "New York",
-      country: "USA",
-    },
-  }}
-  vizItems={vizItems}
-/>;
+return (
+  <>
+    <div ref={ref1}>
+      <RenderData data={data1} /> {/* 你的业务代码,渲染数据1 */}
+    </div>
+    <div ref={ref2}>
+      <RenderData data={data2} /> {/* 你的业务代码,渲染数据2 */}
+    </div>
+  </>
+);
 ```
 
-recommend to read the demo site: https://littlewhite-hai.github.io/diff-viz/
+step 2
 
-## Dependencies
-
-- react (peer dependency)
-- react-dom (peer dependency)
-- lodash (peer dependency)
+```tsx
+// 假设<RenderData />是你的渲染数据的组件
+function RenderData(props) {
+  return (
+    <div>
+      ...
+      <div data-path="cardData">{RenderCard(props.data.cardData)}</div>
+      <div data-path="table.tableData">
+        {RenderTable(props.data.table.tableData)}
+      </div>
+      <div data-path="dateData">{RenderDate(props.data.dateData)}</div>
+      ...
+    </div>
+  );
+}
+```
 
 ## License
 

@@ -332,7 +332,7 @@ function CodeExample3() {
             lineNumber == 6 || lineNumber == 7 ? "#ffeb3b40" : "", // 这里设置你想要高亮的行号范围
         },
       })}
-      code={`import { diff, applyDiff } from "diff-viz";
+      code={`import { calcDiff, applyDiff } from "diff-viz";
 const ref1 = useRef<HTMLDivElement>(null)
 const ref2 = useRef<HTMLDivElement>(null)
 
