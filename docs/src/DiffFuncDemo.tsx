@@ -210,7 +210,7 @@ function RenderDetail(props: { data: any }) {
   );
 }
 
-export default function DiffFuncDemo(props: { count: number }) {
+export default function DiffFuncDemo(props: { count: number; isZh: boolean }) {
   const [disable, setDisable] = useState(false);
   const [editedDataStr1, setEditedDataStr1] = useState(
     JSON.stringify(data1, null, 2)
@@ -271,7 +271,7 @@ export default function DiffFuncDemo(props: { count: number }) {
               setShowJson(!showJson);
             }}
           >
-            编辑数据
+            {props.isZh ? "编辑数据" : "Edit Data"}
           </a>
 
           <a
@@ -286,7 +286,13 @@ export default function DiffFuncDemo(props: { count: number }) {
               setDisable(!disable);
             }}
           >
-            {disable ? "启用DIFF" : "禁用DIFF"}
+            {props.isZh
+              ? disable
+                ? "启用DIFF"
+                : "禁用DIFF"
+              : disable
+              ? "Enable DIFF"
+              : "Disable DIFF"}
           </a>
           <a
             href="https://github.com/LittleWhite-Hai/diff-viz/blob/diff-viz/docs/src/DiffFuncDemo.tsx"
@@ -295,7 +301,7 @@ export default function DiffFuncDemo(props: { count: number }) {
               color: "#7dba2f",
             }}
           >
-            查看源码
+            {props.isZh ? "查看源码" : "View Code"}
           </a>
         </div>
         <div>

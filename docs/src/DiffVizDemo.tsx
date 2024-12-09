@@ -60,7 +60,7 @@ data2.other_tools.unshift({
   description: "good at custom render",
 });
 
-export default function DiffDemo() {
+export default function DiffDemo(props: { isZh: boolean }) {
   const [count, setCount] = useState(0);
   const [formVisible, setFormVisible] = useState(false);
   const [editedDataStr1, setEditedDataStr1] = useState(
@@ -107,7 +107,7 @@ export default function DiffDemo() {
                 color: "#7dba2f",
               }}
             >
-              编辑数据
+              {props.isZh ? "编辑数据" : "Edit Data"}
             </a>
             <a
               style={{
@@ -121,7 +121,13 @@ export default function DiffDemo() {
                 setDisable(!disable);
               }}
             >
-              {disable ? "启用DIFF" : "禁用DIFF"}
+              {props.isZh
+                ? disable
+                  ? "启用DIFF"
+                  : "禁用DIFF"
+                : disable
+                ? "Enable DIFF"
+                : "Disable DIFF"}
             </a>
             <a
               href="https://github.com/LittleWhite-Hai/diff-viz/blob/diff-viz/docs/src/DiffDemo.tsx"
@@ -130,7 +136,7 @@ export default function DiffDemo() {
                 color: "#7dba2f",
               }}
             >
-              查看源码
+              {props.isZh ? "查看源码" : "View Code"}
             </a>
           </div>
         </div>
