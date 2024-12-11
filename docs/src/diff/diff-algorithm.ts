@@ -348,7 +348,9 @@ export function getObjectPathValueMap(data: any) {
       obj === undefined ||
       obj instanceof Date
     ) {
-      if (obj instanceof Date) {
+      if (path === "") {
+        return;
+      } else if (obj instanceof Date) {
         mapResult.set(path, obj.toISOString());
       } else {
         mapResult.set(path, obj);
@@ -358,7 +360,9 @@ export function getObjectPathValueMap(data: any) {
 
     for (const [key, value] of Object.entries(obj)) {
       const newPath = path ? `${path}.${key}` : key;
-      if (
+      if (newPath === "" || key === "") {
+        continue;
+      } else if (
         typeof value === "object" &&
         value !== null &&
         value !== undefined &&
